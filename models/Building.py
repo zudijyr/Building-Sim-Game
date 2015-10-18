@@ -10,6 +10,7 @@ class Building:
 	outputCap = 0
 	outputLoad = 0
 	outputType = ''
+	displayChar = ''
 
 	def __init__(self, xPosition, yPosition):
 		self.xPosition = xPosition
@@ -39,6 +40,7 @@ class Building:
 class cabbagePatch(Building):
 	inputCap = 5
 	outputCap = 5
+	displayChar = 'C'
 	outputType = Resource.Cabbage
 
 	def __init__(self, xPosition, yPosition):
@@ -47,12 +49,13 @@ class cabbagePatch(Building):
 class fishingHole(Building):
 	inputCap = 5
 	outputCap = 5
+	displayChar = 'F'
 	outputType = Resource.Fish
 
 	def __init__(self, xPosition, yPosition):
 		Building.__init__(self, xPosition, yPosition)
 
-building1 = cabbagePatch(1,1,)
+building1 = cabbagePatch(1,1)
 building2 = fishingHole(5,5)
 assert(building1.inputCap == 5)
 assert(building2.outputType == Resource.Fish)
