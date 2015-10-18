@@ -4,6 +4,7 @@ import curses
 import locale
 import time
 from models import building
+from models import terrain
 
 locale.setlocale(locale.LC_ALL, '')
 code = locale.getpreferredencoding()
@@ -11,8 +12,10 @@ curses.initscr()  #s for screen
 curses.noecho()
 curses.cbreak()
 curses.start_color()
-curses.init_pair(1, curses.COLOR_RED, curses.COLOR_WHITE)
-curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_RED)
+curses.init_pair(1, curses.COLOR_RED, terrain.Hill.color)
+curses.init_pair(2, curses.COLOR_BLUE, terrain.Plains.color)
+curses.init_pair(3, curses.COLOR_RED, terrain.Terrain.color)
+curses.init_pair(4, curses.COLOR_RED, terrain.Water.color)
 w = curses.newwin(20,20,0,0)
 w.keypad(1)
 w.border(0)
@@ -25,8 +28,12 @@ w.border(0)
 ###
 
 for x in xrange(1,19):
-	for y in xrange(1,19):
+	for y in xrange(1,10):
 		w.addch(y,x,' ',curses.color_pair(1))
+	for y in xrange(10,11):
+		w.addch(y,x,' ',curses.color_pair(3))
+	for y in xrange(11,19):
+		w.addch(y,x,' ',curses.color_pair(4))
 #w.bkgd(' ',curses.color_pair(1))    
 
 w.refresh()
