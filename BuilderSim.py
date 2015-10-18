@@ -3,7 +3,7 @@
 import curses
 import locale
 import time
-from models import Building
+from models import building
 
 locale.setlocale(locale.LC_ALL, '')
 code = locale.getpreferredencoding()
@@ -32,29 +32,29 @@ for x in xrange(1,19):
 w.refresh()
 
 ### add buildings
-building1 = Building.cabbagePatch(2,2)
-w.addch(building1.xPosition,building1.yPosition,building1.displayChar,curses.color_pair(1))
-building2 = Building.fishingHole(5,5)
-w.addch(building2.xPosition,building2.yPosition,building2.displayChar,curses.color_pair(1))
+building1 = building.CabbagePatch(2,2)
+w.addch(building1.x_position,building1.y_position,building1.display_char,curses.color_pair(1))
+building2 = building.FishingHole(5,5)
+w.addch(building2.x_position,building2.y_position,building2.display_char,curses.color_pair(1))
 ###
 
 ### move buildings
 for i in range(0, 3):
 	w.refresh()
 
-	x = building1.xPosition
-	y = building1.yPosition
-	w.addch(y+1,x+1,building1.displayChar,curses.color_pair(1))
+	x = building1.x_position
+	y = building1.y_position
+	w.addch(y+1,x+1,building1.display_char,curses.color_pair(1))
 	w.addch(y,x,' ',curses.color_pair(1))
-	building1.xPosition += 1
-	building1.yPosition += 1
+	building1.x_position += 1
+	building1.y_position += 1
 
-	x2 = building2.xPosition
-	y2 = building2.yPosition
-	w.addch(y2-1,x2+1,building2.displayChar,curses.color_pair(1))
+	x2 = building2.x_position
+	y2 = building2.y_position
+	w.addch(y2-1,x2+1,building2.display_char,curses.color_pair(1))
 	w.addch(y2,x2,' ',curses.color_pair(1))
-	building2.xPosition += 1
-	building2.yPosition -= 1
+	building2.x_position += 1
+	building2.y_position -= 1
 
 	time.sleep(1)
 	w.refresh()
@@ -81,13 +81,13 @@ while 1:
 		if(cursy > 1):
 			cursy = cursy - 1
 	elif c == ord('d'):
-		w.addch(cursy,cursx,building1.displayChar,curses.color_pair(1))
+		w.addch(cursy,cursx,building1.display_char,curses.color_pair(1))
 		if(cursx > 1):
 			cursy = cursy - 1
 	elif c == ord('g'):
-		w.addch(cursy,cursx,building2.displayChar,curses.color_pair(1))
+		w.addch(cursy,cursx,building2.display_char,curses.color_pair(1))
 	elif c == ord(' '):
-		w.addch(cursy,cursx,building1.displayChar,curses.color_pair(1))
+		w.addch(cursy,cursx,building1.display_char,curses.color_pair(1))
 		#w.addch(cursy,cursx,' ',curses.color_pair(1))
 	else:
 		w.addch(cursy,cursx,c,curses.color_pair(2))

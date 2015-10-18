@@ -4,77 +4,77 @@ import Resource
 import Unit
 
 class Building:
-	inputCap = 0
-	inputLoad = 0
-	inputType = Resource.NullResource
-	outputCap = 0
-	outputLoad = 0
-	outputType = ''
-	displayChar = ''
+	input_cap = 0
+	input_load = 0
+	input_type = Resource.NullResource
+	output_cap = 0
+	output_load = 0
+	output_type = ''
+	display_char = ''
 
-	def __init__(self, xPosition, yPosition):
-		self.xPosition = xPosition
-		self.yPosition = yPosition
+	def __init__(self, x_position, y_position):
+		self.x_position = x_position
+		self.y_position = y_position
 
 	def produce(self):
-		self.inputLoad -= 1 #needs error check
-		self.outputLoad += 1
+		self.input_load -= 1 #needs error check
+		self.output_load += 1
 
-	def unloadUnitCargoIntoBuilding(self, unit):
+	def unload_unit_cargo_into_building(self, unit):
 		#needs error check
-		self.inputLoad = unit.cargoLoad
-		unit.cargoLoad = 0
+		self.input_load = unit.cargo_load
+		unit.cargo_load = 0
 
-	def loadBuildingCargoIntoUnit(self, unit):
+	def load_building_cargo_into_unit(self, unit):
 		#needs error check
-		unit.cargoLoad = self.outputLoad
-		unit.cargoType = self.outputType
-		self.outputLoad = 0
+		unit.cargo_load = self.output_load
+		unit.cargo_type = self.output_type
+		self.output_load = 0
    
-	def displayOutputLoad(self):
-		print "Total outputLoad %d" % Building.outputLoad
+	def display_output_load(self):
+		print "Total output_load %d" % Building.output_load
 
-	def displayBuilding(self):
-		print "xPosition : ", self.xPosition,  ", yPosition: ", self.yPosition, ", outputType: ", self.outputType
+	def display_building(self):
+		print "x_position : ", self.x_position,  ", y_position: ", self.y_position, ", output_type: ", self.output_type
 
-class cabbagePatch(Building):
-	inputCap = 5
-	outputCap = 5
-	displayChar = 'C'
-	outputType = Resource.Cabbage
+class CabbagePatch(Building):
+	input_cap = 5
+	output_cap = 5
+	display_char = 'C'
+	output_type = Resource.Cabbage
 
-	def __init__(self, xPosition, yPosition):
-		Building.__init__(self, xPosition, yPosition)
+	def __init__(self, x_position, y_position):
+		Building.__init__(self, x_position, y_position)
 
-class fishingHole(Building):
-	inputCap = 5
-	outputCap = 5
-	displayChar = 'F'
-	outputType = Resource.Fish
+class FishingHole(Building):
+	input_cap = 5
+	output_cap = 5
+	display_char = 'F'
+	output_type = Resource.Fish
 
-	def __init__(self, xPosition, yPosition):
-		Building.__init__(self, xPosition, yPosition)
+	def __init__(self, x_position, y_position):
+		Building.__init__(self, x_position, y_position)
 
-building1 = cabbagePatch(1,1)
-building2 = fishingHole(5,5)
-assert(building1.inputCap == 5)
-assert(building2.outputType == Resource.Fish)
+building1 = CabbagePatch(1,1)
+building2 = FishingHole(5,5)
+assert(building1.input_cap == 5)
+assert(building2.output_type == Resource.Fish)
 
 unit1 = Unit.Peasant("peasant", 1,1, "null")
-unit1.cargoLoad = 5
+unit1.cargo_load = 5
 unit2 = Unit.Ship("ship", 5,5, "null")
-unit2.cargoLoad = 5
-building1.unloadUnitCargoIntoBuilding(unit1)
-building2.unloadUnitCargoIntoBuilding(unit2)
-assert(building1.inputLoad == 5)
-assert(unit1.cargoLoad == 0)
+unit2.cargo_load = 5
+building1.unload_unit_cargo_into_building(unit1)
+building2.unload_unit_cargo_into_building(unit2)
+assert(building1.input_load == 5)
+assert(unit1.cargo_load == 0)
 
 building1.produce()
 building2.produce()
-assert(building1.inputLoad == 4)
-assert(building2.outputLoad == 1)
+assert(building1.input_load == 4)
+assert(building2.output_load == 1)
 
-building1.loadBuildingCargoIntoUnit(unit1)
-building2.loadBuildingCargoIntoUnit(unit2)
-assert(unit1.cargoType == Resource.Cabbage)
-assert(unit2.cargoType == Resource.Fish)
+building1.load_building_cargo_into_unit(unit1)
+building2.load_building_cargo_into_unit(unit2)
+assert(unit1.cargo_type == Resource.Cabbage)
+assert(unit2.cargo_type == Resource.Fish)

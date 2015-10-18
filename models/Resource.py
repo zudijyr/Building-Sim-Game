@@ -5,7 +5,7 @@ class Resource:
 	def __init__(self):
 		self.name = ''
    
-	def displayResource(self):
+	def display_resource(self):
 		print 'Name : ', self.name
 
 class Cabbage(Resource):

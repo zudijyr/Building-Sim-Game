@@ -2,50 +2,50 @@
 import Resource
 
 class Unit:
-	cargoCap = 0
+	cargo_cap = 0
 	move = 0
 
-	def __init__(self, name, xPosition, yPosition, cargoType):
-		self.cargoLoad = 0
+	def __init__(self, name, x_position, y_position, cargo_type):
+		self.cargo_load = 0
 		self.name = name
-		self.moveRemaining = self.move
-		self.xPosition = xPosition
-		self.yPosition = yPosition
-		self.cargoType = cargoType
+		self.move_remaining = self.move
+		self.x_position = x_position
+		self.y_position = y_position
+		self.cargo_type = cargo_type
    
-	def displayCargoLoad(self):
-		print "Total cargoLoad %d" % Unit.cargoLoad
+	def display_cargo_load(self):
+		print "Total cargo_load %d" % Unit.cargo_load
 
-	def displayUnit(self):
-		print "Name : ", self.name, ", Move: ", self.move, ", cargoCap: ", self.cargoCap
-		print "xPosition : ", self.xPosition,  ", yPosition: ", self.yPosition, ", cargoType: ", self.cargoType
+	def display_unit(self):
+		print "Name : ", self.name, ", Move: ", self.move, ", cargo_cap: ", self.cargo_cap
+		print "x_position : ", self.x_position,  ", y_position: ", self.y_position, ", cargo_type: ", self.cargo_type
 
-	def moveUnit(self, xMove, yMove):
-		self.xPosition += xMove
-		self.moveRemaining -= xMove
-		self.yPosition += yMove
-		self.moveRemaining -= yMove
-		#TODO change this to reduce the moveRemaining by the moveCost of the terrain
+	def move_unit(self, x_move, y_move):
+		self.x_position += x_move
+		self.move_remaining -= x_move
+		self.y_position += y_move
+		self.move_remaining -= y_move
+		#TODO change this to reduce the move_remaining by the moveCost of the terrain
 
 class Peasant(Unit):
-	cargoCap = 5
+	cargo_cap = 5
 	move = 5
 
-	def __init__(self, name, xPosition, yPosition, cargoType):
-		Unit.__init__(self, name, xPosition, yPosition, cargoType)
+	def __init__(self, name, x_position, y_position, cargo_type):
+		Unit.__init__(self, name, x_position, y_position, cargo_type)
 
 class Ship(Unit):
-	cargoCap = 10
+	cargo_cap = 10
 	move = 10
 
-	def __init__(self, name, xPosition, yPosition, cargoType):
-		Unit.__init__(self, name, xPosition, yPosition, cargoType)
+	def __init__(self, name, x_position, y_position, cargo_type):
+		Unit.__init__(self, name, x_position, y_position, cargo_type)
 
 unit1 = Peasant("Peasant", 1,1, "null")
 unit2 = Ship("Ship", 5,5, "fish")
-assert(unit1.cargoCap == 5)
-assert(unit1.moveRemaining == 5)
-unit1.moveUnit(3,0)
-unit2.moveUnit(0,7)
-assert(unit1.xPosition == 4)
-assert(unit2.yPosition == 12)
+assert(unit1.cargo_cap == 5)
+assert(unit1.move_remaining == 5)
+unit1.move_unit(3,0)
+unit2.move_unit(0,7)
+assert(unit1.x_position == 4)
+assert(unit2.y_position == 12)
