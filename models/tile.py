@@ -3,13 +3,13 @@ import terrain
 
 class Tile:
 
-	def __init__(self, terrainType, xPosition, yPosition):
-		self.terrainType = terrainType
-		self.xPosition = xPosition
-		self.yPosition = yPosition
+	def __init__(self, terrain_type, x_position, y_position):
+		self.terrain_type = terrain_type
+		self.x_position = x_position
+		self.y_position = y_position
    
 	def displayTile(self):
-		print 'terrainType : ', self.terrainType, 'xPosition : ', self.xPosition, 'yPosition : ', self.yPosition 
+		print 'terrain_type : ', self.terrain_type, 'x_position : ', self.x_position, 'y_position : ', self.y_position 
 
-tile1 = Tile(Terrain.Hill, 1,2)
-assert(tile1.terrainType.moveCost == 4)
+tile1 = Tile(terrain.Hill, 1,2)
+assert(tile1.terrain_type.move_cost == 4)

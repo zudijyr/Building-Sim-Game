@@ -6,7 +6,7 @@ import unit
 class Building:
 	input_cap = 0
 	input_load = 0
-	input_type = Resource.NullResource
+	input_type = resource.NullResource
 	output_cap = 0
 	output_load = 0
 	output_type = ''
@@ -41,7 +41,7 @@ class CabbagePatch(Building):
 	input_cap = 5
 	output_cap = 5
 	display_char = 'C'
-	output_type = Resource.Cabbage
+	output_type = resource.Cabbage
 
 	def __init__(self, x_position, y_position):
 		Building.__init__(self, x_position, y_position)
@@ -50,7 +50,7 @@ class FishingHole(Building):
 	input_cap = 5
 	output_cap = 5
 	display_char = 'F'
-	output_type = Resource.Fish
+	output_type = resource.Fish
 
 	def __init__(self, x_position, y_position):
 		Building.__init__(self, x_position, y_position)
@@ -58,11 +58,11 @@ class FishingHole(Building):
 building1 = CabbagePatch(1,1)
 building2 = FishingHole(5,5)
 assert(building1.input_cap == 5)
-assert(building2.output_type == Resource.Fish)
+assert(building2.output_type == resource.Fish)
 
-unit1 = Unit.Peasant("peasant", 1,1, "null")
+unit1 = unit.Peasant("peasant", 1,1, "null")
 unit1.cargo_load = 5
-unit2 = Unit.Ship("ship", 5,5, "null")
+unit2 = unit.Ship("ship", 5,5, "null")
 unit2.cargo_load = 5
 building1.unload_unit_cargo_into_building(unit1)
 building2.unload_unit_cargo_into_building(unit2)
@@ -76,5 +76,5 @@ assert(building2.output_load == 1)
 
 building1.load_building_cargo_into_unit(unit1)
 building2.load_building_cargo_into_unit(unit2)
-assert(unit1.cargo_type == Resource.Cabbage)
-assert(unit2.cargo_type == Resource.Fish)
+assert(unit1.cargo_type == resource.Cabbage)
+assert(unit2.cargo_type == resource.Fish)
