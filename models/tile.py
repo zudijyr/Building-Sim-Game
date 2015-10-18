@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import Terrain
+import terrain
 
 class Tile:
 

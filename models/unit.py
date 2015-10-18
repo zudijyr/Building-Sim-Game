@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import Resource
+import resource
 
 class Unit:
 	cargo_cap = 0

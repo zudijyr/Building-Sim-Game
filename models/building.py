@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import Resource
-import Unit
+import resource
+import unit
 
 class Building:
 	input_cap = 0
