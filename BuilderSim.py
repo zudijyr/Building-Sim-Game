@@ -46,7 +46,11 @@ unit2 = unit.Ship(5,15, "null")
 w.addch(unit2.y_position,unit2.x_position,unit2.display_char,curses.color_pair(4))
 ###
 
-### move buildings
+### add buildings
+building1 = building.FishingHole(8,12)
+w.addch(building1.y_position,building1.x_position,building1.display_char,curses.color_pair(4))
+
+### move units
 for i in range(0, 3):
 	w.refresh()
 
@@ -66,7 +70,14 @@ for i in range(0, 3):
 
 	time.sleep(1)
 	w.refresh()
-	
+
+### get fish
+building1.input_load = 5
+building1.produce()
+assert(building1.output_load == 1)
+building1.load_building_cargo_into_unit(unit1)
+assert(unit1.cargo_load == 1)
+
 
 go = 1
 cursx = 1
@@ -92,8 +103,6 @@ while 1:
 		w.addch(cursy,cursx,building1.display_char,curses.color_pair(1))
 		if(cursx > 1):
 			cursy = cursy - 1
-	elif c == ord('g'):
-		w.addch(cursy,cursx,building2.display_char,curses.color_pair(1))
 	elif c == ord(' '):
 		w.addch(cursy,cursx,building1.display_char,curses.color_pair(1))
 		#w.addch(cursy,cursx,' ',curses.color_pair(1))

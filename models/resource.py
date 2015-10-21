@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 class Resource:
-	name = 'dsf'
+	name = ''
 
 	def display_resource(self):
 		print 'Name : ', self.name
