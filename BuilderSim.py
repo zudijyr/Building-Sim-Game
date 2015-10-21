@@ -3,6 +3,7 @@
 import curses
 import locale
 import time
+from models import unit
 from models import building
 from models import terrain
 
@@ -15,7 +16,7 @@ curses.start_color()
 curses.init_pair(1, curses.COLOR_RED, terrain.Hill.color)
 curses.init_pair(2, curses.COLOR_BLUE, terrain.Plains.color)
 curses.init_pair(3, curses.COLOR_RED, terrain.Terrain.color)
-curses.init_pair(4, curses.COLOR_RED, terrain.Water.color)
+curses.init_pair(4, curses.COLOR_MAGENTA, terrain.Water.color)
 w = curses.newwin(20,20,0,0)
 w.keypad(1)
 w.border(0)
@@ -38,30 +39,30 @@ for x in xrange(1,19):
 
 w.refresh()
 
-### add buildings
-building1 = building.CabbagePatch(2,2)
-w.addch(building1.x_position,building1.y_position,building1.display_char,curses.color_pair(1))
-building2 = building.FishingHole(5,5)
-w.addch(building2.x_position,building2.y_position,building2.display_char,curses.color_pair(1))
+### add units
+unit1 = unit.Peasant(2,2, "null")
+w.addch(unit1.y_position,unit1.x_position,unit1.display_char,curses.color_pair(1))
+unit2 = unit.Ship(5,15, "null")
+w.addch(unit2.y_position,unit2.x_position,unit2.display_char,curses.color_pair(4))
 ###
 
 ### move buildings
 for i in range(0, 3):
 	w.refresh()
 
-	x = building1.x_position
-	y = building1.y_position
-	w.addch(y+1,x+1,building1.display_char,curses.color_pair(1))
+	x = unit1.x_position
+	y = unit1.y_position
+	w.addch(y+1,x+1,unit1.display_char,curses.color_pair(1))
 	w.addch(y,x,' ',curses.color_pair(1))
-	building1.x_position += 1
-	building1.y_position += 1
+	unit1.x_position += 1
+	unit1.y_position += 1
 
-	x2 = building2.x_position
-	y2 = building2.y_position
-	w.addch(y2-1,x2+1,building2.display_char,curses.color_pair(1))
-	w.addch(y2,x2,' ',curses.color_pair(1))
-	building2.x_position += 1
-	building2.y_position -= 1
+	x2 = unit2.x_position
+	y2 = unit2.y_position
+	w.addch(y2-1,x2+1,unit2.display_char,curses.color_pair(4))
+	w.addch(y2,x2,' ',curses.color_pair(4))
+	unit2.x_position += 1
+	unit2.y_position -= 1
 
 	time.sleep(1)
 	w.refresh()

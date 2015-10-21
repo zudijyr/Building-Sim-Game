@@ -4,10 +4,10 @@ import resource
 class Unit:
 	cargo_cap = 0
 	move = 0
+	display_char = ''
 
-	def __init__(self, name, x_position, y_position, cargo_type):
+	def __init__(self, x_position, y_position, cargo_type):
 		self.cargo_load = 0
-		self.name = name
 		self.move_remaining = self.move
 		self.x_position = x_position
 		self.y_position = y_position
@@ -17,7 +17,7 @@ class Unit:
 		print "Total cargo_load %d" % Unit.cargo_load
 
 	def display_unit(self):
-		print "Name : ", self.name, ", Move: ", self.move, ", cargo_cap: ", self.cargo_cap
+		print "Move: ", self.move, ", cargo_cap: ", self.cargo_cap
 		print "x_position : ", self.x_position,  ", y_position: ", self.y_position, ", cargo_type: ", self.cargo_type
 
 	def move_unit(self, x_move, y_move):
@@ -30,19 +30,21 @@ class Unit:
 class Peasant(Unit):
 	cargo_cap = 5
 	move = 5
+	display_char = 'P'
 
-	def __init__(self, name, x_position, y_position, cargo_type):
-		Unit.__init__(self, name, x_position, y_position, cargo_type)
+	def __init__(self, x_position, y_position, cargo_type):
+		Unit.__init__(self, x_position, y_position, cargo_type)
 
 class Ship(Unit):
 	cargo_cap = 10
 	move = 10
+	display_char = 'S'
 
-	def __init__(self, name, x_position, y_position, cargo_type):
-		Unit.__init__(self, name, x_position, y_position, cargo_type)
+	def __init__(self, x_position, y_position, cargo_type):
+		Unit.__init__(self, x_position, y_position, cargo_type)
 
-unit1 = Peasant("Peasant", 1,1, "null")
-unit2 = Ship("Ship", 5,5, "fish")
+unit1 = Peasant(1,1, "null")
+unit2 = Ship(5,5, "fish")
 assert(unit1.cargo_cap == 5)
 assert(unit1.move_remaining == 5)
 unit1.move_unit(3,0)
