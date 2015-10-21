@@ -43,10 +43,12 @@ class Ship(Unit):
 	def __init__(self, x_position, y_position, cargo_type):
 		Unit.__init__(self, x_position, y_position, cargo_type)
 
-unit1 = Peasant(1,1, "null")
-unit2 = Ship(5,5, "fish")
+unit1 = Peasant(1,1, resource.NullResource)
+unit2 = Ship(5,5, resource.Fish)
 assert(unit1.cargo_cap == 5)
 assert(unit1.move_remaining == 5)
+assert unit1.cargo_type.name == 'null resource'
+assert unit2.cargo_type.name == 'fish'
 unit1.move_unit(3,0)
 unit2.move_unit(0,7)
 assert(unit1.x_position == 4)

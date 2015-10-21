@@ -60,9 +60,9 @@ building2 = FishingHole(5,5)
 assert(building1.input_cap == 5)
 assert(building2.output_type == resource.Fish)
 
-unit1 = unit.Peasant(1,1, "null")
+unit1 = unit.Peasant(1,1, resource.Cabbage)
 unit1.cargo_load = 5
-unit2 = unit.Ship(5,5, "null")
+unit2 = unit.Ship(5,5, resource.Fish)
 unit2.cargo_load = 5
 building1.unload_unit_cargo_into_building(unit1)
 building2.unload_unit_cargo_into_building(unit2)
