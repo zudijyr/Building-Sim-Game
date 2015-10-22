@@ -42,13 +42,19 @@ w.refresh()
 ### add units
 unit1 = unit.Peasant(2,2, "null")
 w.addch(unit1.y_position,unit1.x_position,unit1.display_char,curses.color_pair(1))
-unit2 = unit.Ship(5,15, "null")
+unit2 = unit.Ship(8,12, "null")
 w.addch(unit2.y_position,unit2.x_position,unit2.display_char,curses.color_pair(4))
 ###
 
 ### add buildings
-building1 = building.FishingHole(8,12)
+building1 = building.FishingHole(5,15)
+building2 = building.Dock(6,10)
+building3 = building.Dock(6,11)
+building4 = building.Dock(6,12)
 w.addch(building1.y_position,building1.x_position,building1.display_char,curses.color_pair(4))
+w.addch(building2.y_position,building2.x_position,building2.display_char,curses.color_pair(3))
+w.addch(building3.y_position,building3.x_position,building3.display_char,curses.color_pair(4))
+w.addch(building4.y_position,building4.x_position,building4.display_char,curses.color_pair(4))
 
 ### move units
 for i in range(0, 3):
@@ -63,10 +69,10 @@ for i in range(0, 3):
 
 	x2 = unit2.x_position
 	y2 = unit2.y_position
-	w.addch(y2-1,x2+1,unit2.display_char,curses.color_pair(4))
+	w.addch(y2+1,x2-1,unit2.display_char,curses.color_pair(4))
 	w.addch(y2,x2,' ',curses.color_pair(4))
-	unit2.x_position += 1
-	unit2.y_position -= 1
+	unit2.x_position -= 1
+	unit2.y_position += 1
 
 	time.sleep(1)
 	w.refresh()
@@ -74,9 +80,23 @@ for i in range(0, 3):
 ### get fish
 building1.input_load = 5
 building1.produce()
-assert(building1.output_load == 1)
+building1.produce()
+assert(building1.output_load == 2)
 building1.load_building_cargo_into_unit(unit1)
-assert(unit1.cargo_load == 1)
+assert(unit1.cargo_load == 2)
+
+### go to dock
+for i in range(0, 3):
+	w.refresh()
+
+	x2 = unit2.x_position
+	y2 = unit2.y_position
+	w.addch(y2-1,x2,unit2.display_char,curses.color_pair(4))
+	w.addch(y2,x2,' ',curses.color_pair(4))
+	unit2.y_position -= 1
+
+	time.sleep(1)
+	w.refresh()
 
 
 go = 1

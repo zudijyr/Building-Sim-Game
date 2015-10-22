@@ -19,6 +19,7 @@ class Building:
 	def produce(self):
 		self.input_load -= 1 #needs error check
 		self.output_load += 1
+		print("\a")
 
 	def unload_unit_cargo_into_building(self, unit):
 		#needs error check
@@ -42,6 +43,15 @@ class CabbagePatch(Building):
 	output_cap = 5
 	display_char = 'C'
 	output_type = resource.Cabbage
+
+	def __init__(self, x_position, y_position):
+		Building.__init__(self, x_position, y_position)
+
+class Dock(Building):
+	input_cap = 5
+	output_cap = 5
+	display_char = 'D'
+	output_type = resource.Fish
 
 	def __init__(self, x_position, y_position):
 		Building.__init__(self, x_position, y_position)
