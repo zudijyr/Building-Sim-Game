@@ -15,29 +15,25 @@ curses.initscr()  #s for screen
 curses.noecho()
 curses.cbreak()
 curses.start_color()
-curses.init_pair(1, curses.COLOR_RED, terrain.Hill.color)
-curses.init_pair(2, curses.COLOR_BLUE, terrain.Plains.color)
-curses.init_pair(3, curses.COLOR_RED, terrain.Terrain.color)
-curses.init_pair(4, curses.COLOR_MAGENTA, terrain.Water.color)
 w = curses.newwin(20,20,0,0)
 w.keypad(1)
 w.border(0)
 
 for x in xrange(1,19):
 	for y in xrange(1,19):
-		w.addch(y,x,' ',curses.color_pair(1))
+		w.addch(y,x,' ',terrain.Hill.color_pair)
 	for y in xrange(10,11):
-		w.addch(y,x,' ',curses.color_pair(3))
+		w.addch(y,x,' ',terrain.Terrain.color_pair)
 	for y in xrange(11,19):
-		w.addch(y,x,' ',curses.color_pair(4))
+		w.addch(y,x,' ',terrain.Water.color_pair)
 
 w.refresh()
 
 ### add units
 unit1 = unit.Peasant(2,2, resource.NullResource)
-w.addch(unit1.y_position,unit1.x_position,unit1.display_char,curses.color_pair(1))
+w.addch(unit1.y_position,unit1.x_position,unit1.display_char,terrain.Hill.color_pair)
 unit2 = unit.Ship(8,12, resource.NullResource)
-w.addch(unit2.y_position,unit2.x_position,unit2.display_char,curses.color_pair(4))
+w.addch(unit2.y_position,unit2.x_position,unit2.display_char,terrain.Water.color_pair)
 ###
 
 ### add buildings
@@ -46,10 +42,10 @@ building2 = building.Dock(6,10)
 building3 = building.Dock(6,11)
 building4 = building.Dock(6,12)
 
-w.addch(building1.y_position,building1.x_position,building1.display_char,curses.color_pair(4))
-w.addch(building2.y_position,building2.x_position,building2.display_char,curses.color_pair(3))
-w.addch(building3.y_position,building3.x_position,building3.display_char,curses.color_pair(4))
-w.addch(building4.y_position,building4.x_position,building4.display_char,curses.color_pair(4))
+w.addch(building1.y_position,building1.x_position,building1.display_char,terrain.Water.color_pair)
+w.addch(building2.y_position,building2.x_position,building2.display_char,terrain.Terrain.color_pair)
+w.addch(building3.y_position,building3.x_position,building3.display_char,terrain.Water.color_pair)
+w.addch(building4.y_position,building4.x_position,building4.display_char,terrain.Water.color_pair)
 
 w.refresh()
 

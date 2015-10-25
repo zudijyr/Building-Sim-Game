@@ -8,7 +8,9 @@ class Terrain:
 	move_cost = 1
 	name = 'base terrain'
 	color = curses.COLOR_WHITE
-	color_pair = curses.color_pair(0)
+	char_color = curses.COLOR_RED
+	curses.init_pair(1, char_color, color)
+	color_pair = curses.color_pair(1)
 
 	def display_terrain():
 		print 'Name : ', name
