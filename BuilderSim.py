@@ -8,6 +8,7 @@ from models import resource
 from models import terrain
 from models import building
 from models import unit
+from models import tile
 
 locale.setlocale(locale.LC_ALL, '')
 code = locale.getpreferredencoding()
@@ -21,15 +22,21 @@ w = curses.newwin(WIN_MAX,WIN_MAX,WIN_MIN,WIN_MIN)
 w.keypad(1)
 w.border(0)
 
+tile_array = {}
 for x in xrange(1,19):
 	for y in xrange(1,19):
-		w.addch(y,x,' ',terrain.Grass.color_pair)
+		tile_array[y,x] = tile.Tile(terrain.Grass,x,y)
 	for y in xrange(10,11):
-		w.addch(y,x,' ',terrain.Terrain.color_pair)
+		tile_array[y,x] = tile.Tile(terrain.Terrain,x,y)
 	for y in xrange(11,19):
-		w.addch(y,x,' ',terrain.Water.color_pair)
+		tile_array[y,x] = tile.Tile(terrain.Water,x,y)
+	for y in xrange(1,19):
+		w.addch(y,x,' ',tile_array[y,x].terrain_type.color_pair)
 
-w.addch(7,7,' ',terrain.Forest.color_pair)
+
+
+tile_array[7,7] = tile.Tile(terrain.Forest,x,y)
+w.addch(7,7,' ',tile_array[7,7].terrain_type.color_pair)
 
 w.refresh()
 
@@ -56,8 +63,8 @@ w.refresh()
 ### move units
 for i in range(0, 3):
 
-	unit1.move_unit(w, 1,1, terrain.Grass)
-	unit2.move_unit(w,-1,1, terrain.Water)
+	unit1.move_unit(w, 1,1, tile_array)
+	unit2.move_unit(w,-1,1, tile_array)
 	time.sleep(1)
 	w.refresh()
 
@@ -73,7 +80,7 @@ assert(unit1.cargo_load == 2)
 for i in range(0, 3):
 	w.refresh()
 
-	unit2.move_unit(w,0,-1, terrain.Water)
+	unit2.move_unit(w,0,-1, tile_array)
 
 	time.sleep(1)
 	w.refresh()

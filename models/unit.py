@@ -22,13 +22,13 @@ class Unit:
 		print "Move: ", self.move, ", cargo_cap: ", self.cargo_cap
 		print "x_position : ", self.x_position,  ", y_position: ", self.y_position, ", cargo_type: ", self.cargo_type
 
-	def move_unit(self, window, x_move, y_move, terrain):
-		window.addch(self.y_position,self.x_position,' ',terrain.color_pair)
+	def move_unit(self, window, x_move, y_move, tile_array):
+		window.addch(self.y_position,self.x_position,' ',tile_array[self.y_position,self.x_position].terrain_type.color_pair)
 		self.x_position += x_move
 		self.move_remaining -= x_move
 		self.y_position += y_move
 		self.move_remaining -= y_move
-		window.addch(self.y_position,self.x_position,self.display_char,terrain.color_pair)
+		window.addch(self.y_position,self.x_position,self.display_char,tile_array[self.y_position,self.x_position].terrain_type.color_pair)
 		#TODO change this to reduce the move_remaining by the moveCost of the terrain
 
 class Peasant(Unit):
