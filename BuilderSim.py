@@ -4,6 +4,7 @@ import curses
 import locale
 import time
 import resource
+from models import resource
 from models import terrain
 from models import building
 from models import unit
@@ -32,10 +33,11 @@ for x in xrange(1,19):
 
 w.refresh()
 
+
 ### add units
-unit1 = unit.Peasant(2,2, "null") #TODO why does resource.NullResource cause an error here?  Circular dependance?
+unit1 = unit.Peasant(2,2, resource.NullResource)
 w.addch(unit1.y_position,unit1.x_position,unit1.display_char,curses.color_pair(1))
-unit2 = unit.Ship(8,12, "null")
+unit2 = unit.Ship(8,12, resource.NullResource)
 w.addch(unit2.y_position,unit2.x_position,unit2.display_char,curses.color_pair(4))
 ###
 
