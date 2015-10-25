@@ -4,15 +4,9 @@ import curses
 import terrain
 
 class Unit:
-	curses.initscr()
-	curses.start_color()
 	cargo_cap = 0
 	move = 0
 	display_char = ''
-	display_color = curses.COLOR_WHITE
-	color_pair = curses.color_pair(0)
-	#This feels clunky to have color_pair be a unit attribute.  Is there a better way?
-	#But it's good enough for now, especially if I'm going to change to real graphics later
 
 	def __init__(self, x_position, y_position, cargo_type):
 		self.cargo_load = 0
@@ -28,22 +22,19 @@ class Unit:
 		print "Move: ", self.move, ", cargo_cap: ", self.cargo_cap
 		print "x_position : ", self.x_position,  ", y_position: ", self.y_position, ", cargo_type: ", self.cargo_type
 
-	def move_unit(self, window, x_move, y_move):
-		window.addch(self.y_position,self.x_position,' ',self.color_pair)
+	def move_unit(self, window, x_move, y_move, terrain):
+		window.addch(self.y_position,self.x_position,' ',terrain.color_pair)
 		self.x_position += x_move
 		self.move_remaining -= x_move
 		self.y_position += y_move
 		self.move_remaining -= y_move
-		window.addch(self.y_position,self.x_position,self.display_char,self.color_pair)
+		window.addch(self.y_position,self.x_position,self.display_char,terrain.color_pair)
 		#TODO change this to reduce the move_remaining by the moveCost of the terrain
 
 class Peasant(Unit):
 	cargo_cap = 5
 	move = 5
 	display_char = 'P'
-	display_color = curses.COLOR_RED
-	curses.init_pair(5, display_color, curses.COLOR_GREEN)
-	color_pair = curses.color_pair(5)
 
 	def __init__(self, x_position, y_position, cargo_type):
 		Unit.__init__(self, x_position, y_position, cargo_type)
@@ -52,9 +43,6 @@ class Ship(Unit):
 	cargo_cap = 10
 	move = 10
 	display_char = 'S'
-	display_color = curses.COLOR_MAGENTA
-	curses.init_pair(6, display_color, curses.COLOR_BLUE)
-	color_pair = curses.color_pair(6)
 
 	def __init__(self, x_position, y_position, cargo_type):
 		Unit.__init__(self, x_position, y_position, cargo_type)

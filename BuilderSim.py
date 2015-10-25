@@ -33,7 +33,6 @@ for x in xrange(1,19):
 
 w.refresh()
 
-
 ### add units
 unit1 = unit.Peasant(2,2, resource.NullResource)
 w.addch(unit1.y_position,unit1.x_position,unit1.display_char,curses.color_pair(1))
@@ -46,6 +45,7 @@ building1 = building.FishingHole(5,15)
 building2 = building.Dock(6,10)
 building3 = building.Dock(6,11)
 building4 = building.Dock(6,12)
+
 w.addch(building1.y_position,building1.x_position,building1.display_char,curses.color_pair(4))
 w.addch(building2.y_position,building2.x_position,building2.display_char,curses.color_pair(3))
 w.addch(building3.y_position,building3.x_position,building3.display_char,curses.color_pair(4))
@@ -56,10 +56,9 @@ w.refresh()
 ### move units
 for i in range(0, 3):
 
-	unit1.move_unit(w, 1,1)
-	unit2.move_unit(w,-1,1)
+	unit1.move_unit(w, 1,1, terrain.Hill)
+	unit2.move_unit(w,-1,1, terrain.Water)
 	time.sleep(1)
-
 	w.refresh()
 
 ### get fish
@@ -74,13 +73,11 @@ assert(unit1.cargo_load == 2)
 for i in range(0, 3):
 	w.refresh()
 
-	unit2.move_unit(w,0,-1)
+	unit2.move_unit(w,0,-1, terrain.Water)
 
 	time.sleep(1)
 	w.refresh()
 
-
-go = 1
 cursx = 1
 cursy = 1
 w.move(cursy,cursx)
