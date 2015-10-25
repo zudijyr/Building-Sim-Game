@@ -59,22 +59,38 @@ w.addch(building3.y_position,building3.x_position,building3.display_char,terrain
 w.addch(building4.y_position,building4.x_position,building4.display_char,terrain.Water.color_pair)
 
 w.refresh()
+time.sleep(1)
 
 ### move units
 for i in range(0, 3):
 
 	unit1.move_unit(w, 1,1, tile_array)
 	unit2.move_unit(w,-1,1, tile_array)
-	time.sleep(1)
 	w.refresh()
+	time.sleep(1)
+
 
 ### get fish
 building1.input_load = 5
 building1.produce()
 building1.produce()
 assert(building1.output_load == 2)
-building1.load_building_cargo_into_unit(unit1)
-assert(unit1.cargo_load == 2)
+building1.load_building_cargo_into_unit(unit2)
+assert(unit2.cargo_load == 2)
+assert(unit2.cargo_type == resource.Fish)
+
+### chop wood
+unit1.chop_wood(tile_array)
+assert(unit1.cargo_load == 1)
+assert(unit1.cargo_type == resource.Wood)
+
+unit1.move_unit(w, 1,0, tile_array)
+w.refresh()
+time.sleep(1)
+
+###construct
+cabbage_farm = building.CabbageFarm(1,5)
+cabbage_farm.construct_building(w, unit1, tile_array)
 
 ### go to dock
 for i in range(0, 3):

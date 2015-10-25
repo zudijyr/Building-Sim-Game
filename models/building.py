@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import curses
 import resource
 import terrain
 import unit
@@ -12,6 +13,8 @@ class Building:
 	output_load = 0
 	output_type = ''
 	display_char = ''
+	building_cost_type = ''
+	building_cost = ''
 
 	def __init__(self, x_position, y_position):
 		self.x_position = x_position
@@ -21,6 +24,7 @@ class Building:
 		self.input_load -= 1 #needs error check
 		self.output_load += 1
 		print("\a")
+
 
 	def unload_unit_cargo_into_building(self, unit):
 		#needs error check
@@ -39,11 +43,21 @@ class Building:
 	def display_building(self):
 		print "x_position : ", self.x_position,  ", y_position: ", self.y_position, ", output_type: ", self.output_type
 
-class CabbagePatch(Building):
+	def construct_building(self, window, unit, tile_array):
+		terrain = tile_array[unit.y_position,unit.x_position].terrain_type
+		new_terrain = tile_array[unit.y_position,unit.x_position+1].terrain_type
+		window.addch(unit.y_position,unit.x_position,self.display_char,terrain.color_pair)
+		unit.x_position += 1
+		window.addch(unit.y_position,unit.x_position,unit.display_char,new_terrain.color_pair)
+
+
+class CabbageFarm(Building):
 	input_cap = 5
 	output_cap = 5
 	display_char = 'C'
 	output_type = resource.Cabbage
+	building_cost_type = resource.Wood
+	building_cost = 1
 
 	def __init__(self, x_position, y_position):
 		Building.__init__(self, x_position, y_position)
@@ -66,7 +80,7 @@ class FishingHole(Building):
 	def __init__(self, x_position, y_position):
 		Building.__init__(self, x_position, y_position)
 
-building1 = CabbagePatch(1,1)
+building1 = CabbageFarm(1,1)
 building2 = FishingHole(5,5)
 assert(building1.input_cap == 5)
 assert(building2.output_type == resource.Fish)
@@ -90,3 +104,5 @@ building2.load_building_cargo_into_unit(unit2)
 assert(unit1.cargo_type == resource.Cabbage)
 assert(unit2.cargo_type == resource.Fish)
 assert(unit1.cargo_load == 1)
+
+#building1.construct_building(unit1)

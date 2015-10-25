@@ -34,7 +34,7 @@ class Unit:
 
 class Peasant(Unit):
 	cargo_cap = 5
-	move = 15
+	move = 25
 	display_char = 'P'
 
 	def chop_wood(self, tile_array):
@@ -58,7 +58,7 @@ class Ship(Unit):
 unit1 = Peasant(1,1, resource.NullResource)
 unit2 = Ship(5,5, resource.Fish)
 assert(unit1.cargo_cap == 5)
-assert(unit1.move_remaining == 15)
+assert(unit1.move_remaining == 25)
 assert unit1.cargo_type.name == 'null resource'
 assert unit2.cargo_type.name == 'fish'
 
