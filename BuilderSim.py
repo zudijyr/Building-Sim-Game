@@ -21,7 +21,7 @@ w.border(0)
 
 for x in xrange(1,19):
 	for y in xrange(1,19):
-		w.addch(y,x,' ',terrain.Hill.color_pair)
+		w.addch(y,x,' ',terrain.Grass.color_pair)
 	for y in xrange(10,11):
 		w.addch(y,x,' ',terrain.Terrain.color_pair)
 	for y in xrange(11,19):
@@ -31,7 +31,7 @@ w.refresh()
 
 ### add units
 unit1 = unit.Peasant(2,2, resource.NullResource)
-w.addch(unit1.y_position,unit1.x_position,unit1.display_char,terrain.Hill.color_pair)
+w.addch(unit1.y_position,unit1.x_position,unit1.display_char,terrain.Grass.color_pair)
 unit2 = unit.Ship(8,12, resource.NullResource)
 w.addch(unit2.y_position,unit2.x_position,unit2.display_char,terrain.Water.color_pair)
 ###
@@ -52,7 +52,7 @@ w.refresh()
 ### move units
 for i in range(0, 3):
 
-	unit1.move_unit(w, 1,1, terrain.Hill)
+	unit1.move_unit(w, 1,1, terrain.Grass)
 	unit2.move_unit(w,-1,1, terrain.Water)
 	time.sleep(1)
 	w.refresh()

@@ -15,8 +15,8 @@ class Terrain:
 	def display_terrain():
 		print 'Name : ', name
 
-class Hill(Terrain):
-	name = 'hill'
+class Grass(Terrain):
+	name = 'grass'
 	move_cost = 4
 	color = curses.COLOR_GREEN
 	char_color = curses.COLOR_RED
@@ -40,8 +40,8 @@ class Plains(Terrain):
 	color_pair = curses.color_pair(7)
 
 terrain1 = Plains()
-terrain2 = Hill()
+terrain2 = Grass()
 assert(terrain1.name == 'plains')
 assert(terrain1.move_cost == 2)
-assert(terrain2.name == 'hill')
+assert(terrain2.name == 'grass')
 assert(terrain2.move_cost == 4)
