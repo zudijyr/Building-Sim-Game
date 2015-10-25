@@ -12,6 +12,12 @@ class Cabbage(Resource):
 	def __init__(self):
 		Resource.__init__(self)
 
+class Wood(Resource):
+	name = 'wood'
+
+	def __init__(self):
+		Resource.__init__(self)
+
 class Fish(Resource):
 	name = 'fish'
 

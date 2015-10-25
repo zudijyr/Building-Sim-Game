@@ -37,6 +37,13 @@ class Peasant(Unit):
 	move = 15
 	display_char = 'P'
 
+	def chop_wood(self, tile_array):
+		if tile_array[self.y_position,self.x_position].terrain_type == terrain.Forest:
+				print("\a")
+				self.move_remaining -= 1
+				self.cargo_load += 1
+				self.cargo_type = resource.Wood
+
 	def __init__(self, x_position, y_position, cargo_type):
 		Unit.__init__(self, x_position, y_position, cargo_type)
 
