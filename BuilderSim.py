@@ -3,9 +3,10 @@
 import curses
 import locale
 import time
-from models import unit
-from models import building
+import resource
 from models import terrain
+from models import building
+from models import unit
 
 locale.setlocale(locale.LC_ALL, '')
 code = locale.getpreferredencoding()
@@ -20,27 +21,19 @@ curses.init_pair(4, curses.COLOR_MAGENTA, terrain.Water.color)
 w = curses.newwin(20,20,0,0)
 w.keypad(1)
 w.border(0)
-###
-#w.addstr(1, 1, '1')
-#w.addstr(1, 2, u"\U0001F37A".encode('utf-8'))
-#w.addstr(1, 3, "wtf")
-#w.addstr(2, 2, u"\U0001F37A".encode('utf-8'))
-#w.addstr(2, 3, u"\U0001F37A".encode('utf-8'))
-###
 
 for x in xrange(1,19):
-	for y in xrange(1,10):
+	for y in xrange(1,19):
 		w.addch(y,x,' ',curses.color_pair(1))
 	for y in xrange(10,11):
 		w.addch(y,x,' ',curses.color_pair(3))
 	for y in xrange(11,19):
 		w.addch(y,x,' ',curses.color_pair(4))
-#w.bkgd(' ',curses.color_pair(1))    
 
 w.refresh()
 
 ### add units
-unit1 = unit.Peasant(2,2, "null")
+unit1 = unit.Peasant(2,2, "null") #TODO why does resource.NullResource cause an error here?  Circular dependance?
 w.addch(unit1.y_position,unit1.x_position,unit1.display_char,curses.color_pair(1))
 unit2 = unit.Ship(8,12, "null")
 w.addch(unit2.y_position,unit2.x_position,unit2.display_char,curses.color_pair(4))
@@ -56,25 +49,15 @@ w.addch(building2.y_position,building2.x_position,building2.display_char,curses.
 w.addch(building3.y_position,building3.x_position,building3.display_char,curses.color_pair(4))
 w.addch(building4.y_position,building4.x_position,building4.display_char,curses.color_pair(4))
 
+w.refresh()
+
 ### move units
 for i in range(0, 3):
-	w.refresh()
 
-	x = unit1.x_position
-	y = unit1.y_position
-	w.addch(y+1,x+1,unit1.display_char,curses.color_pair(1))
-	w.addch(y,x,' ',curses.color_pair(1))
-	unit1.x_position += 1
-	unit1.y_position += 1
-
-	x2 = unit2.x_position
-	y2 = unit2.y_position
-	w.addch(y2+1,x2-1,unit2.display_char,curses.color_pair(4))
-	w.addch(y2,x2,' ',curses.color_pair(4))
-	unit2.x_position -= 1
-	unit2.y_position += 1
-
+	unit1.move_unit(w, 1,1)
+	unit2.move_unit(w,-1,1)
 	time.sleep(1)
+
 	w.refresh()
 
 ### get fish
@@ -89,11 +72,7 @@ assert(unit1.cargo_load == 2)
 for i in range(0, 3):
 	w.refresh()
 
-	x2 = unit2.x_position
-	y2 = unit2.y_position
-	w.addch(y2-1,x2,unit2.display_char,curses.color_pair(4))
-	w.addch(y2,x2,' ',curses.color_pair(4))
-	unit2.y_position -= 1
+	unit2.move_unit(w,0,-1)
 
 	time.sleep(1)
 	w.refresh()
@@ -124,8 +103,7 @@ while 1:
 		if(cursx > 1):
 			cursy = cursy - 1
 	elif c == ord(' '):
-		w.addch(cursy,cursx,building1.display_char,curses.color_pair(1))
-		#w.addch(cursy,cursx,' ',curses.color_pair(1))
+		w.addch(cursy,cursx,' ',curses.color_pair(1))
 	else:
 		w.addch(cursy,cursx,c,curses.color_pair(2))
 	w.move(cursy,cursx)
