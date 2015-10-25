@@ -15,7 +15,9 @@ curses.initscr()  #s for screen
 curses.noecho()
 curses.cbreak()
 curses.start_color()
-w = curses.newwin(20,20,0,0)
+WIN_MAX = 20
+WIN_MIN = 0
+w = curses.newwin(WIN_MAX,WIN_MAX,WIN_MIN,WIN_MIN)
 w.keypad(1)
 w.border(0)
 
@@ -27,10 +29,12 @@ for x in xrange(1,19):
 	for y in xrange(11,19):
 		w.addch(y,x,' ',terrain.Water.color_pair)
 
+w.addch(7,7,' ',terrain.Forest.color_pair)
+
 w.refresh()
 
 ### add units
-unit1 = unit.Peasant(2,2, resource.NullResource)
+unit1 = unit.Peasant(4,4, resource.NullResource)
 w.addch(unit1.y_position,unit1.x_position,unit1.display_char,terrain.Grass.color_pair)
 unit2 = unit.Ship(8,12, resource.NullResource)
 w.addch(unit2.y_position,unit2.x_position,unit2.display_char,terrain.Water.color_pair)

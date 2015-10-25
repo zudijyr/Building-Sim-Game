@@ -15,9 +15,17 @@ class Terrain:
 	def display_terrain():
 		print 'Name : ', name
 
+class Forest(Terrain):
+	name = 'forest'
+	move_cost = 4
+	color = curses.COLOR_MAGENTA
+	char_color = curses.COLOR_BLACK
+	curses.init_pair(2, char_color, color)
+	color_pair = curses.color_pair(2)
+
 class Grass(Terrain):
 	name = 'grass'
-	move_cost = 4
+	move_cost = 2
 	color = curses.COLOR_GREEN
 	char_color = curses.COLOR_RED
 	curses.init_pair(5, char_color, color)
@@ -34,8 +42,8 @@ class Water(Terrain):
 class Plains(Terrain):
 	name = 'plains'
 	move_cost = 2
-	color = curses.COLOR_CYAN
-	char_color = curses.COLOR_RED
+	color = curses.COLOR_RED
+	char_color = curses.COLOR_BLACK
 	curses.init_pair(7, char_color, color)
 	color_pair = curses.color_pair(7)
 
@@ -44,4 +52,4 @@ terrain2 = Grass()
 assert(terrain1.name == 'plains')
 assert(terrain1.move_cost == 2)
 assert(terrain2.name == 'grass')
-assert(terrain2.move_cost == 4)
+assert(terrain2.move_cost == 2)

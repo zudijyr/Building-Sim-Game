@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import resource
+import terrain
 import unit
 
 class Building:
