@@ -24,17 +24,17 @@ class Unit:
 
 	def move_unit(self, window, x_move, y_move, tile_array):
 		new_terrain = tile_array[self.y_position + y_move,self.x_position + x_move].terrain_type
-		window.addch(self.y_position,self.x_position,' ',tile_array[self.y_position,self.x_position].terrain_type.color_pair)
-		self.x_position += x_move
-		self.move_remaining -= new_terrain.move_cost
-		self.y_position += y_move
-		self.move_remaining -= new_terrain.move_cost
-		window.addch(self.y_position,self.x_position,self.display_char,new_terrain.color_pair)
-		#TODO change this to reduce the move_remaining by the moveCost of the terrain
+		if self.move_remaining - new_terrain.move_cost >= 0:
+			window.addch(self.y_position,self.x_position,' ',tile_array[self.y_position,self.x_position].terrain_type.color_pair)
+			self.x_position += x_move
+			self.move_remaining -= new_terrain.move_cost
+			self.y_position += y_move
+			self.move_remaining -= new_terrain.move_cost
+			window.addch(self.y_position,self.x_position,self.display_char,new_terrain.color_pair)
 
 class Peasant(Unit):
 	cargo_cap = 5
-	move = 5
+	move = 15
 	display_char = 'P'
 
 	def __init__(self, x_position, y_position, cargo_type):
@@ -42,7 +42,7 @@ class Peasant(Unit):
 
 class Ship(Unit):
 	cargo_cap = 10
-	move = 10
+	move = 30
 	display_char = 'S'
 
 	def __init__(self, x_position, y_position, cargo_type):
@@ -51,7 +51,7 @@ class Ship(Unit):
 unit1 = Peasant(1,1, resource.NullResource)
 unit2 = Ship(5,5, resource.Fish)
 assert(unit1.cargo_cap == 5)
-assert(unit1.move_remaining == 5)
+assert(unit1.move_remaining == 15)
 assert unit1.cargo_type.name == 'null resource'
 assert unit2.cargo_type.name == 'fish'
 
