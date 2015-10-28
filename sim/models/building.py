@@ -1,41 +1,61 @@
 from sim.models import resource
 from sim.models import unit
 
+class BuildingException(Exception):
+    def __init__(self, message):
+        self.message = message
+    def __str__(self):
+        return self.message
+
 class Building:
-    input_cap = 0
+    input_cap = 5
     input_load = 0
     input_type = resource.NullResource
-    output_cap = 0
+    output_cap = 5
     output_load = 0
     output_type = ''
     display_char = ''
     building_cost_type = ''
     building_cost = ''
 
-    def __init__(self, x_position, y_position):
+    def __init__(self, x_position=0, y_position=0):
         self.x_position = x_position
         self.y_position = y_position
 
+    def can_accept_input(self):
+        return self.input_load < self.input_cap
+
+    def accept_input(self):
+        if not self.can_accept_input():
+            raise BuildingException("Building is already at input capacity")
+        self.input_load += 1
+
+    def can_deliver_output(self):
+        return self.output_load > 0
+
+    def deliver_output(self):
+        if not self.can_deliver_output():
+            raise BuildingException("Building has no output to deliver")
+        self.output_load -= 1
+
     def produce(self):
-        self.input_load -= 1 #needs error check
+        if self.input_load <= 0:
+            return
+        if self.output_load >= self.output_cap:
+            return
+        self.input_load -= 1
+        self.output_load += 1
 
-
-    def unload_unit_cargo_into_building(self, unit):
-        #needs error check
-        self.input_load = unit.cargo_load
-        unit.cargo_load = 0
-
-    def load_building_cargo_into_unit(self, unit):
-        #needs error check
-        unit.cargo_load = self.output_load
-        unit.cargo_type = self.output_type
-        self.output_load = 0
-
-    def display_output_load(self):
-        print("Total output_load %d" % Building.output_load)
-
-    def display_building(self):
-        print("x_position : ", self.x_position,  ", y_position: ", self.y_position, ", output_type: ", self.output_type)
+    def __repr__(self):
+        return '\n'.join([
+            'x_position:  {}'.format(self.x_position),
+            'y_position:  {}'.format(self.y_position),
+            'output_type: {}'.format(self.output_type),
+            'input_cap:   {}'.format(self.input_cap),
+            'output_cap:  {}'.format(self.output_cap),
+            'input_load:  {}'.format(self.input_load),
+            'output_load: {}'.format(self.output_load),
+            ])
 
 
 class CabbageFarm(Building):
@@ -46,17 +66,11 @@ class CabbageFarm(Building):
     building_cost_type = resource.Wood
     building_cost = 1
 
-    def __init__(self, x_position, y_position):
-        Building.__init__(self, x_position, y_position)
-
 class Dock(Building):
     input_cap = 5
     output_cap = 5
     display_char = 'D'
     output_type = resource.Fish
-
-    def __init__(self, x_position, y_position):
-        Building.__init__(self, x_position, y_position)
 
 class FishingHole(Building):
     input_cap = 5
@@ -64,17 +78,6 @@ class FishingHole(Building):
     display_char = 'F'
     output_type = resource.Fish
 
-    def __init__(self, x_position, y_position):
-        Building.__init__(self, x_position, y_position)
-
-#unit1 = unit.Peasant(1,1, resource.Cabbage)
-#unit1.cargo_load = 5
-#unit2 = unit.Ship(5,5, resource.Fish)
-#unit2.cargo_load = 5
-#building1.unload_unit_cargo_into_building(unit1)
-#building2.unload_unit_cargo_into_building(unit2)
-#assert(building1.input_load == 5)
-#assert(unit1.cargo_load == 0)
 #
 #building1.produce()
 #building2.produce()
