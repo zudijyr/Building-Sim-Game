@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+import sys
+import unittest
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+
+import sim.test
+
+def run_suite():
+    parser = ArgumentParser(
+        formatter_class=ArgumentDefaultsHelpFormatter,
+        description='run tests for Building Simulator',
+        )
+    parser.add_argument(
+        '-n',
+        '--name',
+        help="Only run tests from DOTTED_NAME. Example: 'sim.test.model.unit'",
+        metavar='DOTTED_NAME'
+        )
+    parser.add_argument(
+        '-u',
+        '--unit',
+        action='store_true',
+        help='Only run unit tests',
+        )
+    parser.add_argument(
+        '-d',
+        '--directory',
+        help="Only run tests from DIRECTORY and subdirectories. Example: 'test/models'",
+        metavar='DIRECTORY'
+        )
+    parser.add_argument(
+        '-i',
+        '--integration',
+        action='store_true',
+        help='Only run integration tests',
+        )
+    parser.add_argument(
+        '-v',
+        '--verbosity',
+        type=int,
+        default=1,
+        help='Verbosity level'
+        )
+    parser.add_argument(
+        '-t',
+        '--test',
+        help='Run tests starting with STR',
+        metavar='STR'
+        )
+    args = parser.parse_args()
+
+    if args.unit:
+        suite = sim.test.unit_suite()
+    elif args.integration:
+        suite = sim.test.integration_suite()
+    elif args.name:
+        suite = sim.test.name_test(args.name)
+    elif args.test:
+        suite = sim.test.single_test(args.test)
+    elif args.directory:
+        suite = sim.test.directory_test(args.directory)
+    else:
+        suite = sim.test.full_suite()
+
+    unittest.TextTestRunner(verbosity=args.verbosity).run(suite)
+
+if __name__ == "__main__":
+    run_suite()
