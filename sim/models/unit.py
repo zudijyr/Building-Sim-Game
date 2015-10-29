@@ -24,12 +24,11 @@ class Unit:
     def move_unit(self, x_move, y_move):
         move_cost = self.terrain_map.get_terrain(
             self.x_position + x_move,
-            self.y_position + y_move,
+            self.y_position - y_move,
             ).move_cost
         if self.move_remaining - move_cost >= 0:
             self.x_position += x_move
-            self.move_remaining -= move_cost
-            self.y_position += y_move
+            self.y_position -= y_move
             self.move_remaining -= move_cost
 
 class Peasant(Unit):
