@@ -1,32 +1,20 @@
 class Resource:
     name = ''
 
-    def display_resource(self):
-        print('Name : ', self.name)
+    def __repr__(self):
+        return name
 
 class Cabbage(Resource):
     name = 'cabbage'
 
-    def __init__(self):
-        Resource.__init__(self)
-
 class Wood(Resource):
     name = 'wood'
-
-    def __init__(self):
-        Resource.__init__(self)
 
 class Fish(Resource):
     name = 'fish'
 
-    def __init__(self):
-        Resource.__init__(self)
+class Stone(Resource):
+    name = 'stone'
 
 class NullResource(Resource):
     name = 'null resource'
-
-    def __init__(self):
-        Resource.__init__(self)
-
-assert(Cabbage.name == 'cabbage')
-assert(Fish.name == 'fish')

@@ -1,8 +1,7 @@
-#!/usr/bin/python
 from . import terrain
 
 class Tile:
-
+t
     def __init__(self, terrain_type, x_position, y_position):
         self.terrain_type = terrain_type
         self.x_position = x_position
