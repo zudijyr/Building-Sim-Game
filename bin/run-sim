@@ -135,10 +135,8 @@ try:
 
 
 ### get fish
-    building1.input_load = 5
-    building1.produce()
-    building1.produce()
-    building1.load_building_cargo_into_unit(unit2)
+    building1.receive_cargo(resource.Fish, 2)
+    building1.deliver_cargo(resource.Fish, 2)
 
 ### chop wood
     unit1.chop_wood()

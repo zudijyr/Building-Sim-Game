@@ -1,4 +1,4 @@
-from sim.models import resource
+from sim.models.resource import *
 from sim.models import unit
 from sim.models.cargo_container import CargoContainer
 from sim.models.producer_consumer import ProducerConsumer
@@ -54,7 +54,7 @@ class CabbageFarm(Building):
 
 class Dock(Building):
     display_char = 'D'
-    output_type = resource.Fish
+    output_type = Fish
     def setup(self):
         self.container.add_resource_slot(Fish, 5)
         fish_producer = ProducerConsumer()

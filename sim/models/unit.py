@@ -58,6 +58,6 @@ class Peasant(Unit):
 
 class Ship(Unit):
     cargo_cap = 10
-    move = 30
+    movement_speed = 30
     display_char = 'S'
 
