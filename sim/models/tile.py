@@ -1,4 +1,3 @@
-#!/usr/bin/python
 from . import terrain
 
 class Tile:
