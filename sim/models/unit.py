@@ -47,7 +47,7 @@ class Unit:
 
 class Peasant(Unit):
     cargo_cap = 5
-    movement_speed = 1
+    movement_speed = 25
     display_char = 'P'
 
     def chop_wood(self):
