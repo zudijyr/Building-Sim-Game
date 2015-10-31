@@ -1,7 +1,7 @@
-from sim.models.resource import *
 from sim.models import unit
-from sim.models.cargo_container import CargoContainer
+from sim.models.cargo_container import SlottedCargoContainer
 from sim.models.producer_consumer import ProducerConsumer
+from sim.models.resource import *
 from textwrap import indent
 
 class Building:
@@ -10,23 +10,15 @@ class Building:
 
     def __init__(self, x_position=0, y_position=0):
         self.digesters = []
-        self.container = CargoContainer()
+        self.container = SlottedCargoContainer()
         self.x_position = x_position
         self.y_position = y_position
-        self.setup()
-
-    def setup(self):
-        pass
 
     def receive_cargo(self, resource_type, quantity):
-        capped_quantity = min(self.container.remaining_capacity(resource_type), quantity)
-        self.container.load_cargo(resource_type, capped_quantity)
-        return quantity - capped_quantity
+        return self.container.load_cargo(resource_type, quantity)
 
     def deliver_cargo(self, resource_type, quantity):
-        capped_quantity = min(self.container.current_load(resource_type), quantity)
-        self.container.unload_cargo(resource_type, capped_quantity)
-        return capped_quantity
+        return self.container.unload_cargo(resource_type, quantity)
 
     def operate(self):
         [ d.digest(self.container) for d in self.digesters ]
@@ -44,7 +36,8 @@ class CabbageFarm(Building):
 
     display_char = 'C'
 
-    def setup(self):
+    def __init__(self, x_position=0, y_position=0):
+        super().__init__(x_position, y_position)
         self.container.add_resource_slot(Cabbage, 5)
         self.container.add_resource_slot(Wood, 5)
         cabbage_producer = ProducerConsumer()
@@ -55,7 +48,9 @@ class CabbageFarm(Building):
 class Dock(Building):
     display_char = 'D'
     output_type = Fish
-    def setup(self):
+
+    def __init__(self, x_position=0, y_position=0):
+        super().__init__(x_position, y_position)
         self.container.add_resource_slot(Fish, 5)
         fish_producer = ProducerConsumer()
         fish_producer.add_resource_product(Fish, 1)
@@ -64,7 +59,8 @@ class Dock(Building):
 class FishingHole(Building):
     display_char = 'F'
 
-    def setup(self):
+    def __init__(self, x_position=0, y_position=0):
+        super().__init__(x_position, y_position)
         self.container.add_resource_slot(Fish, 10)
         fish_producer = ProducerConsumer()
         fish_producer.add_resource_product(Fish, 3)
