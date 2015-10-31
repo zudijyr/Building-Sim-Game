@@ -40,13 +40,17 @@ class ProducerConsumer:
 
     def can_consume(self, cargo_container):
         for requirement in self.resource_requirements.values():
-            if not cargo_container.can_unload_cargo(requirement['type'], requirement['load']):
+            if not cargo_container.can_hold_cargo(requirement['type']):
+                return False
+            if cargo_container.current_load(requirement['type']) < requirement['load']:
                 return False
         return True
 
     def can_produce(self, cargo_container):
         for requirement in self.resource_products.values():
-            if not cargo_container.can_load_cargo(requirement['type'], requirement['load']):
+            if not cargo_container.can_hold_cargo(requirement['type']):
+                return False
+            if cargo_container.remaining_capacity(requirement['type']) < requirement['load']:
                 return False
         return True
 

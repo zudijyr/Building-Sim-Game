@@ -1,39 +1,8 @@
 import unittest
 from sim.models.building import *
-from sim.models.resource import Fish, Wood, Cabbage, Stone
+from sim.models.resource import *
 
 class BuildingModelTest(unittest.TestCase):
-
-    def test_receive_cargo_accepts_cargo_of_a_specified_type(self):
-        building = Building()
-        building.container.add_resource_slot(Fish, 10)
-        self.assertEqual(building.receive_cargo(Fish, 5), 0)
-        self.assertEqual(building.container.current_load(Fish), 5)
-        self.assertEqual(building.container.remaining_capacity(Fish), 5)
-
-    def test_receive_cargo_accepts_as_much_cargo_as_its_capacity_allows_and_returns_the_rest(self):
-        building = Building()
-        building.container.add_resource_slot(Fish, 10)
-        building.container.load_cargo(Fish, 7)
-        self.assertEqual(building.receive_cargo(Fish, 5), 2)
-        self.assertEqual(building.container.current_load(Fish), 10)
-        self.assertEqual(building.container.remaining_capacity(Fish), 0)
-
-    def test_deliver_cargo_gives_up_cargo_of_a_specified_type(self):
-        building = Building()
-        building.container.add_resource_slot(Fish, 10)
-        building.container.load_cargo(Fish, 7)
-        self.assertEqual(building.deliver_cargo(Fish, 5), 5)
-        self.assertEqual(building.container.current_load(Fish), 2)
-        self.assertEqual(building.container.remaining_capacity(Fish), 8)
-
-    def test_deliver_cargo_gives_up_as_much_cargo_of_a_specified_type_as_it_currently_holds(self):
-        building = Building()
-        building.container.add_resource_slot(Fish, 10)
-        building.container.load_cargo(Fish, 3)
-        self.assertEqual(building.deliver_cargo(Fish, 5), 3)
-        self.assertEqual(building.container.current_load(Fish), 0)
-        self.assertEqual(building.container.remaining_capacity(Fish), 10)
 
     def test_operate_digests_resources_with_all_the_available_digesters(self):
         building = Building()
@@ -43,8 +12,8 @@ class BuildingModelTest(unittest.TestCase):
         building.container.add_resource_slot(Cabbage, 10)
         building.container.add_resource_slot(Stone, 10)
 
-        building.container.load_cargo(Fish, 10)
-        building.container.load_cargo(Wood, 10)
+        building.receive_cargo(Fish, 10)
+        building.receive_cargo(Wood, 10)
 
         cabbage_producer = ProducerConsumer()
         cabbage_producer.add_resource_requirement(Fish, 3)
@@ -76,4 +45,30 @@ class BuildingModelTest(unittest.TestCase):
         self.assertEqual(building.container.current_load(Wood), 1)
         self.assertEqual(building.container.current_load(Cabbage), 1)
         self.assertEqual(building.container.current_load(Stone), 1)
+
+class CabbageFarmModelTest(unittest.TestCase):
+
+    def test_cabbage_farm_produces_cabbage_from_wood(self):
+        farm = CabbageFarm()
+        farm.receive_cargo(Wood, 3)
+        farm.operate()
+        farm.operate()
+        self.assertEqual(farm.deliver_cargo(Cabbage, 10), 2)
+
+class DockModelTest(unittest.TestCase):
+
+    def test_dock_produces_fish(self):
+        dock = Dock()
+        dock.operate()
+        dock.operate()
+        self.assertEqual(dock.deliver_cargo(Fish, 10), 2)
+
+class FishingHoleModelTest(unittest.TestCase):
+
+    def test_fishing_hole_produces_fish(self):
+        hole = FishingHole()
+        hole.operate()
+        hole.operate()
+        self.assertEqual(hole.deliver_cargo(Fish, 10), 6)
+
 

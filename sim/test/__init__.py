@@ -1,6 +1,4 @@
 import unittest
-import logging
-from unittest.mock import Mock
 
 def unit_suite():
     return unittest.TestLoader().discover('test', pattern='*.py', top_level_dir='sim')
