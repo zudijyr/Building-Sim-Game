@@ -88,8 +88,8 @@ try:
     renderer.refresh()
 
 ### add units
-    unit1 = unit.Peasant(4,4, resource.NullResource, terrain_map)
-    unit2 = unit.Ship(8,12, resource.NullResource, terrain_map)
+    unit1 = unit.Peasant(4,4, terrain_map)
+    unit2 = unit.Ship(8,12, terrain_map)
     renderer.render_unit(unit1)
     renderer.render_unit(unit2)
 ###
