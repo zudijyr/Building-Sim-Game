@@ -2,7 +2,7 @@ from sim.models import terrain
 
 class TerrainMap:
 
-	def __init__(self, x_min, x_max, y_min, y_max):
+	def __init__(self, x_min, y_min, x_max, y_max):
 		assert x_max > x_min
 		(self.x_min, self.x_max) = (x_min, x_max)
 		
@@ -26,9 +26,9 @@ class TerrainMap:
 				return False
 		elif new_y < self.y_min:
 				return False
-		elif new_x > self.x_max:
+		elif new_x >= self.x_max:
 				return False
-		elif new_x > self.y_max:
+		elif new_x >= self.y_max:
 				return False
 		else:
 			return True

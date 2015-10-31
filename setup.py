@@ -15,7 +15,7 @@ setup(
     install_requires        = requirements,
     include_package_data    = True,
     zip_safe                = False,
-    packages                = [ 'sim', 'sim.models' ],
+    packages                = [ 'sim', 'sim.models', 'sim.test'],
     scripts = [
         'bin/run-tests',
         'bin/run-sim',

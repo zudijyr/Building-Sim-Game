@@ -70,7 +70,7 @@ w.border(0)
 
 error_message = ''
 try:
-    terrain_map = TerrainMap(0, 20, 0, 20)
+    terrain_map = TerrainMap(0, 0, 20, 20)
     renderer = Renderer(terrain_map, w)
     for x in range(1,19):
         for y in range(1,19):
@@ -108,8 +108,8 @@ try:
 
 ### move units
     for i in range(0, 3):
-        renderer.render_unit_movement(unit1, 1, -1)
-        renderer.render_unit_movement(unit2, -1, -1)
+        renderer.render_unit_movement(unit1, 1, 1)
+        renderer.render_unit_movement(unit2, -1, 1)
         renderer.refresh()
         time.sleep(1)
 
@@ -134,7 +134,7 @@ try:
 
 ### go to dock
     for i in range(0, 3):
-        renderer.render_unit_movement(unit2, 0, 1)
+        renderer.render_unit_movement(unit2, 0, -1)
         w.refresh()
         time.sleep(1)
 

@@ -46,7 +46,7 @@ class Unit:
             # location and the final position
             # Will have to figure out how we want to do this
         new_x = self.x_position + x_move
-        new_y = self.y_position - y_move
+        new_y = self.y_position + y_move
         if not self.terrain_map.in_bounds(new_x, new_y):
             return
         move_cost = self.terrain_map.get_terrain(new_x, new_y).move_cost
