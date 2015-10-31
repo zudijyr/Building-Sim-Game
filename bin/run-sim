@@ -11,50 +11,53 @@ from sim.models import tile
 from sim.models.terrain_map import TerrainMap
 
 class Renderer:
-    pair_key = 1
-    color_pairs = {}
+	pair_key = 1
+	color_pairs = {}
 
-    def __init__(self, terrain_map, window):
-        self.terrain_map = terrain_map
-        self.window = window
+	def __init__(self, terrain_map, window):
+		self.terrain_map = terrain_map
+		self.window = window
 
-    def get_color_pair(self, terrain_type):
-        name = terrain_type.name
-        if name not in self.color_pairs:
-            self.color_pairs[name] = self.pair_key
-            curses.init_pair(
-                self.pair_key,
-                terrain_type.char_color,
-                terrain_type.color
-                )
-            self.pair_key += 1
-        return curses.color_pair(self.color_pairs[name])
+	def get_color_pair(self, terrain_type):
+		name = terrain_type.name
+		if name not in self.color_pairs:
+			self.color_pairs[name] = self.pair_key
+			curses.init_pair(
+				self.pair_key,
+				terrain_type.char_color,
+				terrain_type.color
+				)
+			self.pair_key += 1
+		return curses.color_pair(self.color_pairs[name])
 
-    def get_terrain_color(self, x, y):
-        return self.get_color_pair(self.terrain_map.get_terrain(x, y))
+	def get_terrain_color(self, x, y):
+		return self.get_color_pair(self.terrain_map.get_terrain(x, y))
 
-    def render_unit_movement(self, unit, dx, dy):
-        x = unit.x_position
-        y = unit.y_position
-        self.render_terrain(x, y)
-        unit.move_unit(dx, dy)
-        self.render_unit(unit)
+	def render_terrain(self, x, y, char=' '):
+		self.window.addch(y, x, char, self.get_terrain_color(x, y))
 
-    def render_terrain(self, x, y, char=' '):
-        self.window.addch(y, x, char, self.get_terrain_color(x, y))
+	def render_unit(self, unit):
+		x = unit.x_position
+		y = unit.y_position
+		self.window.addch(y, x, unit.display_char, self.get_terrain_color(x, y))
 
-    def render_unit(self, unit):
-        x = unit.x_position
-        y = unit.y_position
-        self.window.addch(y, x, unit.display_char, self.get_terrain_color(x, y))
+	def render_building(self, building):
+		x = building.x_position
+		y = building.y_position
+		self.window.addch(y, x, building.display_char, self.get_terrain_color(x, y))
 
-    def render_building(self, building):
-        x = building.x_position
-        y = building.y_position
-        self.window.addch(y, x, building.display_char, self.get_terrain_color(x, y))
+	def refresh(self):
+		self.window.refresh()
 
-    def refresh(self):
-        self.window.refresh()
+	def render_unit_movement(self, unit):
+		for move in unit.path:
+			x = unit.x_position
+			y = unit.y_position
+			self.render_terrain(x, y)
+			unit.move_unit_one(move)
+			self.render_unit(unit)
+			self.refresh()
+			time.sleep(1)
 
 locale.setlocale(locale.LC_ALL, '')
 code = locale.getpreferredencoding()
@@ -70,113 +73,110 @@ w.border(0)
 
 error_message = ''
 try:
-    terrain_map = TerrainMap(0, 0, 20, 20)
-    renderer = Renderer(terrain_map, w)
-    for x in range(1,19):
-        for y in range(1,19):
-            t = None
-            if x == 7 and y == 7:
-                t = Forest
-            elif y in range(1, 10):
-                t = Grass
-            elif y in range(10, 11):
-                t = Terrain
-            else:
-                t = Water
-            terrain_map.set_terrain(t, x, y)
-            renderer.render_terrain(x, y)
-    renderer.refresh()
+	terrain_map = TerrainMap(0, 0, 20, 20)
+	renderer = Renderer(terrain_map, w)
+	for x in range(1,19):
+		for y in range(1,19):
+			t = None
+			if x == 7 and y == 7:
+				t = Forest
+			elif y in range(1, 10):
+				t = Grass
+			elif y in range(10, 11):
+				t = Terrain
+			else:
+				t = Water
+			terrain_map.set_terrain(t, x, y)
+			renderer.render_terrain(x, y)
+	renderer.refresh()
 
 ### add units
-    unit1 = unit.Peasant(4,4, terrain_map)
-    unit2 = unit.Ship(8,12, terrain_map)
-    renderer.render_unit(unit1)
-    renderer.render_unit(unit2)
+	unit1 = unit.Peasant(4,4, terrain_map)
+	unit2 = unit.Ship(8,12, terrain_map)
+	renderer.render_unit(unit1)
+	renderer.render_unit(unit2)
 ###
 
 ### add buildings
-    building1 = FishingHole(5,15)
-    building2 = Dock(6,10)
-    building3 = Dock(6,11)
-    building4 = Dock(6,12)
-    renderer.render_building(building1)
-    renderer.render_building(building2)
-    renderer.render_building(building3)
-    renderer.render_building(building4)
-    renderer.refresh()
-    time.sleep(1)
+	building1 = FishingHole(5,15)
+	building2 = Dock(6,10)
+	building3 = Dock(6,11)
+	building4 = Dock(6,12)
+	renderer.render_building(building1)
+	renderer.render_building(building2)
+	renderer.render_building(building3)
+	renderer.render_building(building4)
+	renderer.refresh()
+	time.sleep(1)
 
 ### move units
-    for i in range(0, 3):
-        renderer.render_unit_movement(unit1, 1, 1)
-        renderer.render_unit_movement(unit2, -1, 1)
-        renderer.refresh()
-        time.sleep(1)
-
+	unit1.set_path(7,7,terrain_map)
+	assert(unit1.path == [(1,1),(1,1),(1,1)])
+	unit2.set_path(5,15,terrain_map)
+	assert(unit2.path == [(-1,1),(-1,1),(-1,1)])
+	renderer.render_unit_movement(unit1)
+	renderer.render_unit_movement(unit2)
 
 ### get fish
-    building1.receive_cargo(resource.Fish, 2)
-    building1.deliver_cargo(resource.Fish, 2)
+	building1.receive_cargo(resource.Fish, 2)
+	building1.deliver_cargo(resource.Fish, 2)
 
 ### chop wood
-    unit1.chop_wood()
-
-    renderer.render_unit_movement(unit1, 1, 0)
-    renderer.refresh()
-    time.sleep(1)
+	unit1.chop_wood()
+	unit1.set_path(8,7, terrain_map)
+	renderer.render_unit_movement(unit1)
 
 ###construct
-    cabbage_farm = CabbageFarm(unit1.x_position,unit1.y_position)
-    renderer.render_unit_movement(unit1, 1, 0)
-    renderer.render_building(cabbage_farm)
-    renderer.refresh()
-    time.sleep(1)
+	cabbage_farm = CabbageFarm(unit1.x_position,unit1.y_position)
+	unit1.set_path(9,7, terrain_map)
+	renderer.render_unit_movement(unit1)
+	renderer.render_building(cabbage_farm)
+	renderer.refresh()
+	time.sleep(1)
 
 ### go to dock
-    for i in range(0, 3):
-        renderer.render_unit_movement(unit2, 0, -1)
-        w.refresh()
-        time.sleep(1)
+	unit2.set_path(5,12, terrain_map)
+	renderer.render_unit_movement(unit2)
 
-    cursx = 1
-    cursy = 1
-    w.move(cursy,cursx)
-    new_buildings = []
-    while 1:
-        c = w.getch()
-        if c == ord('q'):
-            break
-        elif c == curses.KEY_RIGHT:
-            if(cursx < 19):
-                cursx = cursx + 1
-        elif c == curses.KEY_LEFT:
-            if(cursx > 1):
-                cursx = cursx - 1
-        elif c == curses.KEY_DOWN:
-            if(cursy < 19):
-                cursy = cursy + 1
-        elif c == curses.KEY_UP:
-            if(cursy > 1):
-                cursy = cursy - 1
-        elif c == ord('d'):
-            building = FishingHole(cursx, cursy)
-            renderer.render_building(building)
-            new_buildings.append(building)
-            if(cursx > 1):
-                cursy = cursy - 1
-        elif c == ord(' '):
-            renderer.render_terrain(cursx, cursy)
-        else:
-            renderer.render_terrain(cursx, cursy, c)
-        w.move(cursy,cursx)
-        renderer.refresh()
+	cursx = 1
+	cursy = 1
+	w.move(cursy,cursx)
+	new_buildings = []
+	while 1:
+		c = w.getch()
+		if c == ord('q'):
+			break
+		elif c == curses.KEY_RIGHT:
+			if(cursx < 19):
+				cursx = cursx + 1
+		elif c == curses.KEY_LEFT:
+			if(cursx > 1):
+				cursx = cursx - 1
+		elif c == curses.KEY_DOWN:
+			if(cursy < 19):
+				cursy = cursy + 1
+		elif c == curses.KEY_UP:
+			if(cursy > 1):
+				cursy = cursy - 1
+		elif c == ord('d'):
+			building = FishingHole(cursx, cursy)
+			renderer.render_building(building)
+			new_buildings.append(building)
+			if(cursx > 1):
+				cursy = cursy - 1
+		elif c == ord(' '):
+			renderer.render_terrain(cursx, cursy)
+		else:
+			renderer.render_terrain(cursx, cursy, c)
+		w.move(cursy,cursx)
+		renderer.refresh()
 except:
-    raise
+	raise
 finally:
-    w.clear()
-    curses.nocbreak()
-    curses.echo()
-    curses.endwin()
+	w.clear()
+	curses.nocbreak()
+	curses.echo()
+	curses.endwin()
 
 w.clear()
 curses.nocbreak()

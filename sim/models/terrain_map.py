@@ -10,6 +10,9 @@ class TerrainMap:
 		(self.y_min, self.y_max) = (y_min, y_max)
 		
 		self.tile_array = {}
+		for x in range(x_min, x_max):
+			for y in range(y_min, y_max):
+				self.tile_array[x, y] = terrain.Terrain
 
 	def set_terrain(self, terrain, x, y):
 		assert x >= self.x_min and x < self.x_max
