@@ -105,7 +105,8 @@ class Unit:
 		if not self.tile_map.in_bounds(new_x, new_y):
 			return
 
-		move_cost = self.tile_map.get_terrain(new_x, new_y).move_cost
+		raw_move_cost = self.tile_map.get_terrain(new_x, new_y).move_cost
+		move_cost = raw_move_cost/(self.tile_map.get_terrain_improvement(new_x, new_y).movement_reduction)
 		if self.moves_remaining - move_cost >= 0:
 			self.x_position = new_x
 			self.y_position = new_y

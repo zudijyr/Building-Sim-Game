@@ -2,6 +2,7 @@ import unittest
 from sim.models.unit import *
 from sim.models.tile_map import TileMap
 from sim.models.terrain import *
+from sim.models.terrain_improvement import *
 from sim.models.resource import *
 
 class DummyUnit(Unit):
@@ -32,6 +33,14 @@ class UnitModelTest(unittest.TestCase):
 		with self.assertRaises(UnitException) as error_context:
 			unit.move_unit_one((2, 0))
 		self.assertEqual("Must move 1 at a time in x and or y", error_context.exception.message)
+
+	def test_move_unit_one_moves_faster_along_road(self):
+		tmap = TileMap(0, 0, 10, 10)
+		unit = DummyUnit(0, 0, tmap)
+		tmap.set_terrain(Plains, 1, 1)
+		tmap.set_terrain_improvement(Road, 1, 1)
+		unit.move_unit_one((1, 1))
+		self.assertEqual(unit.moves_remaining, 10 - (Plains.move_cost)/2)
 
 	def test_set_path_creates_path_straight_from_initial_to_final_position(self):
 		tmap = TileMap(0, 0, 10, 10)

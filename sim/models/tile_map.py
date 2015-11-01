@@ -26,6 +26,16 @@ class TileMap:
 		assert y >= self.y_min and y < self.y_max
 		return self.tile_array[x, y].terrain_type
 
+	def set_terrain_improvement(self, improvement, x, y):
+		assert x >= self.x_min and x < self.x_max
+		assert y >= self.y_min and y < self.y_max
+		self.tile_array[x, y].terrain_improvement = improvement
+
+	def get_terrain_improvement(self, x, y):
+		assert x >= self.x_min and x < self.x_max
+		assert y >= self.y_min and y < self.y_max
+		return self.tile_array[x, y].terrain_improvement
+
 	def in_bounds(self, new_x, new_y):
 		if new_x < self.x_min:
 				return False

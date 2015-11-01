@@ -9,6 +9,7 @@ class TerrainImprovement:
 		print('Name : ', name)
 
 class Road(TerrainImprovement):
-	name = 'forest'
+	name = 'road'
 	movement_reduction = 2
-	display_char = ''
+	display_char = '#'
+
