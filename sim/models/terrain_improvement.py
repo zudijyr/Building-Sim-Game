@@ -3,7 +3,7 @@ import curses
 class TerrainImprovement:
 	movement_reduction = 1
 	name = 'no improvement'
-	display_char = ''
+	display_char = ' '
 
 	def display_terrain():
 		print('Name : ', name)

@@ -5,6 +5,7 @@ import locale
 import time
 from sim.models import resource
 from sim.models.terrain import *
+from sim.models.terrain_improvement import *
 from sim.models.building import *
 from sim.models import unit
 from sim.models import tile
@@ -33,8 +34,20 @@ class Renderer:
 	def get_terrain_color(self, x, y):
 		return self.get_color_pair(self.tile_map.get_terrain(x, y))
 
-	def render_terrain(self, x, y, char=' '):
-		self.window.addch(y, x, char, self.get_terrain_color(x, y))
+	def render_tile(self, x, y):
+		tile = self.tile_map.get_tile(x, y)
+		improvement = tile.terrain_improvement
+		terrain = tile.terrain_type
+		color_pair = self.get_color_pair(terrain)
+		char = improvement.display_char
+		self.window.addch(y, x, char, color_pair)
+
+	#def render_terrain(self, x, y, char=' '):
+	#	self.window.addch(y, x, char, self.get_terrain_color(x, y))
+
+	#def render_terrain_improvement(self, x, y, improvement):
+	#	char = improvement.display_char
+	#	self.window.addch(y, x, char, self.get_terrain_color(x, y))
 
 	def render_unit(self, unit):
 		x = unit.x_position
@@ -53,7 +66,7 @@ class Renderer:
 		for move in unit.path:
 			x = unit.x_position
 			y = unit.y_position
-			self.render_terrain(x, y)
+			self.render_tile(x, y)
 			unit.move_unit_one(move)
 			self.render_unit(unit)
 			self.refresh()
@@ -87,7 +100,12 @@ try:
 			else:
 				t = Water
 			tile_map.set_terrain(t, x, y)
-			renderer.render_terrain(x, y)
+			renderer.render_tile(x, y)
+	renderer.refresh()
+
+	for y in range(3,11):
+		tile_map.set_terrain_improvement(Road, 5, y)
+		renderer.render_tile(5, y)
 	renderer.refresh()
 
 ### add units

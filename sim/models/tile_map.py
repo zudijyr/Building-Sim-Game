@@ -1,5 +1,6 @@
 from sim.models import terrain
 from sim.models import tile
+from sim.models.terrain_improvement import *
 
 class TileMap:
 
@@ -14,7 +15,7 @@ class TileMap:
 		for x in range(x_min, x_max):
 			for y in range(y_min, y_max):
 				self.tile_array[x, y] = tile.Tile(x,y,terrain.Terrain)
-				self.tile_array[x, y]
+				self.tile_array[x, y].terrain_improvement = TerrainImprovement
 
 	def set_terrain(self, terrain, x, y):
 		assert x >= self.x_min and x < self.x_max
@@ -35,6 +36,11 @@ class TileMap:
 		assert x >= self.x_min and x < self.x_max
 		assert y >= self.y_min and y < self.y_max
 		return self.tile_array[x, y].terrain_improvement
+
+	def get_tile(self, x, y):
+		assert x >= self.x_min and x < self.x_max
+		assert y >= self.y_min and y < self.y_max
+		return self.tile_array[x, y]
 
 	def in_bounds(self, new_x, new_y):
 		if new_x < self.x_min:
