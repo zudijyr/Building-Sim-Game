@@ -1,7 +1,7 @@
 from sim.models.resource import *
 from sim.models.terrain import *
 from sim.models.cargo_container import MixedCargoContainer
-from sim.models.terrain_map import TerrainMap
+from sim.models.tile_map import TileMap
 
 from textwrap import indent
 
@@ -16,13 +16,13 @@ class Unit:
 	display_char = ''
 	strength = 0
 
-	def __init__(self, x_position, y_position, terrain_map):
+	def __init__(self, x_position, y_position, tile_map):
 		self.container = MixedCargoContainer()
 		self.container.set_weight_capacity(self.strength)
 		self.moves_remaining = self.movement_speed
 		self.x_position = x_position
 		self.y_position = y_position
-		self.terrain_map = terrain_map
+		self.tile_map = tile_map
 		self.path = []
 
 	def __repr__(self):
@@ -40,7 +40,7 @@ class Unit:
 	def deliver_cargo(self, resource_type, quantity):
 		return self.container.unload_cargo(resource_type, quantity)
 
-	#def find_shortest_path(terrain_map, start, end, path=[]):
+	#def find_shortest_path(tile_map, start, end, path=[]):
 	#	path = path + [start]
 	#	if start == end:
 	#		return path
@@ -55,7 +55,7 @@ class Unit:
 	#					shortest = newpath
 	#	return shortest
 
-	def set_path(self, final_x, final_y, terrain_map):
+	def set_path(self, final_x, final_y, tile_map):
 		#eventually this will calculate the lowest-cost path by something like Dijkstra's algorithm (above)
 		#but for now it just goes in a straight line, starting with diagonal movement
 		self.path = []
@@ -102,10 +102,10 @@ class Unit:
 
 		new_x = self.x_position + x_move
 		new_y = self.y_position + y_move
-		if not self.terrain_map.in_bounds(new_x, new_y):
+		if not self.tile_map.in_bounds(new_x, new_y):
 			return
 
-		move_cost = self.terrain_map.get_terrain(new_x, new_y).move_cost
+		move_cost = self.tile_map.get_terrain(new_x, new_y).move_cost
 		if self.moves_remaining - move_cost >= 0:
 			self.x_position = new_x
 			self.y_position = new_y
@@ -118,7 +118,7 @@ class Peasant(Unit):
 	display_char = 'P'
 
 	def chop_wood(self):
-		current_terrain = self.terrain_map.get_terrain(self.x_position, self.y_position)
+		current_terrain = self.tile_map.get_terrain(self.x_position, self.y_position)
 		if current_terrain != Forest:
 			return
 		if self.container.remaining_capacity(Wood) <= 0:

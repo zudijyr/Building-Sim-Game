@@ -8,14 +8,14 @@ from sim.models.terrain import *
 from sim.models.building import *
 from sim.models import unit
 from sim.models import tile
-from sim.models.terrain_map import TerrainMap
+from sim.models.tile_map import TileMap
 
 class Renderer:
 	pair_key = 1
 	color_pairs = {}
 
-	def __init__(self, terrain_map, window):
-		self.terrain_map = terrain_map
+	def __init__(self, tile_map, window):
+		self.tile_map = tile_map
 		self.window = window
 
 	def get_color_pair(self, terrain_type):
@@ -31,7 +31,7 @@ class Renderer:
 		return curses.color_pair(self.color_pairs[name])
 
 	def get_terrain_color(self, x, y):
-		return self.get_color_pair(self.terrain_map.get_terrain(x, y))
+		return self.get_color_pair(self.tile_map.get_terrain(x, y))
 
 	def render_terrain(self, x, y, char=' '):
 		self.window.addch(y, x, char, self.get_terrain_color(x, y))
@@ -73,8 +73,8 @@ w.border(0)
 
 error_message = ''
 try:
-	terrain_map = TerrainMap(0, 0, 20, 20)
-	renderer = Renderer(terrain_map, w)
+	tile_map = TileMap(0, 0, 20, 20)
+	renderer = Renderer(tile_map, w)
 	for x in range(1,19):
 		for y in range(1,19):
 			t = None
@@ -86,13 +86,13 @@ try:
 				t = Terrain
 			else:
 				t = Water
-			terrain_map.set_terrain(t, x, y)
+			tile_map.set_terrain(t, x, y)
 			renderer.render_terrain(x, y)
 	renderer.refresh()
 
 ### add units
-	unit1 = unit.Peasant(4,4, terrain_map)
-	unit2 = unit.Ship(8,12, terrain_map)
+	unit1 = unit.Peasant(4,4, tile_map)
+	unit2 = unit.Ship(8,12, tile_map)
 	renderer.render_unit(unit1)
 	renderer.render_unit(unit2)
 ###
@@ -110,9 +110,9 @@ try:
 	time.sleep(1)
 
 ### move units
-	unit1.set_path(7,7,terrain_map)
+	unit1.set_path(7,7,tile_map)
 	assert(unit1.path == [(1,1),(1,1),(1,1)])
-	unit2.set_path(5,15,terrain_map)
+	unit2.set_path(5,15,tile_map)
 	assert(unit2.path == [(-1,1),(-1,1),(-1,1)])
 	renderer.render_unit_movement(unit1)
 	renderer.render_unit_movement(unit2)
@@ -123,19 +123,19 @@ try:
 
 ### chop wood
 	unit1.chop_wood()
-	unit1.set_path(8,7, terrain_map)
+	unit1.set_path(8,7, tile_map)
 	renderer.render_unit_movement(unit1)
 
 ###construct
 	cabbage_farm = CabbageFarm(unit1.x_position,unit1.y_position)
-	unit1.set_path(9,7, terrain_map)
+	unit1.set_path(9,7, tile_map)
 	renderer.render_unit_movement(unit1)
 	renderer.render_building(cabbage_farm)
 	renderer.refresh()
 	time.sleep(1)
 
 ### go to dock
-	unit2.set_path(5,12, terrain_map)
+	unit2.set_path(5,12, tile_map)
 	renderer.render_unit_movement(unit2)
 
 	cursx = 1

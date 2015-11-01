@@ -1,6 +1,6 @@
 from sim.models import terrain
 
-class TerrainMap:
+class TileMap:
 
 	def __init__(self, x_min, y_min, x_max, y_max):
 		assert x_max > x_min
