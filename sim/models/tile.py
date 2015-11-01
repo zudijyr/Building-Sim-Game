@@ -11,6 +11,3 @@ class Tile:
 
 	def displayTile(self):
 		print('terrain_type : ', self.terrain_type, 'x_position : ', self.x_position, 'y_position : ', self.y_position)
-
-tile1 = Tile(1,2, terrain.Grass)
-assert(tile1.terrain_type.move_cost == 2)
