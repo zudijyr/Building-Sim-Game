@@ -22,3 +22,4 @@ class Stone(Resource):
 
 class NullResource(Resource):
 	name = 'null resource'
+	weight = 0

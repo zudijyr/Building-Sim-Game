@@ -1,0 +1,3 @@
+*.pyc
+BuildingSimulator.egg-info/
+env/
