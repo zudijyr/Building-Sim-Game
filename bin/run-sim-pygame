@@ -1,0 +1,187 @@
+#!/usr/bin/env python
+
+import pygame
+import time
+
+from sim.models import tile
+from sim.models.tile_map import TileMap
+
+from sim.models.terrain import Terrain
+from sim.models.terrain import Forest
+from sim.models.terrain import Grass
+from sim.models.terrain import Water
+
+from sim.models.resource import Fish
+
+from sim.models.terrain_improvement import Road
+
+from sim.models.unit.peasant import Peasant
+from sim.models.unit.ship import Ship
+
+from sim.models.building.cabbage_farm import CabbageFarm
+from sim.models.building.fishing_hole import FishingHole
+from sim.models.building.dock import Dock
+
+class Renderer:
+    pair_key = 1
+    color_pairs = {}
+
+    def __init__(self, tile_map, tile_size=20):
+        self.tile_map = tile_map
+        pygame.init()
+        self.surface = pygame.display.set_mode(
+            (tile_map.x_max - tile_map.x_min) * tile_size,
+            (tile_map.y_max - tile_map.y_min) * tile_size,
+            )
+
+    def draw_terrain(self):
+        for x in range(tile_map.x_min, tile_map.x_max):
+            for y in range(tile_map.y_min, tile_map.y_max):
+                t = None
+                if x == 7 and y == 7:
+                    t = Forest
+                elif y in range(1, 10):
+                    t = Grass
+                elif y in range(10, 11):
+                    t = Terrain
+                else:
+                    t = Water
+                tile_map.set_terrain(t, x, y)
+                renderer.render_tile(x, y)
+
+    def get_color_pair(self, terrain_type):
+        name = terrain_type.name
+        if name not in self.color_pairs:
+            self.color_pairs[name] = self.pair_key
+            curses.init_pair(
+                self.pair_key,
+                terrain_type.char_color,
+                terrain_type.color
+                )
+            self.pair_key += 1
+        return curses.color_pair(self.color_pairs[name])
+
+    def get_terrain_color(self, x, y):
+        return self.get_color_pair(self.tile_map.get_terrain(x, y))
+
+    def position_to_pixel_coords(self, x, y):
+        return (x - tile_map.x_min, y - tile_map.y_min)
+
+    def render_tile(self, x, y):
+        tile = self.tile_map.get_tile(x, y)
+        improvement = tile.terrain_improvement
+        terrain = tile.terrain_type
+        color_pair = self.get_color_pair(terrain)
+        char = improvement.display_char
+        (px, py) = position_to_pixel_coords(x, y)
+        self.surface.fill(terrain.color, (px, py, self.tile_size, self.tile_size))
+        text = pygame.font.SysFont('courier', 16).render(
+            improvement.display_char,
+            True,
+            terrain.char_color
+            )
+        self.surface.blit(text, px, py)
+
+    def draw_units(self):
+        [ self.render_unit(u) for u in tile_map.get_units() ]
+
+    def draw_buildings(self):
+        [ self.render_building(b) for b in tile_map.get_buildings() ]
+
+    def render_unit(self, unit):
+        (x, y) = self.tile_map.get_unit_position(unit)
+        terrain = self.tile_map.get_terrain_under_unit(unit)
+        (px, py) = position_to_pixel_coords(x, y)
+        self.surface.fill(terrain.color, (px, py, self.tile_size, self.tile_size))
+        text = pygame.font.SysFont('courier', 16).render(
+            unit.display_char,
+            True,
+            terrain.char_color
+            )
+        self.surface.blit(text, px, py)
+
+    def render_building(self, building):
+        (x, y) = self.tile_map.get_building_position(building)
+        (px, py) = position_to_pixel_coords(x, y)
+        self.surface.fill(terrain.color, (px, py, self.tile_size, self.tile_size))
+        text = pygame.font.SysFont('courier', 16).render(
+            building.display_char,
+            True,
+            terrain.char_color
+            )
+        self.surface.blit(text, px, py)
+
+    def refresh(self):
+        pygame.display.flip()
+
+def main():
+
+    tile_map = TileMap(0, 0, 20, 20)
+    timer = Timer(tile_map)
+    renderer = Renderer(tile_map)
+
+    ### add units
+    unit1 = Peasant()
+    unit2 = Ship()
+    tile_map.place_unit(unit1, 4, 4)
+    tile_map.place_unit(unit2, 8, 12)
+    unit1.set_path(7, 7)
+    unit2.set_path(5, 15)
+    ###
+
+    ### add buildings
+    building1 = FishingHole()
+    building2 = Dock()
+    building3 = Dock()
+    building4 = Dock()
+    tile_map.place_building(building1, 5, 15)
+    tile_map.place_building(building2, 6, 10)
+    tile_map.place_building(building3, 6, 11)
+    tile_map.place_building(building4, 6, 12)
+    ###
+
+
+    ### add improvements
+    for y in range(3,11):
+        tile_map.set_terrain_improvement(Road, 5, y)
+    ###
+
+    while True:
+
+        event = pygame.event.poll()
+        if event.type == pygame.QUIT:
+            break
+
+        # TODO: Add a has_arrived method or something
+        if len(unit1.path) == 0:
+            if not unit1.can_construct_building(CabbageFarm):
+                unit1.chop_wood()
+                unit1.set_path(8, 7)
+            else:
+                cabbage_farm = unit1.construct_building(CabbageFarm)
+                (x, y) = tile_map.get_unit_position(unit1)
+                tile_map.place_building(cabbage_farm, x, y)
+                unit1.set_path(9, 7)
+
+        if len(unit2.path) == 0:
+            building1.receive_cargo(Fish, 2)
+            building1.deliver_cargo(Fish, 2)
+            unit2.set_path(5, 12)
+
+        [ self.tile_map.move_unit_along_path(u) for u in self.tile_map.get_units() ]
+
+        renderer.draw_terrain()
+        renderer.draw_buildings()
+        renderer.draw_units()
+        renderer.refresh()
+
+        time.sleep(1)
+
+        # TODO: Add user controlled movement
+
+    pygame.quit()
+
+
+if __name__ == '__main__':
+    main()
+
