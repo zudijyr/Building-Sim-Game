@@ -22,13 +22,14 @@ class Unit:
 		self.tile_map = None
 		self.building_factories = {}
 		self.path = []
-		self.unit_id = uuid4
+		self.unit_id = uuid4()
 
 	def __repr__(self):
 		return '\n'.join([
 			'unit_id:         {}'.format(self.unit_id),
 			'movement_speed:  {}'.format(self.movement_speed),
 			'moves_remaining: {}'.format(self.moves_remaining),
+			'current_path: {}'.format(', '.join(['({},{})'.format(x,y) for (x,y) in self.path ])),
 			'container:\n{}'.format(indent(str(self.container), '  '))
 			])
 
@@ -68,7 +69,7 @@ class Unit:
 	#					shortest = newpath
 	#	return shortest
 
-	def set_path(self, final_x, final_y, tile_map):
+	def set_path(self, final_x, final_y):
 		if self.tile_map is None:
 			raise UnitException("This unit has not been placed on the tile map yet!")
 		#eventually this will calculate the lowest-cost path by something like Dijkstra's algorithm (above)
