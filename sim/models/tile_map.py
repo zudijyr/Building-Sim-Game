@@ -52,7 +52,8 @@ class TileMap:
     def get_units(self):
         return [ v['unit'] for v in self.unit_registry.values() ]
 
-    def get_units(self):
+    def get_buildings(self):
+        # TODO: test me
         return [ v['building'] for v in self.building_registry.values() ]
 
 #TODO: test me
