@@ -1,0 +1,176 @@
+#!/usr/bin/env python
+
+from kivy.app import App
+from kivy.uix.widget import Widget
+from kivy.clock import Clock
+from kivy.properties import NumericProperty, ObjectProperty
+import time
+
+from sim.models import tile
+from sim.models.tile_map import TileMap
+
+from sim.models.terrain import Terrain
+from sim.models.terrain import Forest
+from sim.models.terrain import Grass
+from sim.models.terrain import Water
+
+from sim.models.resource import Fish
+
+from sim.models.terrain_improvement import Road
+
+from sim.models.unit.peasant import Peasant
+from sim.models.unit.ship import Ship
+
+from sim.models.building.cabbage_farm import CabbageFarm
+from sim.models.building.fishing_hole import FishingHole
+from sim.models.building.dock import Dock
+
+class PeasantWidget(Widget):     pass
+class ShipWidget(Widget):        pass
+class GrassWidget(Widget):       pass
+class WaterWidget(Widget):       pass
+class ForestWidget(Widget):      pass
+class PlainsWidget(Widget):      pass
+class CabbageFarmWidget(Widget): pass
+class DockWidget(Widget):        pass
+class FishingHoleWidget(Widget): pass
+class WaterWidget(Widget):       pass
+class RoadWidget(Widget):        pass
+
+class SimGame(Widget):
+    tile_size = NumericProperty(0)
+    board_size_w = NumericProperty(0)
+    board_size_h = NumericProperty(0)
+    tile_map = None
+    widget_registry = {}
+
+    def __init__(self, tile_map):
+        super().__init__()
+        self.tile_map = tile_map
+
+    def update(self, dt):
+        self.update_tiles()
+        self.update_buildings()
+        self.update_units()
+
+    def position_to_pixel_coords(self, x, y):
+        return ((x - self.tile_map.x_min) * self.tile_size, (y - self.tile_map.y_min) * self.tile_size)
+
+    def update_tiles(self):
+        for x in range(self.tile_map.x_min, self.tile_map.x_max):
+            for y in range(self.tile_map.y_min, self.tile_map.y_max):
+                tile_id = "tile({},{})".format(x, y)
+                if tile_id not in self.widget_registry:
+                    terrain = self.tile_map.get_terrain(x, y)
+                    widget = None
+                    if terrain is Forest:
+                        widget = ForestWidget()
+                    elif terrain is Water:
+                        widget = WaterWidget()
+                    elif terrain is Grass:
+                        widget = GrassWidget()
+                    else:
+                        widget = PlainsWidget()
+                    if widget is None:
+                        continue
+                    self.widget_registry[tile_id] = widget
+                    self.add_widget(widget)
+                    widget.size = (self.tile_size, self.tile_size)
+                    widget.pos = self.position_to_pixel_coords(x, y)
+                improvement_id = "improvement({},{})".format(x,y)
+                if improvement_id not in self.widget_registry:
+                    improvement = self.tile_map.get_terrain_improvement(x, y)
+                    widget = None
+                    if improvement is Road:
+                        widget = RoadWidget()
+                    else:
+                        continue
+                    self.widget_registry[improvement_id] = widget
+                    self.add_widget(widget)
+                    widget.size = (self.tile_size, self.tile_size)
+                    widget.pos = self.position_to_pixel_coords(x, y)
+
+    def update_buildings(self):
+        for building in self.tile_map.get_buildings():
+            if building.building_id not in self.widget_registry:
+                widget = None
+                if isinstance(building, CabbageFarm):
+                    widget = CabbageFarmWidget()
+                if isinstance(building, Dock):
+                    widget = DockWidget()
+                if isinstance(building, FishingHole):
+                    widget = FishingHoleWidget()
+                else:
+                    continue
+                self.widget_registry[building.building_id] = widget
+                self.add_widget(widget)
+                widget.size = (self.tile_size, self.tile_size)
+            widget = self.widget_registry[building.building_id]
+            (x, y) = self.tile_map.get_building_position(building)
+            widget.pos = self.position_to_pixel_coords(x, y)
+
+    def update_units(self):
+        for unit in self.tile_map.get_units():
+            unit.act()
+            if unit.unit_id not in self.widget_registry:
+                widget = None
+                if isinstance(unit, Peasant):
+                    widget = PeasantWidget()
+                elif isinstance(unit, Ship):
+                    widget = ShipWidget()
+                else:
+                    continue
+                self.widget_registry[unit.unit_id] = widget
+                self.add_widget(widget)
+                widget.size = (self.tile_size, self.tile_size)
+            widget = self.widget_registry[unit.unit_id]
+            (x, y) = self.tile_map.get_unit_position(unit)
+            widget.pos = self.position_to_pixel_coords(x, y)
+
+class SimApp(App):
+    def build(self):
+        tile_map = TileMap(0, 0, 20, 20)
+
+        ### add terrain
+        [ tile_map.set_terrain(Grass, x, y) for x in range(0, 20) for y in range( 1, 10) ]
+        [ tile_map.set_terrain(Water, x, y) for x in range(0, 20) for y in range(11, 20) ]
+        tile_map.set_terrain(Forest, 7, 7)
+        ###
+
+        ### add improvements
+        [ tile_map.set_terrain_improvement(Road, 5, y) for y in range(3,11) ]
+        ###
+
+        ### add buildings
+        building1 = FishingHole()
+        building2 = Dock()
+        building3 = Dock()
+        building4 = Dock()
+        tile_map.place_building(building1, 5, 15)
+        tile_map.place_building(building2, 6, 10)
+        tile_map.place_building(building3, 6, 11)
+        tile_map.place_building(building4, 6, 12)
+        ###
+
+        ### add units
+        unit1 = Peasant()
+        tile_map.place_unit(unit1, 4, 4)
+        unit1.add_path(7, 7)
+        unit1.add_action(unit1.check_for_wood_to_chop, quantity=10)
+        unit1.add_path(8, 7)
+        unit1.add_action(unit1.attempt_to_build_cabbage_farm)
+        unit1.add_path(9, 7)
+
+        unit2 = Ship()
+        tile_map.place_unit(unit2, 8, 12)
+        unit2.add_path(5, 15)
+        unit2.add_path(5, 12)
+        ###
+
+        game = SimGame(tile_map)
+        Clock.schedule_interval(game.update, 1.0)
+        return game
+
+if __name__ == '__main__':
+    SimApp().run()
+
