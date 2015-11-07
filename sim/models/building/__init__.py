@@ -17,7 +17,7 @@ class Building:
 		self.resource_plants = []
 		self.unit_factories = {}
 		self.container = SlottedCargoContainer()
-		self.building_id = uuid4
+		self.building_id = uuid4()
 
 	def add_resource_plant(self, resource_plant):
 		self.resource_plants.append(resource_plant)
@@ -45,10 +45,11 @@ class Building:
 		lines = [
 			'building_id: {}'.format(self.building_id),
 			'name:        {}'.format(self.name),
-			'container: \n{}'.format(indent(self.container, '  '))
+			'container: \n{}'.format(indent(str(self.container), '  '))
 			]
 		for (index, resource_plant) in enumerate(self.resource_plants):
-			lines.append('resource_plant {}:\n{}'.format(index, indent(resource_plant, '  ')))
+			lines.append('resource_plant {}:\n{}'.format(index, indent(str(resource_plant), '  ')))
 		for (index, unit_factory) in enumerate(self.unit_factories):
-			lines.append('unit_factory {}:\n{}'.format(index, indent(unit_factory, '  ')))
+			lines.append('unit_factory {}:\n{}'.format(index, indent(str(unit_factory), '  ')))
+		return '\n'.join(lines)
 

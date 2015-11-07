@@ -50,14 +50,14 @@ class UnitModelTest(unittest.TestCase):
 		tmap = TileMap(0, 0, 10, 10)
 		unit = DummyUnit()
 		tmap.place_unit(unit, 0, 0)
-		unit.set_path(5,5, tmap)
+		unit.set_path(5,5)
 		self.assertEqual(unit.path, [(1,1),(1,1),(1,1),(1,1),(1,1)] )
 
 	def test_set_path_creates_path_makes_diagonal_moves_first(self):
 		tmap = TileMap(0, 0, 10, 10)
 		unit = DummyUnit()
 		tmap.place_unit(unit, 0, 0)
-		unit.set_path(3,5, tmap)
+		unit.set_path(3,5)
 		self.assertEqual(unit.path, [(1,1),(1,1),(1,1),(0,1),(0,1)] )
 
 
