@@ -24,84 +24,84 @@ from sim.models.building.fishing_hole import FishingHole
 from sim.models.building.dock import Dock
 
 class Renderer:
-    pair_key = 1
-    color_pairs = {}
+	pair_key = 1
+	color_pairs = {}
 
-    def __init__(self, tile_map, window):
-        self.tile_map = tile_map
-        self.window = window
+	def __init__(self, tile_map, window):
+		self.tile_map = tile_map
+		self.window = window
 
-    def get_color_pair(self, terrain_type):
-        name = terrain_type.name
-        if name not in self.color_pairs:
-            self.color_pairs[name] = self.pair_key
-            curses.init_pair(
-                self.pair_key,
-                terrain_type.char_color,
-                terrain_type.color
-                )
-            self.pair_key += 1
-        return curses.color_pair(self.color_pairs[name])
+	def get_color_pair(self, terrain_type):
+		name = terrain_type.name
+		if name not in self.color_pairs:
+			self.color_pairs[name] = self.pair_key
+			curses.init_pair(
+				self.pair_key,
+				terrain_type.char_color,
+				terrain_type.color
+				)
+			self.pair_key += 1
+		return curses.color_pair(self.color_pairs[name])
 
-    def get_terrain_color(self, x, y):
-        return self.get_color_pair(self.tile_map.get_terrain(x, y))
+	def get_terrain_color(self, x, y):
+		return self.get_color_pair(self.tile_map.get_terrain(x, y))
 
-    def render_tile(self, x, y):
-        tile = self.tile_map.get_tile(x, y)
-        improvement = tile.terrain_improvement
-        terrain = tile.terrain_type
-        color_pair = self.get_color_pair(terrain)
-        char = improvement.display_char
-        self.window.addch(y, x, char, color_pair)
+	def render_tile(self, x, y):
+		tile = self.tile_map.get_tile(x, y)
+		improvement = tile.terrain_improvement
+		terrain = tile.terrain_type
+		color_pair = self.get_color_pair(terrain)
+		char = improvement.display_char
+		self.window.addch(y, x, char, color_pair)
 
-    def render_unit(self, unit):
-        (x, y) = self.tile_map.get_unit_position(unit)
-        self.window.addch(y, x, unit.display_char, self.get_terrain_color(x, y))
+	def render_unit(self, unit):
+		(x, y) = self.tile_map.get_unit_position(unit)
+		self.window.addch(y, x, unit.display_char, self.get_terrain_color(x, y))
 
-    def render_building(self, building):
-        (x, y) = self.tile_map.get_building_position(building)
-        self.window.addch(y, x, building.display_char, self.get_terrain_color(x, y))
+	def render_building(self, building):
+		(x, y) = self.tile_map.get_building_position(building)
+		self.window.addch(y, x, building.display_char, self.get_terrain_color(x, y))
 
-    def refresh(self):
-        self.window.refresh()
+	def refresh(self):
+		self.window.refresh()
 
-    def render_unit_movement(self, unit, move_index):
-        if move_index < len(unit.path):
-            move = unit.path[move_index]
-            (x, y) = self.tile_map.get_unit_position(unit)
-            self.render_tile(x, y)
-            unit.move_unit_one(move)
-            self.render_unit(unit)
+	def render_unit_movement(self, unit, move_index):
+		if move_index < len(unit.path):
+			move = unit.path[move_index]
+			(x, y) = self.tile_map.get_unit_position(unit)
+			self.render_tile(x, y)
+			unit.move_unit_one(move)
+			self.render_unit(unit)
 
 class Timer:
-    def __init__(self, tile_map):
-        self.tile_map = tile_map
+	def __init__(self, tile_map):
+		self.tile_map = tile_map
 
-    def set_max_path_length(self):
-        MAX_PATH_LENGTH = 0
-        for unit in self.tile_map.get_units():
-            if len(unit.path) > MAX_PATH_LENGTH:
-                MAX_PATH_LENGTH = len(unit.path)
-        return MAX_PATH_LENGTH
+	def set_max_path_length(self):
+		MAX_PATH_LENGTH = 0
+		for unit in self.tile_map.get_units():
+			if len(unit.path) > MAX_PATH_LENGTH:
+				MAX_PATH_LENGTH = len(unit.path)
+		return MAX_PATH_LENGTH
 
-    def move_all_units(self, renderer):
-        move_index = 0
-        MAX_PATH_LENGTH = self.set_max_path_length()
-        while move_index < MAX_PATH_LENGTH:
-            for unit in self.tile_map.get_units():
-                renderer.render_unit_movement(unit, move_index)
-            renderer.refresh()
-            time.sleep(1)
-            move_index += 1
+	def move_all_units(self, renderer):
+		move_index = 0
+		MAX_PATH_LENGTH = self.set_max_path_length()
+		while move_index < MAX_PATH_LENGTH:
+			for unit in self.tile_map.get_units():
+				renderer.render_unit_movement(unit, move_index)
+			renderer.refresh()
+			time.sleep(1)
+			move_index += 1
 
-    def recharge_all_units(self):
-        for unit in self.tile_map.get_units():
-            unit.reset_moves_remaining
+	def recharge_all_units(self):
+		for unit in self.tile_map.get_units():
+			unit.reset_moves_remaining
 
-    def run_turn(self, renderer):
-        self.move_all_units(renderer)
-        #TODO building stuff
-        self.recharge_all_units()
+	def run_turn(self, renderer):
+		self.move_all_units(renderer)
+		#TODO building stuff
+		self.recharge_all_units()
 
 locale.setlocale(locale.LC_ALL, '')
 code = locale.getpreferredencoding()
@@ -117,128 +117,128 @@ w.border(0)
 
 error_message = ''
 try:
-    tile_map = TileMap(0, 0, 20, 20)
-    renderer = Renderer(tile_map, w)
+	tile_map = TileMap(0, 0, 20, 20)
+	renderer = Renderer(tile_map, w)
 
-    for x in range(1,19):
-        for y in range(1,19):
-            t = None
-            if x == 7 and y == 7:
-                t = Forest
-            elif y in range(1, 10):
-                t = Grass
-            elif y in range(10, 11):
-                t = Terrain
-            else:
-                t = Water
-            tile_map.set_terrain(t, x, y)
-            renderer.render_tile(x, y)
-    renderer.refresh()
+	for x in range(1,19):
+		for y in range(1,19):
+			t = None
+			if x == 7 and y == 7:
+				t = Forest
+			elif y in range(1, 10):
+				t = Grass
+			elif y in range(10, 11):
+				t = Terrain
+			else:
+				t = Water
+			tile_map.set_terrain(t, x, y)
+			renderer.render_tile(x, y)
+	renderer.refresh()
 
-    for y in range(3,11):
-        tile_map.set_terrain_improvement(Road, 5, y)
-        renderer.render_tile(5, y)
-    renderer.refresh()
+	for y in range(3,11):
+		tile_map.set_terrain_improvement(Road, 5, y)
+		renderer.render_tile(5, y)
+	renderer.refresh()
 
 ### add units
-    unit1 = Peasant()
-    unit2 = Ship()
-    tile_map.place_unit(unit1, 4, 4)
-    tile_map.place_unit(unit2, 8, 12)
-    renderer.render_unit(unit1)
-    renderer.render_unit(unit2)
+	unit1 = Peasant()
+	unit2 = Ship()
+	tile_map.place_unit(unit1, 4, 4)
+	tile_map.place_unit(unit2, 8, 12)
+	renderer.render_unit(unit1)
+	renderer.render_unit(unit2)
 ###
 
 ### add buildings
-    building1 = FishingHole()
-    building2 = Dock()
-    building3 = Dock()
-    building4 = Dock()
-    tile_map.place_building(building1, 5, 15)
-    tile_map.place_building(building2, 6, 10)
-    tile_map.place_building(building3, 6, 11)
-    tile_map.place_building(building4, 6, 12)
-    renderer.render_building(building1)
-    renderer.render_building(building2)
-    renderer.render_building(building3)
-    renderer.render_building(building4)
-    renderer.refresh()
-    time.sleep(1)
+	building1 = FishingHole()
+	building2 = Dock()
+	building3 = Dock()
+	building4 = Dock()
+	tile_map.place_building(building1, 5, 15)
+	tile_map.place_building(building2, 6, 10)
+	tile_map.place_building(building3, 6, 11)
+	tile_map.place_building(building4, 6, 12)
+	renderer.render_building(building1)
+	renderer.render_building(building2)
+	renderer.render_building(building3)
+	renderer.render_building(building4)
+	renderer.refresh()
+	time.sleep(1)
 
 ### move units
-    unit1.set_path(7, 7)
-    #raise Exception('unit1:\n{}\nunit2:\n{}'.format(unit1, unit2))
-    #raise Exception('{},{}'.format(*tile_map.get_unit_position(unit1)))
-    assert(unit1.path == [(1,1),(1,1),(1,1)])
-    unit2.set_path(5, 15)
-    assert(unit2.path == [(-1,1),(-1,1),(-1,1)])
-    timer = Timer(tile_map)
-    timer.run_turn(renderer)
+	unit1.set_path(7, 7)
+	#raise Exception('unit1:\n{}\nunit2:\n{}'.format(unit1, unit2))
+	#raise Exception('{},{}'.format(*tile_map.get_unit_position(unit1)))
+	assert(unit1.path == [(1,1),(1,1),(1,1)])
+	unit2.set_path(5, 15)
+	assert(unit2.path == [(-1,1),(-1,1),(-1,1)])
+	timer = Timer(tile_map)
+	timer.run_turn(renderer)
 
 ### get fish
-    building1.receive_cargo(Fish, 2)
-    building1.deliver_cargo(Fish, 2)
+	building1.receive_cargo(Fish, 2)
+	building1.deliver_cargo(Fish, 2)
 
 ### chop wood
-    unit1.chop_wood()
-    unit1.set_path(8, 7)
-    unit2.clear_path()
-    timer.run_turn(renderer)
+	unit1.chop_wood()
+	unit1.set_path(8, 7)
+	unit2.clear_path()
+	timer.run_turn(renderer)
 
 ###construct
-    cabbage_farm = CabbageFarm()
-    (x, y) = tile_map.get_unit_position(unit1)
-    tile_map.place_building(cabbage_farm, x, y)
-    unit1.set_path(9, 7)
-    unit2.clear_path()
-    timer.run_turn(renderer)
-    renderer.render_building(cabbage_farm)
-    renderer.refresh()
-    time.sleep(1)
+	cabbage_farm = CabbageFarm()
+	(x, y) = tile_map.get_unit_position(unit1)
+	tile_map.place_building(cabbage_farm, x, y)
+	unit1.set_path(9, 7)
+	unit2.clear_path()
+	timer.run_turn(renderer)
+	renderer.render_building(cabbage_farm)
+	renderer.refresh()
+	time.sleep(1)
 
 ### go to dock
-    unit2.set_path(5, 12)
-    timer.run_turn(renderer)
+	unit2.set_path(5, 12)
+	timer.run_turn(renderer)
 
-    cursx = 1
-    cursy = 1
-    w.move(cursy,cursx)
-    new_buildings = []
-    while 1:
-        c = w.getch()
-        if c == ord('q'):
-            break
-        elif c == curses.KEY_RIGHT:
-            if(cursx < 19):
-                cursx = cursx + 1
-        elif c == curses.KEY_LEFT:
-            if(cursx > 1):
-                cursx = cursx - 1
-        elif c == curses.KEY_DOWN:
-            if(cursy < 19):
-                cursy = cursy + 1
-        elif c == curses.KEY_UP:
-            if(cursy > 1):
-                cursy = cursy - 1
-        elif c == ord('d'):
-            building = FishingHole(cursx, cursy)
-            renderer.render_building(building)
-            new_buildings.append(building)
-            if(cursx > 1):
-                cursy = cursy - 1
-        elif c == ord(' '):
-            renderer.render_terrain(cursx, cursy)
-        else:
-            renderer.render_terrain(cursx, cursy, c)
-        w.move(cursy,cursx)
-        renderer.refresh()
+	cursx = 1
+	cursy = 1
+	w.move(cursy,cursx)
+	new_buildings = []
+	while 1:
+		c = w.getch()
+		if c == ord('q'):
+			break
+		elif c == curses.KEY_RIGHT:
+			if(cursx < 19):
+				cursx = cursx + 1
+		elif c == curses.KEY_LEFT:
+			if(cursx > 1):
+				cursx = cursx - 1
+		elif c == curses.KEY_DOWN:
+			if(cursy < 19):
+				cursy = cursy + 1
+		elif c == curses.KEY_UP:
+			if(cursy > 1):
+				cursy = cursy - 1
+		elif c == ord('d'):
+			building = FishingHole(cursx, cursy)
+			renderer.render_building(building)
+			new_buildings.append(building)
+			if(cursx > 1):
+				cursy = cursy - 1
+		elif c == ord(' '):
+			renderer.render_terrain(cursx, cursy)
+		else:
+			renderer.render_terrain(cursx, cursy, c)
+		w.move(cursy,cursx)
+		renderer.refresh()
 except:
-    raise
+	raise
 finally:
-    w.clear()
-    curses.nocbreak()
-    curses.echo()
-    curses.endwin()
+	w.clear()
+	curses.nocbreak()
+	curses.echo()
+	curses.endwin()
 
 w.clear()
 curses.nocbreak()
