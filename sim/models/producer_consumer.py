@@ -83,10 +83,7 @@ class Factory(ProducerConsumer):
 
 	def __repr__(self):
 		lines = []
-		for key in self.resource_products.keys():
-			lines.append('produces {}:'.format(key))
-			lines.append('  type:     {}'.format(self.resource_products[key]['type']))
-			lines.append('  load:     {}'.format(self.resource_products[key]['load']))
+		lines.append('produces {}:'.format(self.product.name))
 		return super().__repr__() + '\n'.join(lines)
 
 	def set_product(self, product):

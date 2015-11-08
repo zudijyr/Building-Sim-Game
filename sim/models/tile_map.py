@@ -52,6 +52,18 @@ class TileMap:
 	def get_units(self):
 		return [ v['unit'] for v in self.unit_registry.values() ]
 
+	def get_buildings(self):
+		# TODO: test me
+		return [ v['building'] for v in self.building_registry.values() ]
+
+#TODO: test me
+	def move_unit_along_path(self, unit):
+		if len(unit.path) <= 0:
+			return 0
+		(x, y) = self.get_unit_position(unit)
+		(dx, dy) = unit.path.pop(0)
+		self.set_unit_position(unit, x + dx, y + dy)
+
 	def move_unit(self, unit, dx, dy):
 		# TODO: add error checks
 		(x, y) = self.get_unit_position(unit)
