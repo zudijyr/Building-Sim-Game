@@ -1,13 +1,17 @@
-from . import terrain
-from . import terrain_improvement
+from sim.models.terrain import Terrain
+from sim.models.terrain_improvement import TerrainImprovement
 
 class Tile:
 
-	def __init__(self, x_position, y_position, terrain_type):
-		self.x_position = x_position
-		self.y_position = y_position
-		self.terrain_type = terrain_type
-		self.terrain_improvement = terrain_improvement.TerrainImprovement
+	def __init__(self, tile_id=''):
+		# The tile_id is currently only used for testing
+		self.terrain = Terrain
+		self.terrain_improvement = TerrainImprovement
+		self.tile_id = tile_id
 
-	def displayTile(self):
-		print('terrain_type : ', self.terrain_type, 'x_position : ', self.x_position, 'y_position : ', self.y_position)
+	def set_terrain(self, terrain):
+		self.terrain = terrain
+
+	def set_terrain_improvement(self, terrain_improvement):
+		self.terrain_improvement = terrain_improvement
+

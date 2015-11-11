@@ -5,8 +5,7 @@ from sim.models.resource import Wood
 
 class Ship(Unit):
 	strength = 100
-	movement_speed = 30
-	display_char = 'S'
+	movement_speed = 1.5
 	name = 'Ship'
 
 	def __init__(self):

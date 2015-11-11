@@ -1,5 +1,6 @@
 class Resource:
 	name = ''
+	weight = 1
 
 	def __repr__(self):
 		return name

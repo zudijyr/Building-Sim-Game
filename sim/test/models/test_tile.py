@@ -1,11 +1,12 @@
 import unittest
-from sim.models.tile import *
-from sim.models.terrain import *
-from sim.models.terrain_improvement import *
+from sim.models.tile import Tile
+from sim.models.terrain import Grass
+from sim.models.terrain_improvement import TerrainImprovement
 
 class TileModelTest(unittest.TestCase):
 
-	def test_tile_starts_with_default_improvement(self):
-		tile1 = Tile(1,2, terrain.Grass)
-		assert(tile1.terrain_type.move_cost == terrain.Grass.move_cost)
-		assert(tile1.terrain_improvement  == terrain_improvement.TerrainImprovement)
+	def test_set_terrain_sets_the_terrain_for_a_tile(self):
+		tile = Tile()
+		tile.set_terrain(Grass)
+		self.assertIs(tile.terrain, Grass)
+		self.assertIs(tile.terrain_improvement, TerrainImprovement)

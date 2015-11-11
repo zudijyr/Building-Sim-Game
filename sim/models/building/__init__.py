@@ -10,7 +10,6 @@ class BuildingException(Exception):
 
 class Building:
 
-	display_char = ''
 	name = 'Unnamed'
 
 	def __init__(self):
