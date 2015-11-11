@@ -1,161 +1,35 @@
 #!/usr/bin/env python
 
-import os
-import pyglet
-
-from sim.models import tile
+from sim.renderers.pyglet import PygletRenderer
 from sim.models.tile_map import TileMap
+from sim.models.tile_grid import TileGrid
 
-from sim.models.terrain import Terrain
 from sim.models.terrain import Forest
 from sim.models.terrain import Grass
 from sim.models.terrain import Water
-
-from sim.models.resource import Fish
 
 from sim.models.terrain_improvement import Road
 
 from sim.models.unit.peasant import Peasant
 from sim.models.unit.ship import Ship
 
-from sim.models.building.cabbage_farm import CabbageFarm
 from sim.models.building.fishing_hole import FishingHole
 from sim.models.building.dock import Dock
 
-
-class SimGame:
-	tile_size = 40
-
-	def __init__(self, tile_map):
-		self.tile_map = tile_map
-		window_w = (self.tile_map.x_max - self.tile_map.x_min) * self.tile_size
-		window_h = (self.tile_map.y_max - self.tile_map.y_min) * self.tile_size
-		self.window = pyglet.window.Window(window_w, window_h)
-		self.image_registry = {}
-		self.sprite_registry = {}
-
-	def position_to_pixel_coords(self, x, y):
-		return ((x - self.tile_map.x_min) * self.tile_size, (y - self.tile_map.y_min) * self.tile_size)
-
-	def update(self, dt):
-		self.window.clear()
-		self.update_terrain()
-		self.update_terrain_improvements()
-		self.update_buildings()
-		self.update_units()
-
-	def update_terrain(self):
-		for x in range(self.tile_map.x_min, self.tile_map.x_max):
-			for y in range(self.tile_map.y_min, self.tile_map.y_max):
-				terrain_id = "terrain({},{})".format(x, y)
-				if terrain_id not in self.sprite_registry:
-					terrain = self.tile_map.get_terrain(x, y)
-					image = self.get_terrain_image(terrain)
-					if image is None:
-						continue
-					sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-					sprite.scale = self.tile_size / max(sprite.width, sprite.height)
-					self.sprite_registry[terrain_id] = sprite
-				sprite = self.sprite_registry[terrain_id]
-				(sprite.x, sprite.y) = self.position_to_pixel_coords(x, y)
-				sprite.draw()
-
-	def update_terrain_improvements(self):
-		for x in range(self.tile_map.x_min, self.tile_map.x_max):
-			for y in range(self.tile_map.y_min, self.tile_map.y_max):
-				terrain_improvement_id = "terrain_improvement({},{})".format(x, y)
-				if terrain_improvement_id not in self.sprite_registry:
-					terrain_improvement = self.tile_map.get_terrain_improvement(x, y)
-					image = self.get_terrain_improvement_image(terrain_improvement)
-					if image is None:
-						continue
-					sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-					sprite.scale = self.tile_size / max(sprite.width, sprite.height)
-					self.sprite_registry[terrain_improvement_id] = sprite
-				sprite = self.sprite_registry[terrain_improvement_id]
-				(sprite.x, sprite.y) = self.position_to_pixel_coords(x, y)
-				sprite.draw()
-
-	def update_buildings(self):
-		for building in self.tile_map.get_buildings():
-			if building.building_id not in self.sprite_registry:
-				image = self.get_building_image(building)
-				if image is None:
-					continue
-				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-				sprite.scale = self.tile_size / max(sprite.width, sprite.height)
-				self.sprite_registry[building.building_id] = sprite
-			sprite = self.sprite_registry[building.building_id]
-			(x, y) = self.tile_map.get_building_position(building)
-			(sprite.x, sprite.y) = self.position_to_pixel_coords(x, y)
-			sprite.draw()
-
-	def update_units(self):
-		for unit in self.tile_map.get_units():
-			unit.act()
-			if unit.unit_id not in self.sprite_registry:
-				image = self.get_unit_image(unit)
-				if image is None:
-					continue
-				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-				sprite.scale = self.tile_size / max(sprite.width, sprite.height)
-				self.sprite_registry[unit.unit_id] = sprite
-			sprite = self.sprite_registry[unit.unit_id]
-			(x, y) = self.tile_map.get_unit_position(unit)
-			(sprite.x, sprite.y) = self.position_to_pixel_coords(x, y)
-			sprite.draw()
-
-	def get_terrain_image(self, terrain):
-		if terrain is Forest:
-			return self.load_image('forest.png', 'forest-terrain-image')
-		elif terrain is Water:
-			return self.load_image('water.png', 'water-terrain-image')
-		elif terrain is Grass:
-			return self.load_image('grass.png', 'grass-terrain-image')
-		else:
-			return self.load_image('plains.png', 'plains-terrain-image')
-
-	def get_terrain_improvement_image(self, terrain_improvement):
-		if terrain_improvement is Road:
-			return self.load_image('road.jpg', 'road-improvement-image')
-		else:
-			return None
-
-	def get_building_image(self, building):
-		if isinstance(building, CabbageFarm):
-			return self.load_image('cabbage.png', 'cabbage-building-image')
-		elif isinstance(building, Dock):
-			return self.load_image('dock.jpg', 'dock-building-image')
-		elif isinstance(building, FishingHole):
-			return self.load_image('fish.png', 'fish-building-image')
-		else:
-			return None
-
-	def get_unit_image(self, unit):
-		if isinstance(unit, Peasant):
-			return self.load_image('peasant.png', 'peasant-unit-image')
-		elif isinstance(unit, Ship):
-			return self.load_image('ship.jpg', 'ship-unit-image')
-		else:
-			return None
-
-	def load_image(self, path, key):
-		if key not in self.image_registry:
-			image = pyglet.image.load(os.path.join(os.getcwd(), 'images', path))
-			self.image_registry[key] = image
-		return self.image_registry[key]
-
 def main():
-	tile_map = TileMap(0, 0, 20, 20)
+	tile_grid = TileGrid(20, 20)
+	tile_map = TileMap(tile_grid, 40)
 
 	### add terrain
-	[ tile_map.set_terrain(Grass, x, y) for x in range(0, 20) for y in range( 1, 10) ]
-	[ tile_map.set_terrain(Water, x, y) for x in range(0, 20) for y in range(11, 20) ]
-	tile_map.set_terrain(Forest, 7, 7)
+	[ t.set_terrain(Grass) for t in tile_grid.get_tiles_in_rect(0,  1, 20, 9) ]
+	[ t.set_terrain(Water) for t in tile_grid.get_tiles_in_rect(0, 11, 20, 9) ]
+	tile_grid.get_tile(7, 7).set_terrain(Forest)
 	###
 
 	### add improvements
-	[ tile_map.set_terrain_improvement(Road, 5, y) for y in range(3,11) ]
+	imp_tiles = tile_grid.get_tiles_in_rect(5, 3, 1, 8)
+	print("count of imp tiles: {}".format(len(imp_tiles)))
+	[ t.set_terrain_improvement(Road) for t in imp_tiles ]
 	###
 
 	### add buildings
@@ -163,30 +37,29 @@ def main():
 	building2 = Dock()
 	building3 = Dock()
 	building4 = Dock()
-	tile_map.place_building(building1, 5, 15)
-	tile_map.place_building(building2, 6, 10)
-	tile_map.place_building(building3, 6, 11)
-	tile_map.place_building(building4, 6, 12)
+	tile_map.place_building_on_grid(building1, 5, 15)
+	tile_map.place_building_on_grid(building2, 6, 10)
+	tile_map.place_building_on_grid(building3, 6, 11)
+	tile_map.place_building_on_grid(building4, 6, 12)
 	###
 
 	### add units
 	unit1 = Peasant()
-	tile_map.place_unit(unit1, 4, 4)
-	unit1.add_path(7, 7)
+	tile_map.place_unit_on_grid(unit1, 4, 4)
+	unit1.add_path_on_grid(7, 7)
 	unit1.add_action(unit1.check_for_wood_to_chop, quantity=10)
-	unit1.add_path(8, 7)
+	unit1.add_path_on_grid(8, 7)
 	unit1.add_action(unit1.attempt_to_build_cabbage_farm)
-	unit1.add_path(19, 1)
+	unit1.add_path_on_grid(8, 2)
 
 	unit2 = Ship()
-	tile_map.place_unit(unit2, 8, 12)
-	unit2.add_path(5, 15)
-	unit2.add_path(5, 12)
+	tile_map.place_unit_on_grid(unit2, 8, 12)
+	unit2.add_path_on_grid(5, 15)
+	unit2.add_path_on_grid(5, 12)
 	###
 
-	game = SimGame(tile_map)
-	pyglet.clock.schedule_interval(game.update, .5)
-	pyglet.app.run()
+	renderer = PygletRenderer(tile_map, .05)
+	renderer.run()
 
 if __name__  == '__main__':
 	main()

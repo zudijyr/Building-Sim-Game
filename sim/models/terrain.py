@@ -8,7 +8,7 @@ BLACK   = (  0,   0,   0)
 MAGENTA = (255,   0, 255)
 
 class Terrain:
-	move_cost = 1
+	movement_factor = 1.0
 	name = 'base terrain'
 	color = WHITE
 	char_color = RED
@@ -20,7 +20,7 @@ class Terrain:
 
 class Forest(Terrain):
 	name = 'forest'
-	move_cost = 4
+	movement_factor = 0.25
 	color = MAGENTA
 	char_color = BLACK
 	curses_color = curses.COLOR_MAGENTA
@@ -28,7 +28,7 @@ class Forest(Terrain):
 
 class Grass(Terrain):
 	name = 'grass'
-	move_cost = 2
+	movement_factor = 0.5
 	color = GREEN
 	char_color = RED
 	curses_color = curses.COLOR_GREEN
@@ -36,7 +36,7 @@ class Grass(Terrain):
 
 class Water(Terrain):
 	name = 'water'
-	move_cost = 1
+	movement_factor = 1.0
 	color = BLUE
 	char_color = MAGENTA
 	curses_color = curses.COLOR_BLUE
@@ -44,7 +44,7 @@ class Water(Terrain):
 
 class Plains(Terrain):
 	name = 'plains'
-	move_cost = 2
+	movement_factor = 0.75
 	color = RED
 	char_color = BLACK
 	curses_color = curses.COLOR_RED
