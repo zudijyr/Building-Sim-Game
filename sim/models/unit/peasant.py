@@ -55,6 +55,5 @@ class Peasant(Unit):
 	def build_cabbage_farm(self, dt):
 		print("building cabbage farm")
 		cabbage_farm = self.construct_building(CabbageFarm)
-		(x, y) = self.tile_map.get_unit_position(self)
-		self.tile_map.place_building(cabbage_farm, x, y)
+		self.tile_map.place_building(cabbage_farm, self.tile_map.get_unit_position(self))
 

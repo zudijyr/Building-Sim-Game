@@ -1,5 +1,6 @@
 from sim import SimException
 from sim.models.tile import Tile
+from sim.geometry import *
 
 class TileGridException(SimException): pass
 
@@ -12,28 +13,47 @@ class TileGrid:
 		  (i, j) (row, column) instead of x, y to emphasize the difference
 	"""
 
-	def __init__(self, w, h):
-		if w <= 0 or h <= 0:
-			raise TileGridException("Tile grid must have a positive width and height")
-		(self.w, self.h) = (w, h)
+	def __init__(self, sz):
+		if sz.w <= 0 or sz.h <= 0:
+			raise TileGridException("The grid must have positive area")
+		self.bounds_rect = Rectangle(Point(0, 0), Size(int(sz.w), int(sz.h)))
 
 		self.tile_array = {}
-		for x in range(w):
-			for y in range(h):
-				self.tile_array[x, y] = Tile(tile_id="({},{})".format(x, y))
+		for x in range(self.w):
+			for y in range(self.h):
+				pt = Point(x,y)
+				self.tile_array[pt] = Tile(tile_id="{}".format(pt))
+	@property
+	def sz(self):
+		return self.bounds_rect.sz
 
-	def get_tile(self, x, y):
-		if not self.in_bounds(x, y):
-			raise TileGridException("out of bounds: ({}, {})".format(x, y))
-		return self.tile_array[x, y]
+	@property
+	def w(self):
+		return self.bounds_rect.w
 
-	def in_bounds(self, x, y):
-		if x >= 0 and x < self.w and y >= 0 and y < self.h:
-			return True
-		else:
-			return False
+	@property
+	def h(self):
+		return self.bounds_rect.h
 
-	def get_tiles_in_rect(self, x, y, w, h):
-		if not self.in_bounds(x, y) and self.in_bounds(x + w - 1, y + h - 1):
-			raise TileGridException("invalid rectangle: ({}, {}, {}, {})".format(x, y, w, h))
-		return [ self.get_tile(rx, ry) for rx in range(x, x + w) for ry in range(y, y + h) ]
+	def get_tile(self, pt):
+		if pt not in self:
+			raise TileGridException("out of bounds: {}".format(pt))
+		return self.tile_array[pt]
+
+	def __contains__(self, pt):
+		return pt in self.bounds_rect
+
+	def get_grid_points_in_rect(self, r=None):
+		if r is None:
+			r = self.bounds_rect
+		if r.p not in self or r.p + r.sz + Vector(-1, -1) not in self:
+			raise TileGridException("invalid rectangle: ".format(r))
+		for rx in range(r.p.x, r.p.x + r.w):
+			for ry in range(r.p.y, r.p.y + r.h):
+				yield Point(rx, ry)
+
+	def get_tiles_in_rect(self, r):
+		if r.p not in self or r.p + r.sz + Vector(-1, -1) not in self:
+			raise TileGridException("invalid rectangle: ".format(r))
+		return [ self.get_tile(pt) for pt in self.get_grid_points_in_rect(r) ]
+
