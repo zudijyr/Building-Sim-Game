@@ -5,8 +5,8 @@ from sim.models.resource import Fish
 
 class Dock(Building):
 
-	display_char = 'D'
 	name = 'Dock'
+	build_time = 30.0
 
 	def __init__(self):
 		super().__init__()

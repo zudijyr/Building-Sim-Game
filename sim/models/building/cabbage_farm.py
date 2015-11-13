@@ -4,8 +4,8 @@ from sim.models.resource import Cabbage, Wood
 
 class CabbageFarm(Building):
 
-	display_char = 'C'
 	name = 'Cabbage Farm'
+	build_time = 10.0
 
 	def __init__(self):
 		super().__init__()

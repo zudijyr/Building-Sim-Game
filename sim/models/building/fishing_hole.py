@@ -4,8 +4,8 @@ from sim.models.resource import Fish
 
 class FishingHole(Building):
 
-	display_char = 'F'
 	name = 'Fishing Hole'
+	build_time = 15.0
 
 	def __init__(self):
 		super().__init__()
