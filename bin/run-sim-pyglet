@@ -18,6 +18,11 @@ from sim.models.unit.ship import Ship
 
 from sim.models.building.fishing_hole import FishingHole
 from sim.models.building.dock import Dock
+from sim.models.building.cabbage_farm import CabbageFarm
+
+from sim.models.resource import Wood
+
+from sim.models.action import MoveToward, Harvest, ConstructBuilding
 
 def main():
 	tile_grid = TileGrid(Size(20, 20))
@@ -50,16 +55,16 @@ def main():
 	### add units
 	unit1 = Peasant()
 	tile_map.place_unit_on_grid(unit1, Point(4, 4))
-	unit1.add_path_on_grid(Point(7, 7))
-	unit1.add_action(unit1.check_for_wood_to_chop, quantity=10)
-	unit1.add_path_on_grid(Point(8, 7))
-	unit1.add_action(unit1.attempt_to_build_cabbage_farm)
-	unit1.add_path_on_grid(Point(8, 2))
+	unit1.add_action(MoveToward(Point(7, 7), is_grid_pt=True))
+	unit1.add_action(Harvest(Wood, quantity=10))
+	unit1.add_action(MoveToward(Point(8, 7), is_grid_pt=True))
+	unit1.add_action(ConstructBuilding(CabbageFarm))
+	unit1.add_action(MoveToward(Point(8, 2), is_grid_pt=True))
 
 	unit2 = Ship()
 	tile_map.place_unit_on_grid(unit2, Point(8, 12))
-	unit2.add_path_on_grid(Point(5, 15))
-	unit2.add_path_on_grid(Point(5, 12))
+	unit2.add_action(MoveToward(Point(5, 15), is_grid_pt=True))
+	unit2.add_action(MoveToward(Point(5, 12), is_grid_pt=True))
 	###
 
 	renderer = PygletRenderer(tile_map, .05)

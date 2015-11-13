@@ -11,6 +11,7 @@ class BuildingException(Exception):
 class Building:
 
 	name = 'Unnamed'
+	build_time = 1.0
 
 	def __init__(self):
 		self.resource_plants = []

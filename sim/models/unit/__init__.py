@@ -37,6 +37,19 @@ class Unit:
 			raise UnitException("tile_map must be an instance of TileMap")
 		self.tile_map = tile_map
 
+	@property
+	def tile(self):
+		# TODO: Add test
+		return self.tile_map.get_tile_under_unit(self)
+
+	@property
+	def pt(self):
+		# TODO: Add test
+		return self.tile_map.get_unit_position(self)
+
+	def move(self, v):
+		self.tile_map.move_unit(self, v)
+
 	def add_building_factory(self, building_factory):
 		if building_factory.product.name in self.building_factories:
 			raise UnitException("A factory for that building has already been added")
@@ -60,17 +73,23 @@ class Unit:
 			raise UnitException("This unit cannot build that building")
 		return self.building_factories[building.name].digest(self.container)
 
-
 	def act(self, dt):
 		if len(self.action_queue) == 0:
 			return
-		self.action_queue.pop(0)(dt)
+		action = self.action_queue.pop(0)
+		if not action.is_possible(self, dt):
+			return
+		action.execute(self, dt)
+		if action.is_complete(self, dt):
+			action.finish(self, dt)
+		else:
+			self.add_immediate_action(action.next_action(self, dt))
 
-	def add_action(self, method, *args, **kwds):
-		self.action_queue.append(lambda dt: method(dt, *args, **kwds))
+	def add_action(self, action):
+		self.action_queue.append(action)
 
-	def add_immediate_action(self, method, *args, **kwds):
-		self.action_queue.insert(0, lambda dt: method(dt, *args, **kwds))
+	def add_immediate_action(self, action):
+		self.action_queue.insert(0, action)
 
 	def clear_actions(self):
 		self.action_queue = []
@@ -89,30 +108,4 @@ class Unit:
 	#				if not shortest or len(newpath) < len(shortest):
 	#					shortest = newpath
 	#	return shortest
-
-	def add_path_on_grid(self, final_pt):
-		map_pt = self.tile_map.grid_coords_to_map_coords(final_pt)
-		map_pt = map_pt + self.tile_map.tile_sz * 0.5
-		self.add_path(map_pt)
-
-	def add_path(self, final_pt):
-		if self.tile_map is None:
-			raise UnitException("This unit has not been placed on the tile map yet!")
-		#eventually this will calculate the lowest-cost path by something like Dijkstra's algorithm (above)
-		#but for now it just goes in a straight line, starting with diagonal movement
-		self.add_action(self.move_toward, final_pt)
-
-	def move_toward(self, dt, dest_pt):
-		tile = self.tile_map.get_tile_under_unit(self)
-		movement_factor = tile.terrain.movement_factor * tile.terrain_improvement.movement_factor
-		speed = self.movement_speed * movement_factor * self.tile_map.tile_sz.diag
-
-		unit_pt = self.tile_map.get_unit_position(self)
-		dest_v  = dest_pt - unit_pt
-		possible_distance = min(speed * dt, dest_v.M)
-		move_v = dest_v.u * possible_distance
-		self.tile_map.move_unit(self, move_v)
-		new_pt = self.tile_map.get_unit_position(self)
-		if not new_pt.near(dest_pt):
-			self.add_immediate_action(self.move_toward, dest_pt)
 
