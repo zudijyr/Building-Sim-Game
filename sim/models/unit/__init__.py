@@ -90,35 +90,29 @@ class Unit:
 	#					shortest = newpath
 	#	return shortest
 
-	def add_path_on_grid(self, final_grid_x, final_grid_y):
-		(map_x, map_y) = self.tile_map.grid_coords_to_map_coords(final_grid_x, final_grid_y)
-		(map_x, map_y) = (map_x + 0.5 * self.tile_map.tile_w, map_y + 0.5 * self.tile_map.tile_w)
-		self.add_path(map_x, map_y)
+	def add_path_on_grid(self, final_pt):
+		map_pt = self.tile_map.grid_coords_to_map_coords(final_pt)
+		map_pt = map_pt + self.tile_map.tile_sz * 0.5
+		self.add_path(map_pt)
 
-	def add_path(self, final_x, final_y):
+	def add_path(self, final_pt):
 		if self.tile_map is None:
 			raise UnitException("This unit has not been placed on the tile map yet!")
 		#eventually this will calculate the lowest-cost path by something like Dijkstra's algorithm (above)
 		#but for now it just goes in a straight line, starting with diagonal movement
-		(current_x, current_y) = self.tile_map.get_unit_position(self)
-		self.add_action(self.move_toward, final_x, final_y)
+		self.add_action(self.move_toward, final_pt)
 
-	def move_toward(self, dt, x, y):
-		(ux, uy) = self.tile_map.get_unit_position(self)
-		(Dx, Dy) = (x - ux, y - uy)
-		# Terrain & Improvement figures
-		#raw_move_cost = self.tile_map.get_terrain(new_x, new_y).move_cost
-		#move_cost = raw_move_cost/(self.tile_map.get_terrain_improvement(new_x, new_y).movement_reduction)
+	def move_toward(self, dt, dest_pt):
 		tile = self.tile_map.get_tile_under_unit(self)
-		D = (Dx**2 + Dy**2)**0.5
 		movement_factor = tile.terrain.movement_factor * tile.terrain_improvement.movement_factor
-		s = self.movement_speed * movement_factor * self.tile_map.tile_w
-		d = s * dt
-		dr = min(d / D, 1.0)
-		(dx, dy) = (dr * Dx, dr * Dy)
-		# NOTE: Maybe this should be rounded instead of flooered?
-		self.tile_map.move_unit(self, dx, dy)
-		(ux, uy) = self.tile_map.get_unit_position(self)
-		if abs(x - ux) > EPS or abs(y - uy) > EPS:
-			self.add_immediate_action(self.move_toward, x, y)
+		speed = self.movement_speed * movement_factor * self.tile_map.tile_sz.diag
+
+		unit_pt = self.tile_map.get_unit_position(self)
+		dest_v  = dest_pt - unit_pt
+		possible_distance = min(speed * dt, dest_v.M)
+		move_v = dest_v.u * possible_distance
+		self.tile_map.move_unit(self, move_v)
+		new_pt = self.tile_map.get_unit_position(self)
+		if not new_pt.near(dest_pt):
+			self.add_immediate_action(self.move_toward, dest_pt)
 

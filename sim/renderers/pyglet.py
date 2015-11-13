@@ -42,36 +42,40 @@ class PygletRenderer:
 		self.update_units(dt)
 
 	def update_terrain(self):
-		for x in range(self.tile_map.tile_grid.w):
-			for y in range(self.tile_map.tile_grid.h):
-				terrain_id = "terrain({},{})".format(x, y)
-				if terrain_id not in self.sprite_registry:
-					terrain = self.tile_map.tile_grid.get_tile(x, y).terrain
-					image = self.get_terrain_image(terrain)
-					if image is None:
-						continue
-					sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-					sprite.scale = self.tile_map.tile_w / max(sprite.width, sprite.height)
-					self.sprite_registry[terrain_id] = sprite
-				sprite = self.sprite_registry[terrain_id]
-				(sprite.x, sprite.y) = self.tile_map.grid_coords_to_map_coords(x, y)
-				sprite.draw()
+		for pt in self.tile_map.tile_grid.get_grid_points_in_rect():
+			terrain_id = "terrain{}".format(pt)
+			if terrain_id not in self.sprite_registry:
+				terrain = self.tile_map.tile_grid.get_tile(pt).terrain
+				image = self.get_terrain_image(terrain)
+				if image is None:
+					continue
+				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
+				self.scale_sprite_to_tile_size(sprite)
+				self.sprite_registry[terrain_id] = sprite
+			sprite = self.sprite_registry[terrain_id]
+			(sprite.x, sprite.y) = self.tile_map.grid_coords_to_map_coords(pt)
+			sprite.draw()
 
 	def update_terrain_improvements(self):
-		for x in range(self.tile_map.tile_grid.w):
-			for y in range(self.tile_map.tile_grid.h):
-				terrain_improvement_id = "terrain_improvement({},{})".format(x, y)
-				if terrain_improvement_id not in self.sprite_registry:
-					terrain_improvement = self.tile_map.tile_grid.get_tile(x, y).terrain_improvement
-					image = self.get_terrain_improvement_image(terrain_improvement)
-					if image is None:
-						continue
-					sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-					sprite.scale = self.tile_map.tile_w / max(sprite.width, sprite.height)
-					self.sprite_registry[terrain_improvement_id] = sprite
-				sprite = self.sprite_registry[terrain_improvement_id]
-				(sprite.x, sprite.y) = self.tile_map.grid_coords_to_map_coords(x, y)
-				sprite.draw()
+		for pt in self.tile_map.tile_grid.get_grid_points_in_rect():
+			terrain_improvement_id = "terrain_improvement{}".format(pt)
+			if terrain_improvement_id not in self.sprite_registry:
+				terrain_improvement = self.tile_map.tile_grid.get_tile(pt).terrain_improvement
+				image = self.get_terrain_improvement_image(terrain_improvement)
+				if image is None:
+					continue
+				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
+				self.scale_sprite_to_tile_size(sprite)
+				self.sprite_registry[terrain_improvement_id] = sprite
+			sprite = self.sprite_registry[terrain_improvement_id]
+			(sprite.x, sprite.y) = self.tile_map.grid_coords_to_map_coords(pt)
+			sprite.draw()
+
+	def scale_sprite_to_tile_size(self, sprite):
+		sprite.scale = min(
+			self.tile_map.tile_sz.w / sprite.width,
+			self.tile_map.tile_sz.w / sprite.height,
+			)
 
 	def update_buildings(self):
 		for building in self.tile_map.get_buildings():
@@ -80,11 +84,12 @@ class PygletRenderer:
 				if image is None:
 					continue
 				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-				sprite.scale = self.tile_map.tile_w / max(sprite.width, sprite.height)
+				self.scale_sprite_to_tile_size(sprite)
 				self.sprite_registry[building.building_id] = sprite
 			sprite = self.sprite_registry[building.building_id]
-			(mx, my) = self.tile_map.get_building_position(building)
-			(sprite.x, sprite.y) = (mx - self.tile_map.tile_w / 2.0, my - self.tile_map.tile_w / 2.0)
+			pt = self.tile_map.get_building_position(building)
+			pt = pt - self.tile_map.tile_sz * 0.5
+			(sprite.x, sprite.y) = pt
 			sprite.draw()
 
 	def update_units(self, dt):
@@ -95,11 +100,12 @@ class PygletRenderer:
 				if image is None:
 					continue
 				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-				sprite.scale = self.tile_map.tile_w / max(sprite.width, sprite.height)
+				self.scale_sprite_to_tile_size(sprite)
 				self.sprite_registry[unit.unit_id] = sprite
 			sprite = self.sprite_registry[unit.unit_id]
-			(mx, my) = self.tile_map.get_unit_position(unit)
-			(sprite.x, sprite.y) = (mx - self.tile_map.tile_w / 2.0, my - self.tile_map.tile_w / 2.0)
+			pt = self.tile_map.get_unit_position(unit)
+			pt = pt - self.tile_map.tile_sz * 0.5
+			(sprite.x, sprite.y) = pt
 			sprite.draw()
 
 	def get_terrain_image(self, terrain):
