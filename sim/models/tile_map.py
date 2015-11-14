@@ -113,6 +113,17 @@ class TileMap:
 			raise TileMapException("out of bounds: ".format(pt))
 		return self.tile_grid.get_tile(self.map_coords_to_grid_coords(pt))
 
+	def get_unit_at_position(self, pt):
+		for unit in self.get_units():
+			if (unit.pt - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
+				return unit
+
+	def select_unit(self, unit):
+		self.selected_unit = unit
+
+	def clear_unit_selection(self):
+		self.selected_unit = None
+
 	def get_tile_under_unit(self, unit):
 		if unit.unit_id not in self.unit_registry:
 			raise TileMapException("That unit has not been added to the tile map: {}".format(unit))

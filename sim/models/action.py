@@ -46,8 +46,10 @@ class Harvest(Action):
 
 	def is_possible(self, unit, dt):
 		if unit.tile.terrain not in self.resource.harvestable_from:
+			print("{} can't harvest {} from {}".format(unit.name, self.resource.name, unit.tile.terrain.name))
 			return False
 		if unit.container.remaining_capacity(self.resource) <= 0:
+			print("{} can't harvest {}; no remaining capacity".format(unit.name, self.resource.name))
 			return False
 		return True
 
@@ -110,7 +112,11 @@ class ConstructBuilding(Action):
 		self.building = building
 
 	def is_possible(self, unit, dt):
-		return unit.can_construct_building(self.building)
+		if not unit.can_construct_building(self.building):
+			print("{} can't build {}".format(unit.name, self.building.name))
+			return False
+		else:
+			return True
 
 	def execute(self, unit, dt):
 		self.elapsed_time += dt
