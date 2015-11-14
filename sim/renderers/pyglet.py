@@ -105,8 +105,6 @@ class PygletEventHandler:
 		if scroll_y != 0:
 			self.camera.zoom(1.0 + (0.05 * -scroll_y))
 
-=======
->>>>>>> interim-commit
 class PygletRenderer:
 
 	def __init__(self, tile_map, update_interval):
@@ -116,7 +114,6 @@ class PygletRenderer:
 		self.image_registry = {}
 		self.sprite_registry = {}
 		pyglet.clock.schedule_interval(self.update, self.update_interval)
-<<<<<<< afd9318a37e0c370f762c24943b43fe2b485355a
 		self.clock = 0
 		self.camera = Camera(tile_map)
 		self.window.push_handlers(PygletEventHandler(self.tile_map, self.camera))
@@ -124,9 +121,7 @@ class PygletRenderer:
 
 
 
-=======
-		self.window.push_handlers(PygletEventHandler(tile_map))
->>>>>>> interim-commit
+		self.window.push_handlers(PygletEventHandler(tile_map, self.camera))
 
 	def scale_sprite_to_tile_size(self, sprite):
 		sprite.scale = min(

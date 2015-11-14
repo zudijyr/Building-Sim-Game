@@ -7,6 +7,7 @@ class Ship(Unit):
 	strength = 100
 	movement_speed = 1.5
 	name = 'Ship'
+	moves_on_water = True
 
 	def __init__(self):
 		super().__init__()

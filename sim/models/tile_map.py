@@ -81,7 +81,11 @@ class TileMap:
 		"""
 		# TODO: add error checks
 		new_position = self.get_unit_position(unit) + v
+		new_terrain = self.get_terrain(new_position)
+		if (new_terrain.is_water != unit.moves_on_water):
+				return #returns without error so the unit just stops
 		# TODO: Should we clamp this position in bounds or error if it goes out?
+		# This will be handled by the interface.  Shouldn't be possible to order it out of bounds.
 		if new_position not in self:
 			raise TileMapException("Unit may not move out of bounds")
 		self.set_unit_position(unit, new_position)
@@ -144,6 +148,10 @@ class TileMap:
 		if pt not in self:
 			raise TileMapException("out of bounds: ".format(pt))
 		return self.tile_grid.get_tile(self.map_coords_to_grid_coords(pt))
+
+	def get_terrain(self, pt):
+		tile = self.get_tile(pt)
+		return tile.terrain
 
 	def map_coords_to_grid_coords(self, pt):
 		"""
