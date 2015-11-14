@@ -1,9 +1,10 @@
 import unittest
 from sim.geometry import Point, Size, Vector, Rectangle
 from sim.models.unit.peasant import Peasant
+from sim.models.unit.ship import Ship
 from sim.models.tile_grid import TileGrid
 from sim.models.tile_map import TileMap, TileMapException
-from sim.models.terrain import Terrain, Forest
+from sim.models.terrain import Terrain, Forest, Water, Grass
 from sim.models.building.cabbage_farm import CabbageFarm
 from sim.models.terrain_improvement import TerrainImprovement
 
@@ -212,4 +213,27 @@ class TileMapModelTest(unittest.TestCase):
 		self.assertFalse(Point(100, 200) in tmap)
 		self.assertFalse(Point( -1, 100) in tmap)
 		self.assertFalse(Point(100,  -1) in tmap)
+
+	def test_move_unit_moves_a_unit_on_the_map(self):
+		tmap = TileMap(TileGrid(Size(10, 10)))
+		serf = Peasant()
+		tmap.place_unit(serf, Point(55, 75))
+		tmap.move_unit(serf, Vector(-5, 10))
+		self.assertEqual(tmap.get_unit_position(serf), Point(50, 85))
+
+	def test_move_unit_wont_move_land_unit_onto_water_or_vice_versa(self):
+		grid = TileGrid(Size(1, 2))
+		tmap = TileMap(grid, tile_sz=Size(1,1))
+		grass_area = Rectangle(Point(0, 0), Size(1,1))
+		[ t.set_terrain(Grass) for t in grid.get_tiles_in_rect(grass_area) ]
+		water_area = Rectangle(Point(0,1), Size(1,1))
+		[ t.set_terrain(Water) for t in grid.get_tiles_in_rect(water_area) ]
+		serf = Peasant()
+		schooner = Ship()
+		tmap.place_unit(serf, Point(0, 0))
+		tmap.place_unit(schooner, Point(0, 1))
+		tmap.move_unit(serf, Vector(0, 1))
+		tmap.move_unit(schooner, Vector(0, -1))
+		self.assertEqual(tmap.get_unit_position(serf), Point(0, 0))
+		self.assertEqual(tmap.get_unit_position(schooner), Point(0, 1))
 

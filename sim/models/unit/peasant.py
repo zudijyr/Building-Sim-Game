@@ -13,6 +13,7 @@ class Peasant(Unit):
 	# Tiles per second
 	movement_speed = 1
 	name = 'Peasant'
+	moves_on_water = False
 
 	def __init__(self):
 		super().__init__()
