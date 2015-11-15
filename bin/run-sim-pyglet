@@ -12,6 +12,7 @@ from sim.models.terrain import Grass
 from sim.models.terrain import Water
 
 from sim.models.terrain_improvement import Road
+from sim.models.terrain_improvement import IronOreDeposit
 
 from sim.models.unit.peasant import Peasant
 from sim.models.unit.ship import Ship
@@ -40,6 +41,8 @@ def main():
 	### add improvements
 	road_area = Rectangle(Point(5,3), Size(1,8))
 	[ t.set_terrain_improvement(Road) for t in tile_grid.get_tiles_in_rect(road_area) ]
+	iron_tile = tile_grid.get_tile(Point(13,5))
+	iron_tile.set_terrain_improvement(IronOreDeposit)
 	###
 
 	### add buildings

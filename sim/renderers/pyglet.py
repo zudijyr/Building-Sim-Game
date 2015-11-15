@@ -12,6 +12,7 @@ from sim.models.terrain import Water
 from sim.models.resource import Fish
 
 from sim.models.terrain_improvement import Road
+from sim.models.terrain_improvement import IronOreDeposit
 
 from sim.models.unit.peasant import Peasant
 from sim.models.unit.ship import Ship
@@ -122,6 +123,8 @@ class PygletRenderer:
 	def get_terrain_improvement_image(self, terrain_improvement):
 		if terrain_improvement is Road:
 			return self.load_image('road.jpg', 'road-improvement-image')
+		elif terrain_improvement is IronOreDeposit:
+			return self.load_image('iron_ore.png', 'iron-ore-improvement-image')
 		else:
 			return None
 
