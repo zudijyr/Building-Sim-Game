@@ -30,6 +30,10 @@ class Stone(Resource):
 	name = 'stone'
 	weight = 5
 
+class Lumber(Resource):
+	name = 'lumber'
+	weight = 3
+
 class NullResource(Resource):
 	name = 'null resource'
 	weight = 0

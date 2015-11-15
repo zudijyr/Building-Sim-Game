@@ -18,6 +18,7 @@ from sim.models.unit.ship import Ship
 
 from sim.models.building.cabbage_farm import CabbageFarm
 from sim.models.building.fishing_hole import FishingHole
+from sim.models.building.lumber_mill import LumberMill
 from sim.models.building.dock import Dock
 
 class PygletRenderer:
@@ -131,6 +132,8 @@ class PygletRenderer:
 			return self.load_image('dock.jpg', 'dock-building-image')
 		elif isinstance(building, FishingHole):
 			return self.load_image('fish.png', 'fish-building-image')
+		elif isinstance(building, LumberMill):
+			return self.load_image('lumbermill.png', 'lumber-building-image')
 		else:
 			return None
 
