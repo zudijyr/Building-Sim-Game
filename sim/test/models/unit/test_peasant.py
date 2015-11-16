@@ -43,8 +43,6 @@ class PeasantModelTest(unittest.TestCase):
 		serf = Peasant()
 		serf.container.weight_capacity = Wood.weight - 1
 		tmap.place_unit_on_grid(serf, Point(5, 5))
-		print(tmap.get_unit_position(serf))
-		print(tmap.map_coords_to_grid_coords(tmap.get_unit_position(serf)))
 		serf.chop_wood(1.0)
 		self.assertEqual(serf.deliver_cargo(Wood, 5), 0)
 		self.assertEqual(len(serf.action_queue), 0)
@@ -69,18 +67,17 @@ class PeasantModelTest(unittest.TestCase):
 		serf1.receive_cargo(Lumber, 10)
 		serf2 = Peasant()
 		serf2.receive_cargo(Lumber, 10)
-		tmap.place_unit(serf1, Point(4, 4))
+		tmap.place_unit(serf1, Point(30, 30))
 		tmap.place_unit(serf2, Point(5, 5))
-		serf1.set_tile_map(tmap)
-		serf2.set_tile_map(tmap)
 		serf2.tile.terrain_improvement = IronOreDeposit
 		action = ConstructBuilding(IronMine)
 		serf1.add_action(ConstructBuilding(IronMine))
 		serf2.add_action(ConstructBuilding(IronMine))
+		self.assertIs(tmap, serf1.tile_map)
 		serf1.act(10)
 		self.assertEqual(len(tmap.building_registry.values()), 0)
 		serf2.act(10)
-		self.assertEqual(len(tmap.building_registry.values()), 1) #why does this fail?
+		self.assertEqual(len(tmap.building_registry.values()), 1) #a little vague
 
 	# TODO:test cabbage_farm_creation
 
