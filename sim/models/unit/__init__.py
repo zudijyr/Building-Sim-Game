@@ -1,5 +1,6 @@
 from sim import SimException
 from sim.models.tile_map import TileMap
+from sim.models.tile_grid import TileGrid
 from sim.models.cargo_container import MixedCargoContainer
 
 import sys
@@ -61,11 +62,13 @@ class Unit:
 	def deliver_cargo(self, resource_type, quantity):
 		return self.container.unload_cargo(resource_type, quantity)
 
-	def can_construct_building(self, building):
+	def can_construct_building(self, building, tile):
 		if not building.name in self.building_factories:
 			return False
 		if not self.building_factories[building.name].can_consume(self.container):
 			return False
+		if building.name == "iron mine" and tile.terrain_improvement.name != "iron ore deposit":
+			return False #TODO make this more generalizable
 		return True
 
 	def construct_building(self, building):

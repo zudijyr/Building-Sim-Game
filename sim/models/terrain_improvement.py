@@ -11,4 +11,5 @@ class Road(TerrainImprovement):
 	movement_factor = 2.0
 
 class IronOreDeposit(OreDeposit):
+	name = 'iron ore deposit'
 	can_build_iron_mine = True

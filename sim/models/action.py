@@ -79,7 +79,8 @@ class ConstructBuilding(Action):
 		self.elapsed_time = 0.0
 
 	def is_possible(self, unit, dt):
-		return unit.can_construct_building(self.building)
+		tile = unit.tile
+		return unit.can_construct_building(self.building, tile)
 
 	def execute(self, unit, dt):
 		print("{} building {}".format(unit.name, self.building.name))

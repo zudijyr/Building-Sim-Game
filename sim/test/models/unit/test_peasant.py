@@ -4,8 +4,11 @@ from sim.models.tile_grid import TileGrid
 from sim.models.tile_map import TileMap
 from sim.models.unit.peasant import Peasant
 from sim.models.terrain import Forest, Plains
-from sim.models.resource import Wood
+from sim.models.terrain_improvement import IronOreDeposit
+from sim.models.resource import Wood, Lumber
 from sim.models.building.cabbage_farm import CabbageFarm
+from sim.models.building.iron_mine import IronMine
+from sim.models.action import MoveToward, Harvest, ConstructBuilding
 
 class PeasantModelTest(unittest.TestCase):
 
@@ -57,6 +60,27 @@ class PeasantModelTest(unittest.TestCase):
 		serf.act(1.0)
 		self.assertEqual(serf.deliver_cargo(Wood, 5), 1)
 		self.assertEqual(len(serf.action_queue), 0)
+
+	def test_peasant_can_build_iron_mine_only_on_iron_ore_deposit(self):
+		grid = TileGrid(Size(10, 10))
+		tmap = TileMap(grid)
+		grid.get_tile(Point(5, 5)).set_terrain_improvement(IronOreDeposit)
+		serf1 = Peasant()
+		serf1.receive_cargo(Lumber, 10)
+		serf2 = Peasant()
+		serf2.receive_cargo(Lumber, 10)
+		tmap.place_unit(serf1, Point(4, 4))
+		tmap.place_unit(serf2, Point(5, 5))
+		serf1.set_tile_map(tmap)
+		serf2.set_tile_map(tmap)
+		serf2.tile.terrain_improvement = IronOreDeposit
+		action = ConstructBuilding(IronMine)
+		serf1.add_action(ConstructBuilding(IronMine))
+		serf2.add_action(ConstructBuilding(IronMine))
+		serf1.act(10)
+		self.assertEqual(len(tmap.building_registry.values()), 0)
+		serf2.act(10)
+		self.assertEqual(len(tmap.building_registry.values()), 1) #why does this fail?
 
 	# TODO:test cabbage_farm_creation
 

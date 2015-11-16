@@ -34,6 +34,10 @@ class Lumber(Resource):
 	name = 'lumber'
 	weight = 3
 
+class IronOre(Resource):
+	name = 'iron ore'
+	weight = 5
+
 class NullResource(Resource):
 	name = 'null resource'
 	weight = 0
