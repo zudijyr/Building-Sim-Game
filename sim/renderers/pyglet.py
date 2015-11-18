@@ -1,5 +1,6 @@
 import os
 import pyglet
+from pyglet.gl import *
 
 from sim.geometry import *
 from sim.models import tile
@@ -18,13 +19,46 @@ from sim.models.building.lumber_mill import LumberMill
 from sim.models.building.iron_mine import IronMine
 from sim.models.building.dock import Dock
 
-class PygletEventHandler:
+class Camera:
 
 	def __init__(self, tile_map):
 		self.tile_map = tile_map
+		self.view_rect = Rectangle(Point(0,0), tile_map.sz)
+		self.minimum_tile_line_in_view = 10
+
+	def convert_world_vector_to_view_vector(self, v):
+		return (v / self.tile_map.sz) * self.view_rect.sz
+
+	def convert_world_point_to_view_point(self, p):
+		return (p / self.tile_map.sz) * self.view_rect.sz + self.view_rect.p
+
+	def pan(self, v):
+		scaled_v = self.convert_world_vector_to_view_vector(v)
+		new_center = self.view_rect.clamp_point(self.view_rect.center + scaled_v)
+		clamped_v = new_center - self.view_rect.center
+		self.view_rect = Rectangle(self.view_rect.p + clamped_v, self.view_rect.sz)
+
+	def zoom(self, z):
+		min_sz = self.tile_map.tile_sz * self.minimum_tile_line_in_view
+		min_z = max(*(min_sz / self.view_rect.sz))
+		max_sz = self.tile_map.sz
+		max_z = min(*(max_sz / self.view_rect.sz))
+		clamped_z = max(min(z, max_z), min_z)
+		self.view_rect = self.view_rect * clamped_z
+
+	@property
+	def ortho_matrix(self):
+		return (self.view_rect.left, self.view_rect.right, self.view_rect.bottom, self.view_rect.top)
+
+
+class PygletEventHandler:
+
+	def __init__(self, tile_map, camera):
+		self.tile_map = tile_map
+		self.camera = camera
 
 	def on_mouse_press(self, x, y, button, modifiers):
-		pt = Point(x, y)
+		pt = self.camera.convert_world_point_to_view_point(Point(x, y))
 		if button == pyglet.window.mouse.LEFT:
 			unit = self.tile_map.get_unit_at_position(pt)
 			if unit is None:
@@ -50,16 +84,26 @@ class PygletEventHandler:
 				unit.clear_actions()
 				unit.add_action(Harvest(Wood))
 
+	def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+		if button == pyglet.window.mouse.LEFT:
+			self.camera.pan(Vector(-dx, -dy))
+
+	def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+		if scroll_y != 0:
+			self.camera.zoom(1.0 + (0.05 * -scroll_y))
+
 class PygletRenderer:
 
 	def __init__(self, tile_map, update_interval):
 		self.tile_map = tile_map
 		self.update_interval = update_interval
-		self.window = pyglet.window.Window(self.tile_map.w, self.tile_map.h)
+		self.window = pyglet.window.Window(int(self.tile_map.w), int(self.tile_map.h))
 		self.image_registry = {}
 		self.sprite_registry = {}
 		pyglet.clock.schedule_interval(self.update, self.update_interval)
-		self.window.push_handlers(PygletEventHandler(tile_map))
+		self.clock = 0
+		self.camera = Camera(tile_map)
+		self.window.push_handlers(PygletEventHandler(self.tile_map, self.camera))
 
 	def scale_sprite_to_tile_size(self, sprite):
 		sprite.scale = min(
@@ -72,6 +116,14 @@ class PygletRenderer:
 
 	def update(self, dt):
 		self.window.clear()
+		self.clock += dt
+		glMatrixMode( GL_PROJECTION )
+		glLoadIdentity()
+		glMatrixMode( GL_MODELVIEW )
+		glLoadIdentity()
+
+		gluOrtho2D(*self.camera.ortho_matrix)
+
 		self.update_terrain()
 		self.update_terrain_improvements()
 		self.update_buildings()

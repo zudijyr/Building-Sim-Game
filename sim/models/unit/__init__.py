@@ -63,12 +63,14 @@ class Unit:
 	def deliver_cargo(self, resource_type, quantity):
 		return self.container.unload_cargo(resource_type, quantity)
 
-	def can_construct_building(self, building, tile):
+	def can_construct_building(self, building):
+		if self.tile_map is None:
+			return False
 		if not building.name in self.building_factories:
 			return False
 		if not self.building_factories[building.name].can_consume(self.container):
 			return False
-		if building.name == "iron mine" and tile.terrain_improvement.name != "iron ore deposit":
+		if building.name == "iron mine" and self.tile.terrain_improvement.name != "iron ore deposit":
 			return False #TODO make this more generalizable
 		return True
 
