@@ -12,7 +12,7 @@ class Pair:
 	rhs = '|'
 
 	def __init__(self, v0, v1):
-		self.a = numpy.array([v0, v1])
+		self.a = numpy.array([v0, v1]).astype(float)
 
 	@classmethod
 	def from_array(cls, array):
@@ -31,7 +31,7 @@ class Pair:
 		return self.__repr__().__hash__()
 
 	def __eq__(self, other):
-		return self.a[0] == other.a[0] and self.a[1] == other.a[1]
+		return abs(self.a[0] - other.a[0]) < EPS and abs(self.a[1] - other.a[1]) < EPS
 
 	def __add__(self, other):
 		if isinstance(other, Pair):
@@ -127,9 +127,17 @@ class Rectangle:
 		return "[{} {}]".format(self.p, self.sz)
 
 	def __contains__(self, pt):
+		# TODO: This should probably be adjusted to account for epsilon rounding erros
 		x_in_range = pt.x >= self.x and pt.x < self.x + self.w
 		y_in_range = pt.y >= self.y and pt.y < self.y + self.h
 		return x_in_range and y_in_range
+
+	def __eq__(self, other):
+		return self.p == other.p and self.sz == other.sz
+
+	def scale(self, scale_factor):
+		new_sz = self.sz * scale_factor
+		return Rectangle(self.p + (self.sz - new_sz) / 2, new_sz)
 
 	@property
 	def p(self):
@@ -154,4 +162,30 @@ class Rectangle:
 	@property
 	def h(self):
 		return self.sz.h
+
+	@property
+	def left(self):
+		return self.x
+
+	@property
+	def right(self):
+		return self.x + self.w
+
+	@property
+	def bottom(self):
+		return self.y
+
+	@property
+	def top(self):
+		return self.y + self.h
+
+	def __mul__(self, scale_factor):
+		return self.scale(scale_factor)
+
+	@property
+	def center(self):
+		return Point(self.x + self.w / 2, self.y + self.h / 2)
+
+	def clamp_point(self, pt):
+		return Point(min(max(pt.x, self.x), self.right), min(max(pt.y, self.y), self.top))
 

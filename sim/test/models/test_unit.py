@@ -48,8 +48,10 @@ class UnitModelTest(unittest.TestCase):
 			u.add_building_factory(factory2)
 		self.assertEqual(error_context.exception.message, "A factory for that building has already been added")
 
-	def test_can_construct_building_returns_true_if_and_only_if_the_unit_is_carrying_the_resources_and_has_a_factory_that_can_produce_the_requested_building(self):
+	def test_can_construct_building_returns_true_if_and_only_if_the_unit_is_carrying_the_resources_and_has_a_factory_that_can_produce_the_requested_building_and_the_unit_is_placed_on_the_map(self):
+		tmap = TileMap(TileGrid(Size(10, 10)))
 		u = DummyUnit()
+		tmap.place_unit(u, Point(0,0))
 		self.assertFalse(u.can_construct_building(DummyBuilding))
 
 		factory = Factory()

@@ -33,7 +33,7 @@ class GeometryTest(unittest.TestCase):
 
 	def test_pair_repr_returns_a_string_representation_of_a_pair(self):
 		p = Pair(2, 3)
-		self.assertEqual("{}".format(p), '|2,3|')
+		self.assertEqual("{}".format(p), '|2.0,3.0|')
 
 	def test_pair_eq_returns_true_if_two_pairs_have_the_same_values_in_order(self):
 		p1 = Pair(2, 3)
@@ -101,7 +101,7 @@ class GeometryTest(unittest.TestCase):
 	def test_rectangle_repr_returns_a_string_representation_of_the_rectangle(self):
 		p = Point(2,3)
 		sz = Size(3,4)
-		self.assertTrue("{}".format(Rectangle(p, sz)), "[(2,3) /3,4/]")
+		self.assertTrue("{}".format(Rectangle(p, sz)), "[(2.0,3.0) /3.0,4.0/]")
 
 	def test_rectangle_contains_returns_true_if_a_point_is_in_or_on_a_rectangles_boundary(self):
 		r = Rectangle(Point(2,3), Size(3,4))
@@ -111,3 +111,12 @@ class GeometryTest(unittest.TestCase):
 		self.assertFalse(Point(5, 4) in r)
 		self.assertFalse(Point(3, 7) in r)
 		self.assertFalse(Point(1, 2) in r)
+
+	def test_clamp_point_moves_a_point_outside_the_rectangle_to_the_nearest_border(self):
+		r = Rectangle(Point(-2,-3), Size(5,7))
+		self.assertEqual(r.clamp_point(Point(-5, 0)), Point(-2, 0))
+		self.assertEqual(r.clamp_point(Point(0, -6)), Point(0, -3))
+		self.assertEqual(r.clamp_point(Point(6, 0)), Point(3, 0))
+		self.assertEqual(r.clamp_point(Point(0, 8)), Point(0, 4))
+		self.assertEqual(r.clamp_point(Point(100, 100)), Point(3, 4))
+
