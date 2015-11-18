@@ -7,8 +7,6 @@ import sys
 from uuid import uuid4
 from textwrap import indent
 
-EPS = sys.float_info.epsilon
-
 class UnitException(SimException): pass
 
 class Unit:
@@ -24,6 +22,7 @@ class Unit:
 		self.building_factories = {}
 		self.unit_id = uuid4()
 		self.action_queue = []
+		self.harvestable_resources = set()
 
 	def __repr__(self):
 		return '\n'.join([
@@ -34,19 +33,21 @@ class Unit:
 			])
 
 	def set_tile_map(self, tile_map):
-		if not isinstance(tile_map, TileMap):
-			raise UnitException("tile_map must be an instance of TileMap")
 		self.tile_map = tile_map
 
 	@property
 	def tile(self):
-		# TODO: Add test
 		return self.tile_map.get_tile_under_unit(self)
 
 	@property
 	def pt(self):
-		# TODO: Add test
 		return self.tile_map.get_unit_position(self)
+
+	def add_harvestable_resource(self, resource):
+		self.harvestable_resources.add(resource)
+
+	def can_harvest_resource(self, resource):
+		return resource in self.harvestable_resources
 
 	def move(self, v):
 		self.tile_map.move_unit(self, v)
@@ -96,19 +97,4 @@ class Unit:
 
 	def clear_actions(self):
 		self.action_queue = []
-
-	#def find_shortest_path(tile_map, start, end, path=[]):
-	#	path = path + [start]
-	#	if start == end:
-	#		return path
-	#	if not graph.has_key(start):
-	#		return None
-	#	shortest = None
-	#	for node in graph[start]:
-	#		if node not in path:
-	#			newpath = find_shortest_path(graph, node, end, path)
-	#			if newpath:
-	#				if not shortest or len(newpath) < len(shortest):
-	#					shortest = newpath
-	#	return shortest
 

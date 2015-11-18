@@ -1,19 +1,14 @@
 import os
 import pyglet
 
+from sim.geometry import *
 from sim.models import tile
 from sim.models.tile_map import TileMap
 
-from sim.models.terrain import Terrain
-from sim.models.terrain import Forest
-from sim.models.terrain import Grass
-from sim.models.terrain import Water
-
-from sim.models.resource import Fish
-
-from sim.models.terrain_improvement import Road
-from sim.models.terrain_improvement import IronOreDeposit
-
+from sim.models.action import *
+from sim.models.terrain import *
+from sim.models.resource import *
+from sim.models.terrain_improvement import *
 from sim.models.unit.peasant import Peasant
 from sim.models.unit.ship import Ship
 
@@ -22,6 +17,38 @@ from sim.models.building.fishing_hole import FishingHole
 from sim.models.building.lumber_mill import LumberMill
 from sim.models.building.iron_mine import IronMine
 from sim.models.building.dock import Dock
+
+class PygletEventHandler:
+
+	def __init__(self, tile_map):
+		self.tile_map = tile_map
+
+	def on_mouse_press(self, x, y, button, modifiers):
+		pt = Point(x, y)
+		if button == pyglet.window.mouse.LEFT:
+			unit = self.tile_map.get_unit_at_position(pt)
+			if unit is None:
+				self.tile_map.clear_unit_selection()
+			else:
+				self.tile_map.select_unit(unit)
+		if button == pyglet.window.mouse.RIGHT:
+			unit = self.tile_map.selected_unit
+			if unit is not None:
+				unit.clear_actions()
+				unit.add_action(MoveToward(pt))
+
+	def on_key_press(self, symbol, modifiers):
+		if symbol == pyglet.window.key.F:
+			unit = self.tile_map.selected_unit
+			if unit is not None:
+				unit.clear_actions()
+				unit.add_action(ConstructBuilding(CabbageFarm))
+
+		if symbol == pyglet.window.key.C:
+			unit = self.tile_map.selected_unit
+			if unit is not None:
+				unit.clear_actions()
+				unit.add_action(Harvest(Wood))
 
 class PygletRenderer:
 
@@ -32,10 +59,16 @@ class PygletRenderer:
 		self.image_registry = {}
 		self.sprite_registry = {}
 		pyglet.clock.schedule_interval(self.update, self.update_interval)
+		self.window.push_handlers(PygletEventHandler(tile_map))
+
+	def scale_sprite_to_tile_size(self, sprite):
+		sprite.scale = min(
+			self.tile_map.tile_sz.w / sprite.width,
+			self.tile_map.tile_sz.w / sprite.height,
+			)
 
 	def run(self):
 		pyglet.app.run()
-
 
 	def update(self, dt):
 		self.window.clear()
@@ -74,12 +107,6 @@ class PygletRenderer:
 			(sprite.x, sprite.y) = self.tile_map.grid_coords_to_map_coords(pt)
 			sprite.draw()
 
-	def scale_sprite_to_tile_size(self, sprite):
-		sprite.scale = min(
-			self.tile_map.tile_sz.w / sprite.width,
-			self.tile_map.tile_sz.w / sprite.height,
-			)
-
 	def update_buildings(self):
 		for building in self.tile_map.get_buildings():
 			if building.building_id not in self.sprite_registry:
@@ -107,6 +134,18 @@ class PygletRenderer:
 				self.sprite_registry[unit.unit_id] = sprite
 			sprite = self.sprite_registry[unit.unit_id]
 			pt = self.tile_map.get_unit_position(unit)
+			pt = pt - self.tile_map.tile_sz * 0.5
+			(sprite.x, sprite.y) = pt
+			sprite.draw()
+		if self.tile_map.selected_unit is not None:
+			unit_selection_key = 'unit-selection'
+			if unit_selection_key not in self.sprite_registry:
+				image = self.load_image('selection.png', 'unit-selection-image')
+				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
+				self.scale_sprite_to_tile_size(sprite)
+				self.sprite_registry[unit_selection_key] = sprite
+			sprite = self.sprite_registry[unit_selection_key]
+			pt = self.tile_map.selected_unit.pt
 			pt = pt - self.tile_map.tile_sz * 0.5
 			(sprite.x, sprite.y) = pt
 			sprite.draw()

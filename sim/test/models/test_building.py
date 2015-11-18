@@ -1,9 +1,38 @@
 import unittest
-from sim.models.building import Building
+from sim.models.building import Building, BuildingException
+from sim.models.unit.peasant import Peasant
 from sim.models.resource import Fish, Wood, Cabbage, Stone
-from sim.models.producer_consumer import ResourcePlant
+from sim.models.producer_consumer import Factory, ResourcePlant
 
 class BuildingModelTest(unittest.TestCase):
+
+	def test_build_unit_consumes_resources_to_produce_a_new_unit(self):
+		building = Building()
+
+		building.container.add_resource_slot(Cabbage, 10)
+		building.receive_cargo(Cabbage, 10)
+
+		serf_factory = Factory()
+		serf_factory.add_resource_requirement(Cabbage, 10)
+		serf_factory.product = Peasant
+		building.add_unit_factory(serf_factory)
+
+		serf = building.build_unit(Peasant)
+		self.assertIsInstance(serf, Peasant)
+
+	def test_build_unit_raises_an_exception_if_the_building_cannot_produce_that_type_of_unit(self):
+		building = Building()
+		with self.assertRaises(BuildingException) as error_context:
+			serf = building.build_unit(Peasant)
+		self.assertEqual(error_context.exception.message, "This building cannot build that unit")
+
+	def test_build_unit_returns_None_if_there_are_not_enough_resources_to_produce_that_unit(self):
+		building = Building()
+		serf_factory = Factory()
+		serf_factory.add_resource_requirement(Cabbage, 10)
+		serf_factory.product = Peasant
+		building.add_unit_factory(serf_factory)
+		self.assertIsNone(building.build_unit(Peasant))
 
 	def test_produce_resources_digests_resources_with_all_the_available_digesters(self):
 		building = Building()

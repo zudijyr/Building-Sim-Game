@@ -5,6 +5,13 @@ class ActionException(SimException) : pass
 
 class Action:
 
+	def __init__(self, *args, **kwds):
+		self.elapsed_time = 0.0
+		self.setup(*args, **kwds)
+
+	def setup(self, *args, **kwds):
+		pass
+
 	def is_possible(self, unit, dt):
 		return True
 
@@ -22,15 +29,17 @@ class Action:
 
 class Harvest(Action):
 
-	def __init__(self, resource, quantity=1):
+	def setup(self, resource, quantity=1):
 		self.initial_quantity = quantity
 		self.quantity = quantity
 		self.resource = resource
 
 	def is_possible(self, unit, dt):
 		if unit.tile.terrain not in self.resource.harvestable_from:
+			print("{} can't harvest {} from {}".format(unit.name, self.resource.name, unit.tile.terrain.name))
 			return False
 		if unit.container.remaining_capacity(self.resource) <= 0:
+			print("{} can't harvest {}; no remaining capacity".format(unit.name, self.resource.name))
 			return False
 		return True
 
@@ -46,12 +55,16 @@ class Harvest(Action):
 
 class MoveToward(Action):
 
-	def __init__(self, dest_pt, is_grid_pt=False):
+	def setup(self, dest_pt, is_grid_pt=False):
 		self.dest_pt = dest_pt
 		self.is_grid_pt = is_grid_pt
 
 	def is_possible(self, unit, dt):
-		return unit.tile_map is not None
+		if unit.tile_map is None:
+			print("{} can't move toward {}; not placed on the map!".format(unit.name, self.dest_pt))
+			return False
+		else:
+			return True
 
 	def execute(self, unit, dt):
 		print("{} moving toward {}".format(unit.name, self.dest_pt))
@@ -74,13 +87,11 @@ class MoveToward(Action):
 
 class ConstructBuilding(Action):
 
-	def __init__(self, building):
+	def setup(self, building):
 		self.building = building
-		self.elapsed_time = 0.0
 
 	def is_possible(self, unit, dt):
-		tile = unit.tile
-		return unit.can_construct_building(self.building, tile)
+		return unit.can_construct_building(self.building, unit.tile)
 
 	def execute(self, unit, dt):
 		print("{} building {}".format(unit.name, self.building.name))

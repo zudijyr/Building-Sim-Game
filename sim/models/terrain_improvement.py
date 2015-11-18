@@ -6,6 +6,12 @@ class TerrainImprovement:
 class OreDeposit(TerrainImprovement):
 	name = 'ore deposit'
 
+	def __repr__(self):
+		return name
+
+	def __hash__(self):
+		return name.__hash__()
+
 class Road(TerrainImprovement):
 	name = 'road'
 	movement_factor = 2.0

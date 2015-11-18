@@ -1,7 +1,7 @@
 from sim.models.unit import Unit, UnitException
 from sim.models.producer_consumer import Factory
 from sim.models.building.dock import Dock
-from sim.models.resource import Wood
+from sim.models.resource import Fish
 
 class Ship(Unit):
 	strength = 100
@@ -14,4 +14,5 @@ class Ship(Unit):
 		dock_factory.add_resource_requirement(Wood, 15)
 		dock_factory.set_product(Dock)
 		self.add_building_factory(dock_factory)
+		self.add_harvestable_resource(Fish)
 

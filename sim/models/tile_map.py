@@ -23,8 +23,8 @@ class TileMap:
 		map_sz = self.tile_grid.sz * tile_sz
 		self.bounds_rect = Rectangle(Point(0, 0), map_sz)
 		self.building_registry = {}
-		self.reverse_building_registry = {}
 		self.unit_registry = {}
+		self.selected_unit = None
 
 	@property
 	def w(self):
@@ -52,7 +52,6 @@ class TileMap:
 			'building' : building,
 			'position' : pt,
 			}
-		self.reverse_building_registry[pt] = building
 
 	def place_unit_on_grid(self, building, grid_pt):
 		map_pt = self.grid_coords_to_map_coords(grid_pt) + self.tile_sz * 0.5
@@ -71,7 +70,6 @@ class TileMap:
 		return [ v['unit'] for v in self.unit_registry.values() ]
 
 	def get_buildings(self):
-		# TODO: test me
 		return [ v['building'] for v in self.building_registry.values() ]
 
 	def move_unit(self, unit, v):
@@ -98,19 +96,38 @@ class TileMap:
 			raise TileMapException("That unit has not been added to the tile map: {}".format(unit))
 		self.unit_registry[unit.unit_id]['position'] = pt
 
-	def get_building_position(self, building):
-		if building.building_id not in self.building_registry:
-			raise TileMapException("That building has not been added to the tile map: {}".format(building))
-		return self.building_registry[building.building_id]['position']
+	def get_unit_at_position(self, pt):
+		for unit in self.get_units():
+			if (unit.pt - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
+				return unit
+		return None
 
-	# This will need look for building overlapping the coordinates
-	#def get_building_at_position(self, x, y):
-	#    return self.reverse_building_registry.get((x, y))
+	def select_unit(self, unit):
+		self.selected_unit = unit
+
+	def clear_unit_selection(self):
+		self.selected_unit = None
+
+	def get_tile(self, pt):
+		if pt not in self:
+			raise TileMapException("out of bounds: ".format(pt))
+		return self.tile_grid.get_tile(self.map_coords_to_grid_coords(pt))
 
 	def get_tile_under_unit(self, unit):
 		if unit.unit_id not in self.unit_registry:
 			raise TileMapException("That unit has not been added to the tile map: {}".format(unit))
 		return self.get_tile(self.get_unit_position(unit))
+
+	def get_building_position(self, building):
+		if building.building_id not in self.building_registry:
+			raise TileMapException("That building has not been added to the tile map: {}".format(building))
+		return self.building_registry[building.building_id]['position']
+
+	def get_building_at_position(self, pt):
+		# TODO: this should actually check to see if the point is within the buildings bounds when buildings are given a boundary
+		for building in self.get_buildings():
+			if (self.building_registry[building.building_id]['position'] - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
+				return building
 
 	def get_tile(self, pt):
 		if pt not in self:

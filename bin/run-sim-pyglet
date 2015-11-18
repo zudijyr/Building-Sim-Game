@@ -29,7 +29,7 @@ from sim.models.action import MoveToward, Harvest, ConstructBuilding
 
 def main():
 	tile_grid = TileGrid(Size(20, 20))
-	tile_map = TileMap(tile_grid, tile_sz=Size(40, 40))
+	tile_map = TileMap(tile_grid, tile_sz=Size(50, 50))
 
 	### add terrain
 	grass_area = Rectangle(Point(0, 1), Size(20,9))
