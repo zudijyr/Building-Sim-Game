@@ -10,7 +10,7 @@ class TileGridModelTest(unittest.TestCase):
 		for pt in [ Point(x, y) for x in range(10) for y in range(15) ]:
 			self.assertIsInstance(grid.tile_array[pt], Tile)
 
-	def test_initialization_dies_area_of_tile_grid_is_zero(self):
+	def test_initialization_dies_if_the_area_of_tile_grid_is_zero(self):
 		with self.assertRaises(TileGridException) as error_context:
 			TileGrid(Size(0, 10))
 		self.assertEqual(error_context.exception.message, "The grid must have positive area")
@@ -34,6 +34,26 @@ class TileGridModelTest(unittest.TestCase):
 		with self.assertRaises(TileGridException) as error_context:
 			grid.get_tile(Point(-1, 5))
 		self.assertIn("out of bounds", error_context.exception.message)
+
+	def test_get_grid_points_in_rect_finds_all_points_inside_of_a_bounding_rectangle(self):
+		grid = TileGrid(Size(10, 15))
+		rect = Rectangle(Point(4, 5), Size(2, 3))
+		expected_points = [ Point(x,y) for x in range(4, 4+2) for y in range(5, 5+3) ]
+		computed_points = [ pt for pt in grid.get_grid_points_in_rect(rect) ]
+		self.assertEqual(expected_points, computed_points)
+
+	def test_get_grid_points_in_rect_raises_an_error_if_the_bounding_rect_is_out_of_bounds(self):
+		grid = TileGrid(Size(10, 15))
+		rect = Rectangle(Point(8, 13), Size(4, 4))
+		with self.assertRaises(TileGridException) as error_context:
+			grid.get_grid_points_in_rect(rect)
+		self.assertIn("invalid rectangle", error_context.exception.message)
+
+	def test_get_grid_points_in_rect_finds_all_points_inside_of_the_grid_if_a_rectangle_is_not_provided(self):
+		grid = TileGrid(Size(10, 15))
+		expected_points = [ Point(x,y) for x in range(10) for y in range(15) ]
+		computed_points = [ pt for pt in grid.get_grid_points_in_rect() ]
+		self.assertEqual(expected_points, computed_points)
 
 	def test_get_tiles_in_rect_returns_all_tiles_within_a_bounding_rectangle(self):
 		grid = TileGrid(Size(10, 15))

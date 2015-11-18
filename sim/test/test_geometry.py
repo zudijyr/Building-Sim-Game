@@ -26,6 +26,11 @@ class GeometryTest(unittest.TestCase):
 		self.assertEqual(v0, 2)
 		self.assertEqual(v1, 3)
 
+	def test_pair_hash_allows_a_pair_to_be_hashable(self):
+		p = Pair(2, 3)
+		d = { p: 'pair' }
+		self.assertEqual(d[p], 'pair')
+
 	def test_pair_repr_returns_a_string_representation_of_a_pair(self):
 		p = Pair(2, 3)
 		self.assertEqual("{}".format(p), '|2,3|')
@@ -40,10 +45,18 @@ class GeometryTest(unittest.TestCase):
 		p2 = Pair(7, 9)
 		self.assertEqual(p1 + p2, Pair(9, 12))
 
-	def test_pair_sub_returns_a_new_pair_that_is_the_sum_of_two_others(self):
+	def test_pair_add_returns_a_translated_pair_that_is_the_sum_of_the_original_and_a_scalar(self):
+		p1 = Pair(2, 3)
+		self.assertEqual(p1 + 5, Pair(7, 8))
+
+	def test_pair_sub_returns_a_new_pair_that_is_the_difference_of_two_others(self):
 		p1 = Pair(2, 3)
 		p2 = Pair(7, 9)
 		self.assertEqual(p1 - p2, Pair(-5, -6))
+
+	def test_pair_mul_returns_a_scaled_pair_that_is_the_product_of_the_original_and_a_scalar(self):
+		p1 = Pair(2, 3)
+		self.assertEqual(p1 * 5, Pair(10, 15))
 
 	def test_pair_mul_returns_a_new_pair_that_is_the_product_of_two_others(self):
 		p1 = Pair(2, 3)
@@ -59,6 +72,8 @@ class GeometryTest(unittest.TestCase):
 		p1 = Pair(2, 3)
 		self.assertEqual(-p1, Pair(-2, -3))
 
+
+
 	def test_point_sub_returns_a_vector_difference_between_the_two_points(self):
 		p1 = Point(2, 3)
 		p2 = Point(7, 9)
@@ -71,6 +86,8 @@ class GeometryTest(unittest.TestCase):
 		p2 = Point(2.0000000001, 3.0000000001)
 		self.assertTrue(p1.near(p2))
 
+
+
 	def test_vector_M_returns_the_magnitude_of_a_vector(self):
 		v = Vector(3, 4)
 		self.assertEqual(5, v.M)
@@ -78,6 +95,8 @@ class GeometryTest(unittest.TestCase):
 	def test_vector_u_returns_the_unit_vector_for_the_given_vector(self):
 		v = Vector(3, 4)
 		self.assertEqual(v.u, Vector(3/5, 4/5))
+
+
 
 	def test_rectangle_repr_returns_a_string_representation_of_the_rectangle(self):
 		p = Point(2,3)

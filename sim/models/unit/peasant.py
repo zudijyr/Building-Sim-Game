@@ -20,6 +20,7 @@ class Peasant(Unit):
 		cabbage_farm_factory.add_resource_requirement(Wood, 10)
 		cabbage_farm_factory.set_product(CabbageFarm)
 		self.add_building_factory(cabbage_farm_factory)
+		self.add_harvestable_resource(Wood)
 
 		iron_mine_factory = Factory()
 		iron_mine_factory.add_resource_requirement(Lumber, 10)

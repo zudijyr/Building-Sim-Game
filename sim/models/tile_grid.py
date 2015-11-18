@@ -48,9 +48,7 @@ class TileGrid:
 			r = self.bounds_rect
 		if r.p not in self or r.p + r.sz + Vector(-1, -1) not in self:
 			raise TileGridException("invalid rectangle: ".format(r))
-		for rx in range(r.p.x, r.p.x + r.w):
-			for ry in range(r.p.y, r.p.y + r.h):
-				yield Point(rx, ry)
+		return [ Point(x,y) for x in range(r.x, r.x + r.w) for y in range(r.y, r.y + r.h) ]
 
 	def get_tiles_in_rect(self, r):
 		if r.p not in self or r.p + r.sz + Vector(-1, -1) not in self:

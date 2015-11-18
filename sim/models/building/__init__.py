@@ -25,7 +25,7 @@ class Building:
 	def add_unit_factory(self, unit_factory):
 		if unit_factory.product.name in self.unit_factories:
 			raise BuildingException("A factory for that unit has already been added")
-		self.unit_factories[unit_factory.name] = unit_factory
+		self.unit_factories[unit_factory.product.name] = unit_factory
 
 	def receive_cargo(self, resource_type, quantity):
 		return self.container.load_cargo(resource_type, quantity)
@@ -38,7 +38,7 @@ class Building:
 
 	def build_unit(self, unit):
 		if unit.name not in self.unit_factories:
-			raise UnitException("This building cannot build that unit")
+			raise BuildingException("This building cannot build that unit")
 		return self.unit_factories[unit.name].digest(self.container)
 
 	def __repr__(self):
