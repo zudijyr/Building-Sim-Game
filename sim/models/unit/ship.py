@@ -1,7 +1,7 @@
 from sim.models.unit import Unit, UnitException
 from sim.models.producer_consumer import Factory
 from sim.models.building.dock import Dock
-from sim.models.resource import Fish
+from sim.models.resource import Fish, Wood
 
 class Ship(Unit):
 	strength = 100

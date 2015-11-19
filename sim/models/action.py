@@ -91,7 +91,7 @@ class ConstructBuilding(Action):
 		self.building = building
 
 	def is_possible(self, unit, dt):
-		return unit.can_construct_building(self.building, unit.tile)
+		return unit.can_construct_building(self.building)
 
 	def execute(self, unit, dt):
 		print("{} building {}".format(unit.name, self.building.name))
