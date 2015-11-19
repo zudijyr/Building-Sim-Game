@@ -75,6 +75,8 @@ class MoveToward(Action):
 	def is_possible(self, unit, dt):
 		if unit.tile_map is None:
 			return False
+		elif self.dest_pt == unit.tile_map.get_unit_position(unit):
+		    return False
 		else:
 			return True
 
