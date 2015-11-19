@@ -25,7 +25,7 @@ class Pair:
 			yield self.a[i]
 
 	def __repr__(self):
-		return "{}{},{}{}".format(self.lhs, round(self.a[0], 6), round(self.a[1], 6), self.rhs)
+		return "{}{:.2f},{:.2f}{}".format(self.lhs, self.a[0], self.a[1], self.rhs)
 
 	def __hash__(self):
 		return self.__repr__().__hash__()
@@ -56,6 +56,16 @@ class Pair:
 
 	def __neg__(self):
 		return self.from_array(-self.a)
+
+	def __tuple__(self):
+		return (a[0], a[1])
+
+	@staticmethod
+	def chain(*args):
+		chain = ()
+		for pair in args:
+			chain = chain + tuple(pair)
+		return chain
 
 class Point(Pair):
 	lhs = '('
@@ -135,9 +145,22 @@ class Rectangle:
 	def __eq__(self, other):
 		return self.p == other.p and self.sz == other.sz
 
-	def scale(self, scale_factor):
-		new_sz = self.sz * scale_factor
-		return Rectangle(self.p + (self.sz - new_sz) / 2, new_sz)
+	def scale_x(self, scale_factor, center=True):
+		new_w = self.w * scale_factor
+		x_off = 0
+		if center is True:
+			x_off = (self.w - new_w)/2
+		return Rectangle(self.p + Vector(x_off, 0), Size(new_w, self.h))
+
+	def scale_y(self, scale_factor, center=True):
+		new_h = self.h * scale_factor
+		y_off = 0
+		if center is True:
+			y_off = (self.h - new_h)/2
+		return Rectangle(self.p + Vector(0, y_off), Size(self.w, new_h))
+
+	def scale(self, scale_factor, center=True):
+		return self.scale_x(scale_factor, center).scale_y(scale_factor, center)
 
 	@property
 	def p(self):
@@ -174,6 +197,22 @@ class Rectangle:
 	@property
 	def bottom(self):
 		return self.y
+
+	@property
+	def ll(self):
+		return self.p
+
+	@property
+	def lr(self):
+		return self.p + Vector(self.w, 0)
+
+	@property
+	def ur(self):
+		return self.p + self.sz
+
+	@property
+	def ul(self):
+		return self.p + Vector(0, self.h)
 
 	@property
 	def top(self):

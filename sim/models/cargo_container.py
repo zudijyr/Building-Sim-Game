@@ -11,10 +11,8 @@ class CargoContainer:
 
 	def __repr__(self):
 		lines = []
-		for key in self.cargo_slots.keys():
-			lines.append('{}:'.format(key))
-			slot = self.cargo_slots[key]
-			[ lines.append('  {}: {}'.format(k, slot[k])) for k in slot.keys() ]
+		for (name, slot) in self.cargo_slots.items():
+			lines.append('{} load :{:.2f}'.format(name, slot['load']))
 		return '\n'.join(lines)
 
 	def load_cargo(self, resource_type, quantity):
@@ -50,7 +48,7 @@ class MixedCargoContainer(CargoContainer):
 	def __repr__(self):
 		return '\n'.join([
 			'weight_capacity: {}'.format(self.weight_capacity),
-			'current_weight: {}'.format(self.get_current_weight()),
+			'current_weight: {:.2f}'.format(self.get_current_weight()),
 			super().__repr__(),
 			])
 
@@ -83,6 +81,12 @@ class MixedCargoContainer(CargoContainer):
 		return slot['load']
 
 class SlottedCargoContainer(CargoContainer):
+
+	def __repr__(self):
+		lines = []
+		for (name, slot) in self.cargo_slots.items():
+			lines.append('{} capacity {:.2f}:'.format(name, slot['capacity']))
+		return '\n'.join(lines + [ super().__repr__() ])
 
 	def get_slot(self, resource_type):
 		if resource_type.name not in self.cargo_slots:

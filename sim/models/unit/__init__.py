@@ -25,15 +25,28 @@ class Unit:
 		self.harvestable_resources = set()
 
 	def __repr__(self):
+		return self.name
+
+	@property
+	def status(self):
 		return '\n'.join([
-			'unit_id:         {}'.format(self.unit_id),
-			'movement_speed:  {}'.format(self.movement_speed),
+			'unit type:        {}'.format(self.name),
+			'unit id:          {}'.format(self.unit_id),
+			'movement speed:   {}'.format(self.movement_speed),
+			'current position: {}'.format(self.pt),
+			'current action:   {}'.format(self.current_action),
 			'container:\n{}'.format(indent(str(self.container), '  '))
-			# display actions somehow?
 			])
 
 	def set_tile_map(self, tile_map):
 		self.tile_map = tile_map
+
+	@property
+	def current_action(self):
+		if len(self.action_queue) == 0:
+			return None
+		else:
+			return self.action_queue[0]
 
 	@property
 	def tile(self):
