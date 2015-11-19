@@ -9,6 +9,9 @@ class Action:
 		self.elapsed_time = 0.0
 		self.setup(*args, **kwds)
 
+	def __repr__(self):
+		return 'base_action'
+
 	def setup(self, *args, **kwds):
 		pass
 
@@ -34,26 +37,34 @@ class Harvest(Action):
 		self.quantity = quantity
 		self.resource = resource
 
+	def __repr__(self):
+		return 'Harvest {} {} ({:.2f} remaining)'.format(
+			self.initial_quantity,
+			self.resource.name,
+			self.quantity,
+			)
+
 	def is_possible(self, unit, dt):
 		if unit.tile.terrain not in self.resource.harvestable_from:
-			print("{} can't harvest {} from {}".format(unit.name, self.resource.name, unit.tile.terrain.name))
 			return False
 		if unit.container.remaining_capacity(self.resource) <= 0:
-			print("{} can't harvest {}; no remaining capacity".format(unit.name, self.resource.name))
 			return False
 		return True
 
 	def execute(self, unit, dt):
-		print("{} harvesting {}".format(unit.name, self.resource.name))
 		gathered_quantity = min(dt * self.resource.harvest_rate, self.quantity)
 		unit.container.load_cargo(self.resource, gathered_quantity)
 		self.quantity -= gathered_quantity
-		print("{} has {} of {} {}".format(unit.name, unit.container.current_load(self.resource), self.initial_quantity,self.resource.name))
 
 	def is_complete(self, unit, dt):
 		return self.quantity <= 0.0
 
 class MoveToward(Action):
+
+	def __repr__(self):
+		return 'Move Toward {}'.format(
+			self.dest_pt,
+			)
 
 	def setup(self, dest_pt, is_grid_pt=False):
 		self.dest_pt = dest_pt
@@ -61,13 +72,11 @@ class MoveToward(Action):
 
 	def is_possible(self, unit, dt):
 		if unit.tile_map is None:
-			print("{} can't move toward {}; not placed on the map!".format(unit.name, self.dest_pt))
 			return False
 		else:
 			return True
 
 	def execute(self, unit, dt):
-		print("{} moving toward {}".format(unit.name, self.dest_pt))
 		if self.is_grid_pt is True:
 			self.dest_pt = unit.tile_map.grid_coords_to_map_coords(self.dest_pt)
 			self.dest_pt += unit.tile_map.tile_sz * 0.5
@@ -87,6 +96,16 @@ class MoveToward(Action):
 
 class ConstructBuilding(Action):
 
+	def __repr__(self):
+		return 'Construct {} ({:.2f} seconds remaining)'.format(
+			self.building.name,
+			self.seconds_remaining,
+			)
+
+	@property
+	def seconds_remaining(self):
+		return self.building.build_time - self.elapsed_time
+
 	def setup(self, building):
 		self.building = building
 
@@ -94,9 +113,7 @@ class ConstructBuilding(Action):
 		return unit.can_construct_building(self.building)
 
 	def execute(self, unit, dt):
-		print("{} building {}".format(unit.name, self.building.name))
 		self.elapsed_time += dt
-		print("{} has {} seconds remaining".format(unit.name, self.building.build_time - self.elapsed_time))
 
 	def is_complete(self, unit, dt):
 		return self.elapsed_time >= self.building.build_time

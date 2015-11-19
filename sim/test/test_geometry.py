@@ -33,7 +33,7 @@ class GeometryTest(unittest.TestCase):
 
 	def test_pair_repr_returns_a_string_representation_of_a_pair(self):
 		p = Pair(2, 3)
-		self.assertEqual("{}".format(p), '|2.0,3.0|')
+		self.assertEqual("{}".format(p), '|2.00,3.00|')
 
 	def test_pair_eq_returns_true_if_two_pairs_have_the_same_values_in_order(self):
 		p1 = Pair(2, 3)
@@ -72,6 +72,12 @@ class GeometryTest(unittest.TestCase):
 		p1 = Pair(2, 3)
 		self.assertEqual(-p1, Pair(-2, -3))
 
+	def test_pair_chain_strings_pairs_together_into_a_single_tuple(self):
+		p1 = Pair(2, 3)
+		p2 = Pair(4, 5)
+		p3 = Pair(6, 7)
+		self.assertEqual(Pair.chain(p1, p2, p3), (2, 3, 4, 5, 6, 7))
+
 
 
 	def test_point_sub_returns_a_vector_difference_between_the_two_points(self):
@@ -101,7 +107,7 @@ class GeometryTest(unittest.TestCase):
 	def test_rectangle_repr_returns_a_string_representation_of_the_rectangle(self):
 		p = Point(2,3)
 		sz = Size(3,4)
-		self.assertTrue("{}".format(Rectangle(p, sz)), "[(2.0,3.0) /3.0,4.0/]")
+		self.assertTrue("{}".format(Rectangle(p, sz)), "[(2.00,3.00) /3.00,4.00/]")
 
 	def test_rectangle_contains_returns_true_if_a_point_is_in_or_on_a_rectangles_boundary(self):
 		r = Rectangle(Point(2,3), Size(3,4))
@@ -119,4 +125,28 @@ class GeometryTest(unittest.TestCase):
 		self.assertEqual(r.clamp_point(Point(6, 0)), Point(3, 0))
 		self.assertEqual(r.clamp_point(Point(0, 8)), Point(0, 4))
 		self.assertEqual(r.clamp_point(Point(100, 100)), Point(3, 4))
+
+	def test_scale_x_returns_a_rectangle_with_its_width_multiplied_by_a_scale_factor_centered_on_the_same_center_as_the_source_rectangle(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.scale_x(3), Rectangle(Point(2-(9-3)/2, 3), Size(9, 4)))
+
+	def test_scale_x_with_center_set_to_false_returns_a_rectangle_with_its_width_multiplied_by_a_scale_factor_anchored_to_the_same_point_as_the_source_rectangle(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.scale_x(3, center=False), Rectangle(Point(2, 3), Size(9, 4)))
+
+	def test_scale_y_returns_a_rectangle_with_its_height_multiplied_by_a_scale_factor_centered_on_the_same_center_as_the_source_rectangle(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.scale_y(3), Rectangle(Point(2, 3-(12-4)/2), Size(3, 12)))
+
+	def test_scale_y_with_center_set_to_false_returns_a_rectangle_with_its_height_multiplied_by_a_scale_factor_anchored_to_the_same_point_as_the_source_rectangle(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.scale_y(3, center=False), Rectangle(Point(2, 3), Size(3, 12)))
+
+	def test_scale_returns_a_rectangle_with_its_width_and_height_multiplied_by_a_scale_factor_centered_on_the_same_center_as_the_source_rectangle(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.scale(3), Rectangle(Point(2-(9-3)/2, 3-(12-4)/2), Size(9, 12)))
+
+	def test_scale_with_center_set_to_false_returns_a_rectangle_with_its_width_and_height_multiplied_by_a_scale_factor_anchored_to_the_same_point_as_the_source_rectangle(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.scale(3, center=False), Rectangle(Point(2, 3), Size(9, 12)))
 

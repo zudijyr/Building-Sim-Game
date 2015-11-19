@@ -50,6 +50,19 @@ class Camera:
 	def ortho_matrix(self):
 		return (self.view_rect.left, self.view_rect.right, self.view_rect.bottom, self.view_rect.top)
 
+class HUD:
+
+	def __init__(self, tile_map, window):
+		self.tile_map = tile_map
+		self.window = window
+		self.status_box_rect = self.tile_map.bounds_rect.scale_y(0.20, center=False).scale_x(0.66)
+
+	def should_draw(self):
+		return self.tile_map.selected_unit is not None
+
+	def get_status_text(self):
+		u = self.tile_map.selected_unit
+		return "{}".format(u.status)
 
 class PygletEventHandler:
 
@@ -104,6 +117,10 @@ class PygletRenderer:
 		self.clock = 0
 		self.camera = Camera(tile_map)
 		self.window.push_handlers(PygletEventHandler(self.tile_map, self.camera))
+		self.hud = HUD(self.tile_map, self.window)
+
+
+
 
 	def scale_sprite_to_tile_size(self, sprite):
 		sprite.scale = min(
@@ -117,6 +134,7 @@ class PygletRenderer:
 	def update(self, dt):
 		self.window.clear()
 		self.clock += dt
+
 		glMatrixMode( GL_PROJECTION )
 		glLoadIdentity()
 		glMatrixMode( GL_MODELVIEW )
@@ -128,6 +146,29 @@ class PygletRenderer:
 		self.update_terrain_improvements()
 		self.update_buildings()
 		self.update_units(dt)
+
+		if not self.hud.should_draw():
+			return
+
+		glLoadIdentity()
+		gluOrtho2D(0, self.window.width, 0, self.window.height)
+		r = self.hud.status_box_rect
+
+		pyglet.graphics.draw(
+			4,
+			pyglet.gl.GL_QUADS,
+			('v2f', Pair.chain(r.ll, r.lr, r.ur, r.ul)),
+			('c3f', (0.5,0.5,0.5)*4),
+			)
+
+		status_doc = pyglet.text.document.FormattedDocument()
+		status_doc.text = self.hud.get_status_text()
+		status_doc.set_style(0, -1, {'color': (255, 255, 255, 255)})
+		layout = pyglet.text.layout.TextLayout(status_doc, r.w, r.h)
+		layout.x = r.x
+		layout.y = r.y
+		layout.multiline = True
+		layout.draw()
 
 	def update_terrain(self):
 		for pt in self.tile_map.tile_grid.get_grid_points_in_rect():
