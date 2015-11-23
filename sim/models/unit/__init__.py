@@ -31,7 +31,6 @@ class Unit:
 	def status(self):
 		return '\n'.join([
 			'unit type:        {}'.format(self.name),
-			'unit id:          {}'.format(self.unit_id),
 			'movement speed:   {}'.format(self.movement_speed),
 			'current position: {}'.format(self.pt),
 			'current action:   {}'.format(self.current_action),
