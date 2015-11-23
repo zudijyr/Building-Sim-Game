@@ -1,6 +1,11 @@
 import os
 import pyglet
+
 from pyglet.gl import *
+
+from sim.game.hud import HUD, HUDException
+from sim.game.camera import Camera
+from sim.game.event_handler import EventHandler
 
 from sim.geometry import *
 from sim.models import tile
@@ -19,109 +24,19 @@ from sim.models.building.lumber_mill import LumberMill
 from sim.models.building.iron_mine import IronMine
 from sim.models.building.dock import Dock
 
-class Camera:
-
-	def __init__(self, tile_map):
-		self.tile_map = tile_map
-		self.view_rect = Rectangle(Point(0,0), tile_map.sz)
-		self.minimum_tile_line_in_view = 10
-
-	def convert_world_vector_to_view_vector(self, v):
-		return (v / self.tile_map.sz) * self.view_rect.sz
-
-	def convert_world_point_to_view_point(self, p):
-		return (p / self.tile_map.sz) * self.view_rect.sz + self.view_rect.p
-
-	def pan(self, v):
-		scaled_v = self.convert_world_vector_to_view_vector(v)
-		new_center = self.view_rect.clamp_point(self.view_rect.center + scaled_v)
-		clamped_v = new_center - self.view_rect.center
-		self.view_rect = Rectangle(self.view_rect.p + clamped_v, self.view_rect.sz)
-
-	def zoom(self, z):
-		min_sz = self.tile_map.tile_sz * self.minimum_tile_line_in_view
-		min_z = max(*(min_sz / self.view_rect.sz))
-		max_sz = self.tile_map.sz
-		max_z = min(*(max_sz / self.view_rect.sz))
-		clamped_z = max(min(z, max_z), min_z)
-		self.view_rect = self.view_rect * clamped_z
-
-	@property
-	def ortho_matrix(self):
-		return (self.view_rect.left, self.view_rect.right, self.view_rect.bottom, self.view_rect.top)
-
-class HUD:
-
-	def __init__(self, tile_map, window):
-		self.tile_map = tile_map
-		self.window = window
-		self.status_box_rect = self.tile_map.bounds_rect.scale_y(0.20, center=False).scale_x(0.66)
-
-	def should_draw(self):
-		return self.tile_map.selected_unit is not None
-
-	def get_status_text(self):
-		u = self.tile_map.selected_unit
-		return "{}".format(u.status)
-
-class PygletEventHandler:
-
-	def __init__(self, tile_map, camera):
-		self.tile_map = tile_map
-		self.camera = camera
-
-	def on_mouse_press(self, x, y, button, modifiers):
-		pt = self.camera.convert_world_point_to_view_point(Point(x, y))
-		if button == pyglet.window.mouse.LEFT:
-			unit = self.tile_map.get_unit_at_position(pt)
-			if unit is None:
-				self.tile_map.clear_unit_selection()
-			else:
-				self.tile_map.select_unit(unit)
-		if button == pyglet.window.mouse.RIGHT:
-			unit = self.tile_map.selected_unit
-			if unit is not None:
-				unit.clear_actions()
-				unit.add_action(MoveToward(pt))
-
-	def on_key_press(self, symbol, modifiers):
-		if symbol == pyglet.window.key.F:
-			unit = self.tile_map.selected_unit
-			if unit is not None:
-				unit.clear_actions()
-				unit.add_action(ConstructBuilding(CabbageFarm))
-
-		if symbol == pyglet.window.key.C:
-			unit = self.tile_map.selected_unit
-			if unit is not None:
-				unit.clear_actions()
-				unit.add_action(Harvest(Wood))
-
-	def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-		if button == pyglet.window.mouse.LEFT:
-			self.camera.pan(Vector(-dx, -dy))
-
-	def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
-		if scroll_y != 0:
-			self.camera.zoom(1.0 + (0.05 * -scroll_y))
-
-class PygletRenderer:
+class Engine:
 
 	def __init__(self, tile_map, update_interval):
 		self.tile_map = tile_map
 		self.update_interval = update_interval
 		self.window = pyglet.window.Window(int(self.tile_map.w), int(self.tile_map.h))
+		self.hud = HUD(self.window)
 		self.image_registry = {}
 		self.sprite_registry = {}
 		pyglet.clock.schedule_interval(self.update, self.update_interval)
 		self.clock = 0
 		self.camera = Camera(tile_map)
-		self.window.push_handlers(PygletEventHandler(self.tile_map, self.camera))
-		self.hud = HUD(self.tile_map, self.window)
-
-
-
-		self.window.push_handlers(PygletEventHandler(tile_map, self.camera))
+		self.window.push_handlers(EventHandler(self.tile_map, self.camera, self.hud))
 
 	def scale_sprite_to_tile_size(self, sprite):
 		sprite.scale = min(
@@ -148,28 +63,7 @@ class PygletRenderer:
 		self.update_buildings()
 		self.update_units(dt)
 
-		if not self.hud.should_draw():
-			return
-
-		glLoadIdentity()
-		gluOrtho2D(0, self.window.width, 0, self.window.height)
-		r = self.hud.status_box_rect
-
-		pyglet.graphics.draw(
-			4,
-			pyglet.gl.GL_QUADS,
-			('v2f', Pair.chain(r.ll, r.lr, r.ur, r.ul)),
-			('c3f', (0.5,0.5,0.5)*4),
-			)
-
-		status_doc = pyglet.text.document.FormattedDocument()
-		status_doc.text = self.hud.get_status_text()
-		status_doc.set_style(0, -1, {'color': (255, 255, 255, 255)})
-		layout = pyglet.text.layout.TextLayout(status_doc, r.w, r.h)
-		layout.x = r.x
-		layout.y = r.y
-		layout.multiline = True
-		layout.draw()
+		self.hud.draw(self.tile_map.selected_unit)
 
 	def update_terrain(self):
 		for pt in self.tile_map.tile_grid.get_grid_points_in_rect():

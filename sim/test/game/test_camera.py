@@ -3,7 +3,7 @@ import numpy
 from sim.models.tile_map import TileMap
 from sim.models.tile_grid import TileGrid
 from sim.geometry import *
-from sim.renderers.pyglet import Camera
+from sim.game.camera import Camera
 
 class CameraTest(unittest.TestCase):
 

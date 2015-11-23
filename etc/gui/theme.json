@@ -1,0 +1,48 @@
+{
+   "font":"Lucida Grande",
+   "font_size":12,
+   "text_color":[ 255, 255, 255, 255 ],
+   "gui_color":[ 255, 0, 0, 255 ],
+   "button":{
+      "down":{
+         "image":{
+            "source":"button-down.png",
+            "frame":[ 6, 6, 3, 3 ],
+            "padding":[ 12, 12, 4, 2 ]
+         },
+         "text_color":[ 0, 0, 0, 255 ]
+      },
+      "up":{
+         "image":{
+            "source":"button.png",
+            "frame":[ 6, 6, 3, 3 ],
+            "padding":[ 12, 12, 4, 2 ]
+         }
+      }
+   },
+   "vscrollbar":{
+      "knob":{
+         "image":{
+            "source":"vscrollbar.png",
+            "region":[ 0, 16, 16, 16 ],
+            "frame":[ 0, 6, 16, 4 ],
+            "padding":[ 0, 0, 0, 0 ]
+         },
+         "offset":[ 0, 0 ]
+      },
+      "bar":{
+         "image":{
+            "source":"vscrollbar.png",
+            "region":[ 0, 64, 16, 16 ]
+         },
+         "padding":[ 0, 0, 0, 0 ]
+      }
+   },
+   "frame":{
+      "image":{
+         "source":"panel.png",
+         "frame":[ 8, 8, 16, 16 ],
+         "padding":[ 16, 16, 8, 8 ]
+      }
+   }
+}

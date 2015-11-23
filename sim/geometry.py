@@ -162,6 +162,18 @@ class Rectangle:
 	def scale(self, scale_factor, center=True):
 		return self.scale_x(scale_factor, center).scale_y(scale_factor, center)
 
+	def translate_x(self, dx):
+		# TODO: test me
+		return self.translate(Vector(dx, 0.0))
+
+	def translate_y(self, dy):
+		# TODO: test me
+		return self.translate(Vector(0.0, dy))
+
+	def translate(self, move_v):
+		# TODO: test me
+		return Rectangle(self.p + move_v, self.sz)
+
 	@property
 	def p(self):
 		return self._p

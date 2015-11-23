@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sim.renderers.pyglet import PygletRenderer
+from sim.game.engine import Engine
 
 from sim.geometry import *
 
@@ -29,7 +29,7 @@ from sim.models.action import MoveToward, Harvest, ConstructBuilding
 
 def main():
 	tile_grid = TileGrid(Size(20, 20))
-	tile_map = TileMap(tile_grid, tile_sz=Size(50, 50))
+	tile_map = TileMap(tile_grid, tile_sz=Size(40, 40))
 
 	### add terrain
 	grass_area = Rectangle(Point(0, 1), Size(20,9))
@@ -81,8 +81,8 @@ def main():
 	unit2.add_action(MoveToward(Point(14, 5), is_grid_pt=True))
 	###
 
-	renderer = PygletRenderer(tile_map, .05)
-	renderer.run()
+	game_engine = Engine(tile_map, .05)
+	game_engine.run()
 
 if __name__  == '__main__':
 	main()
