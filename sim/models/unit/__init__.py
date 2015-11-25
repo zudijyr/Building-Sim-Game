@@ -24,6 +24,7 @@ class Unit:
 		self.unit_id = uuid4()
 		self.action_queue = []
 		self.harvestable_resources = set()
+		self.pt = None
 
 	def __repr__(self):
 		return self.name
@@ -38,9 +39,6 @@ class Unit:
 			'container:\n{}'.format(indent(str(self.container), '  '))
 			])
 
-	def set_tile_map(self, tile_map):
-		self.tile_map = tile_map
-
 	@property
 	def current_action(self):
 		if len(self.action_queue) == 0:
@@ -50,11 +48,7 @@ class Unit:
 
 	@property
 	def tile(self):
-		return self.tile_map.get_tile_under_unit(self)
-
-	@property
-	def pt(self):
-		return self.tile_map.get_unit_position(self)
+		return self.tile_map.get_tile(self.pt)
 
 	def add_harvestable_resource(self, resource):
 		self.harvestable_resources.add(resource)
@@ -63,7 +57,12 @@ class Unit:
 		return resource in self.harvestable_resources
 
 	def move(self, v):
-		self.tile_map.move_unit(self, v)
+		if self.tile_map is None:
+			raise UnitException("The unit is not yet placed on the map")
+		new_pt = self.pt + v
+		if new_pt not in self.tile_map:
+			raise UnitException("Unit may not move out of bounds")
+		self.pt = new_pt
 
 	def add_building_factory(self, building_factory):
 		if building_factory.product.name in self.building_factories:

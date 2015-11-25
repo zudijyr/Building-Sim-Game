@@ -119,3 +119,33 @@ class UnitModelTest(unittest.TestCase):
 		action.execute.assert_not_called()
 		self.assertEqual(len(u.action_queue), 0)
 
+	def test_move_moves_a_unit_along_a_movement_vector(self):
+		tmap = TileMap(TileGrid(Size(10, 10)))
+		u = DummyUnit()
+		tmap.place_unit(u, Point(55, 75))
+		u.move(Vector(-5, 10))
+		self.assertEqual(u.pt, Point(50, 85))
+
+	def test_move_raises_an_exception_if_the_unit_has_not_yet_been_placed_on_the_map(self):
+		tmap = TileMap(TileGrid(Size(10, 10)))
+		u = DummyUnit()
+		with self.assertRaises(UnitException) as error_context:
+			u.move(Vector(-5, -10))
+		self.assertIn("not yet placed on the map", error_context.exception.message)
+
+	def test_move_raises_an_exception_if_the_move_would_take_the_unit_out_of_bounds(self):
+		tmap = TileMap(TileGrid(Size(10, 10)))
+		u = DummyUnit()
+		tmap.place_unit(u, Point(5, 5))
+		with self.assertRaises(UnitException) as error_context:
+			u.move(Vector(-5, -10))
+		self.assertIn("out of bounds", error_context.exception.message)
+
+	def test_tile_returns_the_tile_at_the_units_position(self):
+		tmap = TileMap(TileGrid(Size(10, 10)))
+		u = DummyUnit()
+		tmap.place_unit(u, Point(110, 110))
+		tile = tmap.tile_grid.get_tile(Point(5, 5))
+		tile.tile_id = "target tile"
+		self.assertEqual(u.tile.tile_id, "target tile")
+

@@ -51,14 +51,14 @@ class TileMapModelTest(unittest.TestCase):
 		serf = Peasant()
 		tmap.place_unit_on_grid(serf, Point(5, 5))
 		self.assertIn(serf.unit_id, tmap.unit_registry)
-		self.assertEqual(tmap.get_unit_position(serf), Point(5*20+0.5*20, 5*20+0.5*20))
+		self.assertEqual(serf.pt, Point(5*20+0.5*20, 5*20+0.5*20))
 
-	def test_place_unit_puts_a_unit_into_the_unit_registry_at_the_given_position(self):
+	def test_place_unit_puts_a_unit_into_the_unit_registry_and_sets_the_units_position(self):
 		tmap = TileMap(TileGrid(Size(10, 10)))
 		serf = Peasant()
 		tmap.place_unit(serf, Point(100, 100))
 		self.assertIn(serf.unit_id, tmap.unit_registry)
-		self.assertEqual(tmap.get_unit_position(serf), Point(100, 100))
+		self.assertEqual(serf.pt, Point(100, 100))
 
 	def test_place_unit_raises_an_exception_when_a_unit_is_placed_out_of_bounds(self):
 		tmap = TileMap(TileGrid(Size(10, 10)))
@@ -95,48 +95,6 @@ class TileMapModelTest(unittest.TestCase):
 		self.assertIn(building2, buildings)
 		self.assertIn(building3, buildings)
 
-	def test_move_unit_moves_a_unit_on_the_map(self):
-		tmap = TileMap(TileGrid(Size(10, 10)))
-		serf = Peasant()
-		tmap.place_unit(serf, Point(55, 75))
-		tmap.move_unit(serf, Vector(-5, 10))
-		self.assertEqual(tmap.get_unit_position(serf), Point(50, 85))
-
-	def test_move_unit_raises_an_exception_if_the_move_would_take_the_unit_out_of_bounds(self):
-		tmap = TileMap(TileGrid(Size(10, 10)))
-		serf = Peasant()
-		tmap.place_unit(serf, Point(5, 5))
-		with self.assertRaises(TileMapException) as error_context:
-			tmap.move_unit(serf, Vector(-5, -10))
-		self.assertIn("out of bounds", error_context.exception.message)
-
-	def test_get_unit_position_returns_the_location_of_a_unit(self):
-		tmap = TileMap(TileGrid(Size(10, 10)))
-		serf = Peasant()
-		tmap.place_unit(serf, Point(100, 100))
-		self.assertEqual(tmap.get_unit_position(serf), Point(100, 100))
-
-	def test_get_unit_position_raises_an_exception_if_the_unit_has_not_been_added_to_the_map(self):
-		tmap = TileMap(TileGrid(Size(10, 10)))
-		serf = Peasant()
-		with self.assertRaises(TileMapException) as error_context:
-			tmap.get_unit_position(serf)
-		self.assertIn('That unit has not been added to the tile map', error_context.exception.message)
-
-	def test_set_unit_position_sets_the_location_of_a_unit(self):
-		tmap = TileMap(TileGrid(Size(10, 10)))
-		serf = Peasant()
-		tmap.place_unit(serf, Point(100, 100))
-		tmap.set_unit_position(serf, Point(20, 20))
-		self.assertEqual(tmap.get_unit_position(serf), Point(20, 20))
-
-	def test_set_unit_position_raises_an_exception_if_the_unit_has_not_been_added_to_the_map(self):
-		tmap = TileMap(TileGrid(Size(10, 10)))
-		serf = Peasant()
-		with self.assertRaises(TileMapException) as error_context:
-			tmap.set_unit_position(serf, Point(100, 100))
-		self.assertIn('That unit has not been added to the tile map', error_context.exception.message)
-
 	def test_get_unit_at_position_finds_a_unit_near_to_the_given_point(self):
 		tmap = TileMap(TileGrid(Size(10, 10)))
 		serf = Peasant()
@@ -161,14 +119,6 @@ class TileMapModelTest(unittest.TestCase):
 		with self.assertRaises(TileMapException) as error_context:
 			tmap.get_tile(Point(-1, 0))
 		self.assertIn("out of bounds", error_context.exception.message)
-
-	def test_get_tile_under_unit_returns_the_tile_at_the_units_position(self):
-		tmap = TileMap(TileGrid(Size(10, 10)))
-		serf = Peasant()
-		tmap.place_unit(serf, Point(110, 110))
-		tile = tmap.tile_grid.get_tile(Point(5, 5))
-		tile.tile_id = "target tile"
-		self.assertEqual(tmap.get_tile_under_unit(serf).tile_id, "target tile")
 
 	def test_get_building_position_returns_the_location_of_a_building(self):
 		tmap = TileMap(TileGrid(Size(10, 10)))
@@ -213,11 +163,4 @@ class TileMapModelTest(unittest.TestCase):
 		self.assertFalse(Point(100, 200) in tmap)
 		self.assertFalse(Point( -1, 100) in tmap)
 		self.assertFalse(Point(100,  -1) in tmap)
-
-	def test_move_unit_moves_a_unit_on_the_map(self):
-		tmap = TileMap(TileGrid(Size(10, 10)))
-		serf = Peasant()
-		tmap.place_unit(serf, Point(55, 75))
-		tmap.move_unit(serf, Vector(-5, 10))
-		self.assertEqual(tmap.get_unit_position(serf), Point(50, 85))
 

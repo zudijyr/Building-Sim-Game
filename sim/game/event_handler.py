@@ -1,10 +1,8 @@
 import pyglet
 
 from sim.geometry import *
-
-from sim.models.building.cabbage_farm import CabbageFarm
-from sim.models.action import *
 from sim.models.resource import *
+from sim.models.actions.move_toward import MoveToward
 
 class EventHandler:
 
@@ -30,19 +28,6 @@ class EventHandler:
 				unit.add_action(MoveToward(pt))
 				if self.hud.selected_action is not None:
 					unit.add_action(self.hud.selected_action)
-
-	def on_key_press(self, symbol, modifiers):
-		if symbol == pyglet.window.key.F:
-			unit = self.tile_map.selected_unit
-			if unit is not None:
-				unit.clear_actions()
-				unit.add_action(ConstructBuilding(CabbageFarm))
-
-		if symbol == pyglet.window.key.C:
-			unit = self.tile_map.selected_unit
-			if unit is not None:
-				unit.clear_actions()
-				unit.add_action(Harvest(Wood))
 
 	def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
 		if button == pyglet.window.mouse.LEFT:
