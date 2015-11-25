@@ -1,0 +1,2 @@
+#!/bin/bash
+coverage run bin/run-tests && coverage report -m | grep -v "env\/" | grep -v "bin\/" | less

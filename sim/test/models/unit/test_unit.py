@@ -10,7 +10,7 @@ from sim.models.tile_map import TileMap
 from sim.models.tile_grid import TileGrid
 from sim.models.terrain import Plains
 from sim.models.terrain_improvement import Road
-from sim.models.action import Action
+from sim.models.actions import Action
 
 class DummyUnit(Unit):
 	name = 'Dummy Unit'

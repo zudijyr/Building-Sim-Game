@@ -1,3 +1,4 @@
 *.pyc
 BuildingSimulator.egg-info/
 env/
+.coverage

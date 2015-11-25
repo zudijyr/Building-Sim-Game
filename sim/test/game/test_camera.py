@@ -7,6 +7,18 @@ from sim.game.camera import Camera
 
 class CameraTest(unittest.TestCase):
 
+	def test_convert_world_vector_to_view_vector_transforms_a_vector_in_world_space_to_a_vector_in_view_space(self):
+		tmap = TileMap(TileGrid(Size(12, 16)), tile_sz=Size(10,10))
+		cam = Camera(tmap)
+		cam.view_rect = Rectangle(Point(2, 3), Size(2, 3))
+		self.assertEqual(cam.convert_world_vector_to_view_vector(Vector(3, 4)), Vector(3/120*2, 4/160*3))
+
+	def test_convert_world_point_to_view_point_transforms_a_point_in_world_space_to_a_point_in_view_space(self):
+		tmap = TileMap(TileGrid(Size(12, 16)), tile_sz=Size(10,10))
+		cam = Camera(tmap)
+		cam.view_rect = Rectangle(Point(2, 3), Size(2, 3))
+		self.assertEqual(cam.convert_world_point_to_view_point(Point(3, 4)), Point(3/120*2+2, 4/160*3+3))
+
 	def test_pan_moves_the_view_rectangle_by_a_supplied_vector(self):
 		tmap = TileMap(TileGrid(Size(12, 16)), tile_sz=Size(10, 10))
 		cam = Camera(tmap)
@@ -43,3 +55,8 @@ class CameraTest(unittest.TestCase):
 		cam.zoom(1000000)
 		self.assertEqual(cam.view_rect, tmap.bounds_rect)
 
+	def test_ortho_matrix_returns_a_cameras_view_rect_as_an_ortho_matrix_friendlly_for_opengl(self):
+		""" NOTE: This test is here primarily to satisfy test coverage """
+		tmap = TileMap(TileGrid(Size(12, 16)), tile_sz=Size(10,10))
+		cam = Camera(tmap)
+		self.assertEqual(cam.ortho_matrix, (0, 120, 0, 160))

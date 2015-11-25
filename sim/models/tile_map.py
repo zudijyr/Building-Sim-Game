@@ -73,19 +73,7 @@ class TileMap:
 		return [ v['building'] for v in self.building_registry.values() ]
 
 	def move_unit(self, unit, v):
-		"""
-		Move the unit's position by a direction vector
-
-		args:
-		v (Vector): the vector by which to move the unit's position
-		"""
-		# TODO: add error checks
 		new_position = self.get_unit_position(unit) + v
-		new_terrain = self.get_terrain(new_position)
-		if (new_terrain.is_water != unit.moves_on_water):
-				return #returns without error so the unit just stops
-		# TODO: Should we clamp this position in bounds or error if it goes out?
-		# This will be handled by the interface.  Shouldn't be possible to order it out of bounds.
 		if new_position not in self:
 			raise TileMapException("Unit may not move out of bounds")
 		self.set_unit_position(unit, new_position)
