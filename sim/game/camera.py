@@ -1,4 +1,5 @@
 from sim.geometry import *
+
 class Camera:
 
 	def __init__(self, tile_map):

@@ -72,6 +72,10 @@ class GeometryTest(unittest.TestCase):
 		p1 = Pair(2, 3)
 		self.assertEqual(-p1, Pair(-2, -3))
 
+	def test_tuple_method_allows_a_pair_to_be_cast_as_a_tuple(self):
+		p1 = Pair(2, 3)
+		self.assertEqual(tuple(p1), (2, 3))
+
 	def test_pair_chain_strings_pairs_together_into_a_single_tuple(self):
 		p1 = Pair(2, 3)
 		p2 = Pair(4, 5)
@@ -101,6 +105,22 @@ class GeometryTest(unittest.TestCase):
 	def test_vector_u_returns_the_unit_vector_for_the_given_vector(self):
 		v = Vector(3, 4)
 		self.assertEqual(v.u, Vector(3/5, 4/5))
+
+	def test_vector_i_and_j_property_return_elements_of_vector(self):
+		v = Vector(3, 4)
+		self.assertEqual(v.i, 3)
+		self.assertEqual(v.j, 4)
+
+
+
+	def test_size_w_and_h_properties_return_elements_of_size(self):
+		sz = Size(3, 4)
+		self.assertEqual(sz.w, 3)
+		self.assertEqual(sz.h, 4)
+
+	def test_size_diag_property_returns_the_diagonal_of_the_size(self):
+		sz = Size(3, 4)
+		self.assertEqual(sz.diag, 5)
 
 
 
@@ -149,4 +169,24 @@ class GeometryTest(unittest.TestCase):
 	def test_scale_with_center_set_to_false_returns_a_rectangle_with_its_width_and_height_multiplied_by_a_scale_factor_anchored_to_the_same_point_as_the_source_rectangle(self):
 		r = Rectangle(Point(2,3), Size(3,4))
 		self.assertEqual(r.scale(3, center=False), Rectangle(Point(2, 3), Size(9, 12)))
+
+	def test_translate_x_returns_a_rectangle_that_has_been_translated_by_distance_in_x(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.translate_x(2), Rectangle(Point(4,3), Size(3,4)))
+
+	def test_translate_y_returns_a_rectangle_that_has_been_translated_by_distance_in_y(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.translate_y(3), Rectangle(Point(2,6), Size(3,4)))
+
+	def test_translate_returns_a_rectangle_that_has_been_translated_over_a_vector(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.translate(Vector(2, 3)), Rectangle(Point(4,6), Size(3,4)))
+
+	def test_ll_lr_ur_ul_properties_return_the_corner_points_of_the_rectangle(self):
+		r = Rectangle(Point(2,3), Size(3,4))
+		self.assertEqual(r.ll, Point(2, 3))
+		self.assertEqual(r.lr, Point(5, 3))
+		self.assertEqual(r.ur, Point(5, 7))
+		self.assertEqual(r.ul, Point(2, 7))
+
 

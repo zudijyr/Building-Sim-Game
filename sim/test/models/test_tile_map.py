@@ -108,7 +108,7 @@ class TileMapModelTest(unittest.TestCase):
 		tmap.place_unit(serf, Point(5, 5))
 		with self.assertRaises(TileMapException) as error_context:
 			tmap.move_unit(serf, Vector(-5, -10))
-		self.assertEqual(error_context.exception.message, "Unit may not move out of bounds")
+		self.assertIn("out of bounds", error_context.exception.message)
 
 	def test_get_unit_position_returns_the_location_of_a_unit(self):
 		tmap = TileMap(TileGrid(Size(10, 10)))
@@ -220,20 +220,4 @@ class TileMapModelTest(unittest.TestCase):
 		tmap.place_unit(serf, Point(55, 75))
 		tmap.move_unit(serf, Vector(-5, 10))
 		self.assertEqual(tmap.get_unit_position(serf), Point(50, 85))
-
-	def test_move_unit_wont_move_land_unit_onto_water_or_vice_versa(self):
-		grid = TileGrid(Size(1, 2))
-		tmap = TileMap(grid, tile_sz=Size(1,1))
-		grass_area = Rectangle(Point(0, 0), Size(1,1))
-		[ t.set_terrain(Grass) for t in grid.get_tiles_in_rect(grass_area) ]
-		water_area = Rectangle(Point(0,1), Size(1,1))
-		[ t.set_terrain(Water) for t in grid.get_tiles_in_rect(water_area) ]
-		serf = Peasant()
-		schooner = Ship()
-		tmap.place_unit(serf, Point(0, 0))
-		tmap.place_unit(schooner, Point(0, 1))
-		tmap.move_unit(serf, Vector(0, 1))
-		tmap.move_unit(schooner, Vector(0, -1))
-		self.assertEqual(tmap.get_unit_position(serf), Point(0, 0))
-		self.assertEqual(tmap.get_unit_position(schooner), Point(0, 1))
 

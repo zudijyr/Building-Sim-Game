@@ -1,4 +1,5 @@
 from sim import SimException
+
 from sim.models.tile_map import TileMap
 from sim.models.tile_grid import TileGrid
 from sim.models.cargo_container import MixedCargoContainer
