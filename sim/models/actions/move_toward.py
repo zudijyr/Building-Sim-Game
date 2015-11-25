@@ -1,4 +1,5 @@
 from sim.models.actions import Action, ActionException
+from sim.models.unit import UnitException
 
 class MoveToward(Action):
 
@@ -7,6 +8,7 @@ class MoveToward(Action):
 
 	def setup(self, dest_pt):
 		self.dest_pt = dest_pt
+		self.is_obstructed = False
 
 	def is_possible(self, unit, dt):
 		if unit.tile_map is None:
@@ -24,8 +26,11 @@ class MoveToward(Action):
 		dest_v  = self.dest_pt - unit.pt
 		possible_distance = min(speed * dt, dest_v.M)
 		move_v = dest_v.u * possible_distance
-		unit.move(move_v)
+		try:
+			unit.move(move_v)
+		except UnitException as error:
+			self.is_obstructed = True
 
 	def is_complete(self, unit, dt):
-		return unit.pt.near(self.dest_pt)
+		return unit.pt.near(self.dest_pt) or self.is_obstructed
 

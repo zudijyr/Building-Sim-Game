@@ -25,6 +25,7 @@ class Unit:
 		self.action_queue = []
 		self.harvestable_resources = set()
 		self.pt = None
+		self.traversable_terrain_types = set()
 
 	def __repr__(self):
 		return self.name
@@ -62,6 +63,9 @@ class Unit:
 		new_pt = self.pt + v
 		if new_pt not in self.tile_map:
 			raise UnitException("Unit may not move out of bounds")
+		tile = self.tile_map.get_tile(new_pt)
+		if tile.terrain.terrain_type not in self.traversable_terrain_types:
+			raise UnitException("This unit cannot traverse {}".format(tile.terrain.terrain_type))
 		self.pt = new_pt
 
 	def add_building_factory(self, building_factory):
