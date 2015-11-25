@@ -12,7 +12,9 @@ from pyglet_gui.manager    import Manager
 from pyglet_gui.gui        import Label, Frame
 
 from sim import SimException
-from sim.models.action import *
+
+from sim.models.actions.harvest     import Harvest
+from sim.models.actions.construct   import Construct
 
 class HUDException(SimException) : pass
 
@@ -64,7 +66,7 @@ class HUD:
 			building_button = GroupButton(
 				group_id='action-gui-buttons',
 				label=building_factory.product.name,
-				on_press=lambda x: self.handle_click(x, ConstructBuilding(building_factory.product)),
+				on_press=lambda x: self.handle_click(x, Construct(building_factory.product)),
 				)
 			building_content.append(building_button)
 		construct_container = HorizontalContainer(building_content)

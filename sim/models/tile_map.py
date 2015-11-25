@@ -53,40 +53,22 @@ class TileMap:
 			'position' : pt,
 			}
 
-	def place_unit_on_grid(self, building, grid_pt):
+	def place_unit_on_grid(self, unit, grid_pt):
 		map_pt = self.grid_coords_to_map_coords(grid_pt) + self.tile_sz * 0.5
-		self.place_unit(building, map_pt)
+		self.place_unit(unit, map_pt)
 
 	def place_unit(self, unit, pt):
 		if pt not in self:
 			raise TileMapException("Units must be placed in bounds")
-		self.unit_registry[unit.unit_id] = {
-			'unit'     : unit,
-			'position' : pt,
-			}
-		unit.set_tile_map(self)
+		self.unit_registry[unit.unit_id] = unit
+		unit.tile_map = self
+		unit.pt = pt
 
 	def get_units(self):
-		return [ v['unit'] for v in self.unit_registry.values() ]
+		return self.unit_registry.values()
 
 	def get_buildings(self):
 		return [ v['building'] for v in self.building_registry.values() ]
-
-	def move_unit(self, unit, v):
-		new_position = self.get_unit_position(unit) + v
-		if new_position not in self:
-			raise TileMapException("Unit may not move out of bounds")
-		self.set_unit_position(unit, new_position)
-
-	def get_unit_position(self, unit):
-		if unit.unit_id not in self.unit_registry:
-			raise TileMapException("That unit has not been added to the tile map: {}".format(unit))
-		return self.unit_registry[unit.unit_id]['position']
-
-	def set_unit_position(self, unit, pt):
-		if unit.unit_id not in self.unit_registry:
-			raise TileMapException("That unit has not been added to the tile map: {}".format(unit))
-		self.unit_registry[unit.unit_id]['position'] = pt
 
 	def get_unit_at_position(self, pt):
 		for unit in self.get_units():
@@ -105,21 +87,11 @@ class TileMap:
 			raise TileMapException("out of bounds: ".format(pt))
 		return self.tile_grid.get_tile(self.map_coords_to_grid_coords(pt))
 
-	def get_unit_at_position(self, pt):
-		for unit in self.get_units():
-			if (unit.pt - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
-				return unit
-
 	def select_unit(self, unit):
 		self.selected_unit = unit
 
 	def clear_unit_selection(self):
 		self.selected_unit = None
-
-	def get_tile_under_unit(self, unit):
-		if unit.unit_id not in self.unit_registry:
-			raise TileMapException("That unit has not been added to the tile map: {}".format(unit))
-		return self.get_tile(self.get_unit_position(unit))
 
 	def get_building_position(self, building):
 		if building.building_id not in self.building_registry:

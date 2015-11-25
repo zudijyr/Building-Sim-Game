@@ -11,7 +11,6 @@ from sim.geometry import *
 from sim.models import tile
 from sim.models.tile_map import TileMap
 
-from sim.models.action import *
 from sim.models.terrain import *
 from sim.models.resource import *
 from sim.models.terrain_improvement import *
@@ -121,8 +120,7 @@ class Engine:
 				self.scale_sprite_to_tile_size(sprite)
 				self.sprite_registry[unit.unit_id] = sprite
 			sprite = self.sprite_registry[unit.unit_id]
-			pt = self.tile_map.get_unit_position(unit)
-			pt = pt - self.tile_map.tile_sz * 0.5
+			pt = unit.pt - self.tile_map.tile_sz * 0.5
 			(sprite.x, sprite.y) = pt
 			sprite.draw()
 		if self.tile_map.selected_unit is not None:
