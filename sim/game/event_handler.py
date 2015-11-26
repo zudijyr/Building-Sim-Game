@@ -1,8 +1,8 @@
 import pyglet
 
-from sim.geometry import *
-from sim.models.resource import *
+from sim.geometry import Point, Vector
 from sim.models.actions.move_toward import MoveToward
+
 
 class EventHandler:
 
@@ -36,4 +36,3 @@ class EventHandler:
 	def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
 		if scroll_y != 0:
 			self.camera.zoom(1.0 + (0.05 * -scroll_y))
-

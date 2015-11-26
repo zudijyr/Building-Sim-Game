@@ -1,4 +1,5 @@
-from sim.models.actions import Action, ActionException
+from sim.models.actions import Action
+
 
 class Construct(Action):
 
@@ -27,4 +28,3 @@ class Construct(Action):
 	@property
 	def seconds_remaining(self):
 		return self.building.build_time - self.elapsed_time
-

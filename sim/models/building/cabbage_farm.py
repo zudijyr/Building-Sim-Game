@@ -1,6 +1,7 @@
+from sim.models.building import Building
 from sim.models.producer_consumer import ResourcePlant
-from sim.models.building import Building, BuildingException
 from sim.models.resource import Cabbage, Wood
+
 
 class CabbageFarm(Building):
 
@@ -15,4 +16,3 @@ class CabbageFarm(Building):
 		cabbage_plant.add_resource_requirement(Wood, 1)
 		cabbage_plant.add_resource_product(Cabbage, 1)
 		self.add_resource_plant(cabbage_plant)
-

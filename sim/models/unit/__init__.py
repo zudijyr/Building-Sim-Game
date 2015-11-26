@@ -1,14 +1,14 @@
 from sim import SimException
 
-from sim.models.tile_map import TileMap
-from sim.models.tile_grid import TileGrid
 from sim.models.cargo_container import MixedCargoContainer
 
-import sys
 from uuid import uuid4
 from textwrap import indent
 
-class UnitException(SimException): pass
+
+class UnitException(SimException):
+	pass
+
 
 class Unit:
 	# grid units per second
@@ -65,13 +65,17 @@ class Unit:
 			raise UnitException("Unit may not move out of bounds")
 		tile = self.tile_map.get_tile(new_pt)
 		if tile.terrain.terrain_type not in self.traversable_terrain_types:
-			raise UnitException("This unit cannot traverse {}".format(tile.terrain.terrain_type))
+			message = "This unit cannot traverse "
+			message += str(tile.terrain.terrain_type)
+			raise UnitException(message)
 		self.pt = new_pt
 
 	def add_building_factory(self, building_factory):
 		if building_factory.product.name in self.building_factories:
-			raise UnitException("A factory for that building has already been added")
-		self.building_factories[building_factory.product.name] = building_factory
+			message = "A factory for that building has already been added"
+			raise UnitException(message)
+		factory_key = building_factory.product.name
+		self.building_factories[factory_key] = building_factory
 
 	def receive_cargo(self, resource_type, quantity):
 		return self.container.load_cargo(resource_type, quantity)
@@ -82,12 +86,15 @@ class Unit:
 	def can_construct_building(self, building):
 		if self.tile_map is None:
 			return False
-		if not building.name in self.building_factories:
+		if building.name not in self.building_factories:
 			return False
-		if not self.building_factories[building.name].can_consume(self.container):
+		factory = self.building_factories[building.name]
+		if not factory.can_consume(self.container):
 			return False
-		if building.name == "iron mine" and self.tile.terrain_improvement.name != "iron ore deposit":
-			return False #TODO make this more generalizable
+		if (building.name == "iron mine" and
+				self.tile.terrain_improvement.name != "iron ore deposit"):
+			# TODO make this more generalizable
+			return False
 		return True
 
 	def construct_building(self, building):
@@ -115,4 +122,3 @@ class Unit:
 
 	def clear_actions(self):
 		self.action_queue = []
-

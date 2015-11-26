@@ -1,6 +1,7 @@
 import unittest
 from sim.models.building.dock import Dock
-from sim.models.resource import Fish, Wood
+from sim.models.resource import Fish
+
 
 class DockModelTest(unittest.TestCase):
 
@@ -9,4 +10,3 @@ class DockModelTest(unittest.TestCase):
 		dock.produce_resources()
 		dock.produce_resources()
 		self.assertEqual(dock.deliver_cargo(Fish, 10), 2)
-

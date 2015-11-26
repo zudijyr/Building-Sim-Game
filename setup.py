@@ -9,6 +9,8 @@ if os.path.exists(requirements_path):
         if len(requirements) == 0:
             raise Exception("Failed to load requirements from {}".format(requirements_path))
 
+print(requirements)
+
 setup(
     name                    = "BuildingSimulator",
     version                 = "0.1",
@@ -18,7 +20,8 @@ setup(
     packages                = [ 'sim', 'sim.models', 'sim.test'],
     scripts = [
         'bin/run-tests',
-        'bin/run-sim',
+        'bin/run-game',
         ],
-    test_suite              = "sim.test.full_suite"
+    test_suite              = "bin/run-tests",
+    dependency_links = [ 'git+https://github.com/dusktreader/pyglet-gui.git#egg=pyglet-gui' ],
 )

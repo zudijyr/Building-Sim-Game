@@ -3,18 +3,21 @@ class TerrainImprovement:
 	name = 'no improvement'
 	can_build_iron_mine = False
 
+
 class OreDeposit(TerrainImprovement):
 	name = 'ore deposit'
 
 	def __repr__(self):
-		return name
+		return self.name
 
 	def __hash__(self):
-		return name.__hash__()
+		return self.name.__hash__()
+
 
 class Road(TerrainImprovement):
 	name = 'road'
 	movement_factor = 2.0
+
 
 class IronOreDeposit(OreDeposit):
 	name = 'iron ore deposit'

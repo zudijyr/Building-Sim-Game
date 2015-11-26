@@ -1,11 +1,13 @@
 from sim import SimException
 
 import numpy
-from decimal import Decimal
 
 EPS = 10**-6
 
-class GeometryException(SimException): pass
+
+class GeometryException(SimException):
+	pass
+
 
 class Pair:
 	lhs = '|'
@@ -25,13 +27,21 @@ class Pair:
 			yield self.a[i]
 
 	def __repr__(self):
-		return "{}{:.2f},{:.2f}{}".format(self.lhs, self.a[0], self.a[1], self.rhs)
+		return "{}{:.2f},{:.2f}{}".format(
+			self.lhs,
+			self.a[0],
+			self.a[1],
+			self.rhs
+			)
 
 	def __hash__(self):
 		return self.__repr__().__hash__()
 
 	def __eq__(self, other):
-		return abs(self.a[0] - other.a[0]) < EPS and abs(self.a[1] - other.a[1]) < EPS
+		return (
+			abs(self.a[0] - other.a[0]) < EPS and
+			abs(self.a[1] - other.a[1]) < EPS
+			)
 
 	def __add__(self, other):
 		if isinstance(other, Pair):
@@ -58,7 +68,7 @@ class Pair:
 		return self.from_array(-self.a)
 
 	def __tuple__(self):
-		return (a[0], a[1])
+		return (self.a[0], self.a[1])
 
 	@staticmethod
 	def chain(*args):
@@ -66,6 +76,7 @@ class Pair:
 		for pair in args:
 			chain = chain + tuple(pair)
 		return chain
+
 
 class Point(Pair):
 	lhs = '('
@@ -84,6 +95,7 @@ class Point(Pair):
 
 	def near(self, other):
 		return (self - other).M < EPS
+
 
 class Vector(Pair):
 	lhs = '<'
@@ -111,6 +123,7 @@ class Vector(Pair):
 		"""
 		return self / self.M
 
+
 class Size(Pair):
 	lhs = '/'
 	rhs = '/'
@@ -127,6 +140,7 @@ class Size(Pair):
 	def diag(self):
 		return numpy.linalg.norm(self.a)
 
+
 class Rectangle:
 
 	def __init__(self, p, sz):
@@ -137,7 +151,8 @@ class Rectangle:
 		return "[{} {}]".format(self.p, self.sz)
 
 	def __contains__(self, pt):
-		# TODO: This should probably be adjusted to account for epsilon rounding erros
+		# TODO: This should probably be adjusted to account for
+		#       epsilon rounding erros
 		x_in_range = pt.x >= self.x and pt.x < self.x + self.w
 		y_in_range = pt.y >= self.y and pt.y < self.y + self.h
 		return x_in_range and y_in_range
@@ -236,5 +251,7 @@ class Rectangle:
 		return Point(self.x + self.w / 2, self.y + self.h / 2)
 
 	def clamp_point(self, pt):
-		return Point(min(max(pt.x, self.x), self.right), min(max(pt.y, self.y), self.top))
-
+		return Point(
+			min(max(pt.x, self.x), self.right),
+			min(max(pt.y, self.y), self.top),
+			)

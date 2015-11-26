@@ -1,8 +1,9 @@
-from sim.models.unit import Unit, UnitException
+from sim.models.unit import Unit
 from sim.models.terrain import TerrainType
 from sim.models.producer_consumer import Factory
 from sim.models.building.dock import Dock
 from sim.models.resource import Fish, Wood
+
 
 class Ship(Unit):
 	strength = 100
@@ -19,4 +20,3 @@ class Ship(Unit):
 		self.add_harvestable_resource(Fish)
 
 		self.traversable_terrain_types.add(TerrainType.water)
-

@@ -1,6 +1,9 @@
 from sim import SimException
 
-class ActionException(SimException) : pass
+
+class ActionException(SimException):
+	pass
+
 
 class Action:
 
@@ -32,4 +35,3 @@ class Action:
 
 	def next_action(self, unit, dt):
 		return self
-

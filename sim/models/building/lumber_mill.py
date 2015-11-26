@@ -1,6 +1,7 @@
+from sim.models.building import Building
 from sim.models.producer_consumer import ResourcePlant
-from sim.models.building import Building, BuildingException
 from sim.models.resource import Lumber, Wood
+
 
 class LumberMill(Building):
 
@@ -15,4 +16,3 @@ class LumberMill(Building):
 		lumber_plant.add_resource_requirement(Wood, 1)
 		lumber_plant.add_resource_product(Lumber, 1)
 		self.add_resource_plant(lumber_plant)
-

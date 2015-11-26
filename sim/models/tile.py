@@ -1,6 +1,7 @@
 from sim.models.terrain import Terrain
 from sim.models.terrain_improvement import TerrainImprovement
 
+
 class Tile:
 
 	def __init__(self, tile_id=''):
@@ -14,4 +15,3 @@ class Tile:
 
 	def set_terrain_improvement(self, terrain_improvement):
 		self.terrain_improvement = terrain_improvement
-
