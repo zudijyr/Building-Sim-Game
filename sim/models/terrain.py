@@ -1,7 +1,14 @@
+from enum import Enum, unique
+
+@unique
+class TerrainType(Enum):
+	land  = 1
+	water = 2
+
 class Terrain:
+	terrain_type = TerrainType.land
 	movement_factor = 1.0
 	name = 'base terrain'
-	is_water = False
 
 	def __repr__(self):
 		return name
@@ -9,27 +16,20 @@ class Terrain:
 	def __hash__(self):
 		return name.__hash__()
 
-class LandTerrain(Terrain):
-	name = 'land'
-	is_water = False
-
-class WaterTerrain(Terrain):
-	name = 'water'
-	is_water = True
-
-class Forest(LandTerrain):
+class Forest(Terrain):
 	name = 'forest'
 	movement_factor = 0.25
 
-class Grass(LandTerrain):
+class Grass(Terrain):
 	name = 'grass'
 	movement_factor = 0.5
 
-class Water(WaterTerrain):
-	name = 'water'
-	movement_factor = 1.0
-
-class Plains(LandTerrain):
+class Plains(Terrain):
 	name = 'plains'
 	movement_factor = 0.75
+
+class Water(Terrain):
+	terrain_type = TerrainType.water
+	name = 'water'
+	movement_factor = 1.0
 

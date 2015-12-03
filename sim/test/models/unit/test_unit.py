@@ -8,7 +8,7 @@ from sim.models.building import Building
 from sim.models.resource import Resource
 from sim.models.tile_map import TileMap
 from sim.models.tile_grid import TileGrid
-from sim.models.terrain import Plains
+from sim.models.terrain import TerrainType, Plains, Water
 from sim.models.terrain_improvement import Road
 from sim.models.actions import Action
 
@@ -16,6 +16,9 @@ class DummyUnit(Unit):
 	name = 'Dummy Unit'
 	strength = 10
 	movement_speed = 0.5
+	def __init__(self):
+		super().__init__()
+		self.traversable_terrain_types.add(TerrainType.land)
 
 class DummyBuilding(Building):
 	name = 'Dummy Building'
@@ -140,6 +143,15 @@ class UnitModelTest(unittest.TestCase):
 		with self.assertRaises(UnitException) as error_context:
 			u.move(Vector(-5, -10))
 		self.assertIn("out of bounds", error_context.exception.message)
+
+	def test_move_raises_an_exception_if_the_move_would_take_the_unit_into_non_traversable_terrain(self):
+		tmap = TileMap(TileGrid(Size(10, 10)))
+		u = DummyUnit()
+		tmap.place_unit(u, Point(5, 5))
+		tmap.get_tile(Point(15, 5)).set_terrain(Water)
+		with self.assertRaises(UnitException) as error_context:
+			u.move(Vector(10, 0))
+		self.assertIn("unit cannot traverse", error_context.exception.message)
 
 	def test_tile_returns_the_tile_at_the_units_position(self):
 		tmap = TileMap(TileGrid(Size(10, 10)))
