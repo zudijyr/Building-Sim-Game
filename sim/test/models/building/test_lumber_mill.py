@@ -2,6 +2,7 @@ import unittest
 from sim.models.resource import Lumber, Wood
 from sim.models.building.lumber_mill import LumberMill
 
+
 class LumberMillModelTest(unittest.TestCase):
 
 	def test_lumber_mill_produces_lumbe_from_wood(self):

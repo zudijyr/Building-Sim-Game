@@ -4,6 +4,7 @@ from sim.models.unit.peasant import Peasant
 from sim.models.resource import Fish, Wood, Cabbage, Stone
 from sim.models.producer_consumer import Factory, ResourcePlant
 
+
 class BuildingModelTest(unittest.TestCase):
 
 	def test_build_unit_consumes_resources_to_produce_a_new_unit(self):
@@ -20,13 +21,16 @@ class BuildingModelTest(unittest.TestCase):
 		serf = building.build_unit(Peasant)
 		self.assertIsInstance(serf, Peasant)
 
-	def test_build_unit_raises_an_exception_if_the_building_cannot_produce_that_type_of_unit(self):
+	def test_build_unit_raises_an_exception_if_the_building_cannot_produce_that_type_of_unit(self):  # noqa
 		building = Building()
 		with self.assertRaises(BuildingException) as error_context:
-			serf = building.build_unit(Peasant)
-		self.assertEqual(error_context.exception.message, "This building cannot build that unit")
+			building.build_unit(Peasant)
+		self.assertEqual(
+			error_context.exception.message,
+			"This building cannot build that unit",
+			)
 
-	def test_build_unit_returns_None_if_there_are_not_enough_resources_to_produce_that_unit(self):
+	def test_build_unit_returns_None_if_there_are_not_enough_resources_to_produce_that_unit(self):  # noqa
 		building = Building()
 		serf_factory = Factory()
 		serf_factory.add_resource_requirement(Cabbage, 10)
@@ -34,7 +38,7 @@ class BuildingModelTest(unittest.TestCase):
 		building.add_unit_factory(serf_factory)
 		self.assertIsNone(building.build_unit(Peasant))
 
-	def test_produce_resources_digests_resources_with_all_the_available_digesters(self):
+	def test_produce_resources_digests_resources_with_all_the_available_digesters(self):  # noqa
 		building = Building()
 
 		building.container.add_resource_slot(Fish, 10)
@@ -75,5 +79,3 @@ class BuildingModelTest(unittest.TestCase):
 		self.assertEqual(building.container.current_load(Wood), 1)
 		self.assertEqual(building.container.current_load(Cabbage), 1)
 		self.assertEqual(building.container.current_load(Stone), 1)
-
-

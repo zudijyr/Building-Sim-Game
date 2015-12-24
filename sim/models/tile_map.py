@@ -1,10 +1,10 @@
 from sim import SimException
-from sim.geometry import Point, Size, Vector, Rectangle
-from sim.models import tile
-from sim.models.terrain import Terrain
-from sim.models.terrain_improvement import TerrainImprovement
+from sim.geometry import Point, Size, Rectangle
 
-class TileMapException(SimException): pass
+
+class TileMapException(SimException):
+	pass
+
 
 class TileMap:
 
@@ -46,11 +46,12 @@ class TileMap:
 		if pt not in self:
 			raise TileMapException("Buildings must be placed in bounds")
 		# TODO: Compute building overlaps here
-		#if self.get_building_at_position(x, y) is not None:
-		#    raise TileMapException("There is already a building at that position")
+		# if self.get_building_at_position(x, y) is not None:
+		#     message = "There is already a building at that position"
+		#     raise TileMapException(message)
 		self.building_registry[building.building_id] = {
-			'building' : building,
-			'position' : pt,
+			'building': building,
+			'position': pt,
 			}
 
 	def place_unit_on_grid(self, unit, grid_pt):
@@ -68,7 +69,7 @@ class TileMap:
 		return self.unit_registry.values()
 
 	def get_buildings(self):
-		return [ v['building'] for v in self.building_registry.values() ]
+		return [v['building'] for v in self.building_registry.values()]
 
 	def get_unit_at_position(self, pt):
 		for unit in self.get_units():
@@ -87,27 +88,20 @@ class TileMap:
 			raise TileMapException("out of bounds: ".format(pt))
 		return self.tile_grid.get_tile(self.map_coords_to_grid_coords(pt))
 
-	def select_unit(self, unit):
-		self.selected_unit = unit
-
-	def clear_unit_selection(self):
-		self.selected_unit = None
-
 	def get_building_position(self, building):
 		if building.building_id not in self.building_registry:
-			raise TileMapException("That building has not been added to the tile map: {}".format(building))
+			message = "That building has not been added to the tile map: "
+			message += str(building)
+			raise TileMapException(message)
 		return self.building_registry[building.building_id]['position']
 
 	def get_building_at_position(self, pt):
-		# TODO: this should actually check to see if the point is within the buildings bounds when buildings are given a boundary
+		# TODO: this should actually check to see if the point is within the
+		#       buildings bounds when buildings are given a boundary
 		for building in self.get_buildings():
-			if (self.building_registry[building.building_id]['position'] - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
+			b_pt = self.building_registry[building.building_id]['position']
+			if (b_pt - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
 				return building
-
-	def get_tile(self, pt):
-		if pt not in self:
-			raise TileMapException("out of bounds: ".format(pt))
-		return self.tile_grid.get_tile(self.map_coords_to_grid_coords(pt))
 
 	def get_terrain(self, pt):
 		tile = self.get_tile(pt)

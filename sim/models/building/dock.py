@@ -1,7 +1,7 @@
+from sim.models.building import Building
 from sim.models.producer_consumer import ResourcePlant
-from sim.models.producer_consumer import Factory
-from sim.models.building import Building, BuildingException
 from sim.models.resource import Fish
+
 
 class Dock(Building):
 
@@ -14,4 +14,3 @@ class Dock(Building):
 		fish_plant = ResourcePlant()
 		fish_plant.add_resource_product(Fish, 1)
 		self.add_resource_plant(fish_plant)
-

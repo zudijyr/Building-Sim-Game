@@ -1,4 +1,5 @@
-from sim.models.actions import Action, ActionException
+from sim.models.actions import Action
+
 
 class Harvest(Action):
 
@@ -28,4 +29,3 @@ class Harvest(Action):
 
 	def is_complete(self, unit, dt):
 		return self.quantity <= 0.0
-

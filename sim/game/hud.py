@@ -2,28 +2,30 @@ import os
 import json
 
 import pyglet
-from pyglet.gl import *
+from pyglet.gl import glLoadIdentity, gluOrtho2D
 
-from pyglet_gui.document   import Document
-from pyglet_gui.buttons    import Button, GroupButton
+from pyglet_gui.document import Document
+from pyglet_gui.buttons import GroupButton
 from pyglet_gui.containers import HorizontalContainer, VerticalContainer
-from pyglet_gui.theme      import Theme
-from pyglet_gui.manager    import Manager
-from pyglet_gui.gui        import Label, Frame
+from pyglet_gui.theme import Theme
+from pyglet_gui.manager import Manager
+from pyglet_gui.gui import Label, Frame
 
 from sim import SimException
 
-from sim.models.actions.harvest     import Harvest
-from sim.models.actions.construct   import Construct
+from sim.models.actions.harvest import Harvest
+from sim.models.actions.construct import Construct
 
-class HUDException(SimException) : pass
+
+class HUDException(SimException):
+	pass
+
 
 class HUD:
 
 	def __init__(self, window):
-		#with theme_file as open('etc/gui/theme'):
-		theme_file = open('etc/gui/theme.json')
-		theme_dict = json.loads(theme_file.read())
+		with open('etc/gui/theme.json') as theme_file:
+			theme_dict = json.loads(theme_file.read())
 		self.theme = Theme(
 			theme_dict,
 			resources_path=os.path.join(os.getcwd(), 'etc/gui/images')
@@ -51,7 +53,7 @@ class HUD:
 		if unit is None:
 			raise HUDException("Can't build action gui with a unit of None")
 
-		harvest_content = [ Label(text='Harvest') ]
+		harvest_content = [Label(text='Harvest')]
 		for resource in unit.harvestable_resources:
 			harvest_button = GroupButton(
 				group_id='action-gui-buttons',
@@ -61,17 +63,21 @@ class HUD:
 			harvest_content.append(harvest_button)
 		harvest_container = HorizontalContainer(harvest_content)
 
-		building_content = [ Label(text='Construct') ]
+		building_content = [Label(text='Construct')]
 		for building_factory in unit.building_factories.values():
 			building_button = GroupButton(
 				group_id='action-gui-buttons',
 				label=building_factory.product.name,
-				on_press=lambda x: self.handle_click(x, Construct(building_factory.product)),
+				on_press=lambda x:
+					self.handle_click(x, Construct(building_factory.product)),
 				)
 			building_content.append(building_button)
 		construct_container = HorizontalContainer(building_content)
 
-		action_container = VerticalContainer([ harvest_container, construct_container ])
+		action_container = VerticalContainer([
+			harvest_container,
+			construct_container,
+			])
 		self.action_gui_batch = pyglet.graphics.Batch()
 		self.action_gui_manager = Manager(
 			action_container,
@@ -79,7 +85,10 @@ class HUD:
 			theme=self.theme,
 			batch=self.action_gui_batch,
 			)
-		self.action_gui_manager.set_position(10, self.window.height - action_container.height - 10)
+		self.action_gui_manager.set_position(
+			10,
+			self.window.height - action_container.height - 10,
+			)
 		self.action_gui_manager.is_movable = False
 
 	def build_status_gui(self):
@@ -97,7 +106,10 @@ class HUD:
 			theme=self.theme,
 			batch=self.status_gui_batch,
 			)
-		self.status_gui_manager.set_position((self.window.width - status_frame.width)/2, 10)
+		self.status_gui_manager.set_position(
+			(self.window.width - status_frame.width)/2,
+			10,
+			)
 		self.status_gui_manager.is_movable = False
 
 	def draw(self, selected_unit):
@@ -111,4 +123,3 @@ class HUD:
 				self.build_status_gui()
 			self.status_box.set_text(selected_unit.status)
 			self.status_gui_batch.draw()
-

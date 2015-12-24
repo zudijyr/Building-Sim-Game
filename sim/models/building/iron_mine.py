@@ -1,6 +1,7 @@
+from sim.models.building import Building
 from sim.models.producer_consumer import ResourcePlant
-from sim.models.building import Building, BuildingException
 from sim.models.resource import IronOre
+
 
 class IronMine(Building):
 

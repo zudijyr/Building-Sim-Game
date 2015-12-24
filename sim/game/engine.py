@@ -1,19 +1,15 @@
 import os
 import pyglet
 
-from pyglet.gl import *
+from pyglet.gl import glMatrixMode, glLoadIdentity, gluOrtho2D
+from pyglet.gl import GL_PROJECTION, GL_MODELVIEW
 
-from sim.game.hud import HUD, HUDException
+from sim.game.hud import HUD
 from sim.game.camera import Camera
 from sim.game.event_handler import EventHandler
 
-from sim.geometry import *
-from sim.models import tile
-from sim.models.tile_map import TileMap
-
-from sim.models.terrain import *
-from sim.models.resource import *
-from sim.models.terrain_improvement import *
+from sim.models.terrain import Forest, Water, Grass
+from sim.models.terrain_improvement import Road, IronOreDeposit
 from sim.models.unit.peasant import Peasant
 from sim.models.unit.ship import Ship
 
@@ -23,19 +19,24 @@ from sim.models.building.lumber_mill import LumberMill
 from sim.models.building.iron_mine import IronMine
 from sim.models.building.dock import Dock
 
+
 class Engine:
 
 	def __init__(self, tile_map, update_interval):
 		self.tile_map = tile_map
 		self.update_interval = update_interval
-		self.window = pyglet.window.Window(int(self.tile_map.w), int(self.tile_map.h))
+		self.window = pyglet.window.Window(
+			int(self.tile_map.w),
+			int(self.tile_map.h),
+			)
 		self.hud = HUD(self.window)
 		self.image_registry = {}
 		self.sprite_registry = {}
 		pyglet.clock.schedule_interval(self.update, self.update_interval)
 		self.clock = 0
 		self.camera = Camera(tile_map)
-		self.window.push_handlers(EventHandler(self.tile_map, self.camera, self.hud))
+		event_handler = EventHandler(self.tile_map, self.camera, self.hud)
+		self.window.push_handlers(event_handler)
 
 	def scale_sprite_to_tile_size(self, sprite):
 		sprite.scale = min(
@@ -50,9 +51,9 @@ class Engine:
 		self.window.clear()
 		self.clock += dt
 
-		glMatrixMode( GL_PROJECTION )
+		glMatrixMode(GL_PROJECTION)
 		glLoadIdentity()
-		glMatrixMode( GL_MODELVIEW )
+		glMatrixMode(GL_MODELVIEW)
 		glLoadIdentity()
 
 		gluOrtho2D(*self.camera.ortho_matrix)
@@ -83,7 +84,8 @@ class Engine:
 		for pt in self.tile_map.tile_grid.get_grid_points_in_rect():
 			terrain_improvement_id = "terrain_improvement{}".format(pt)
 			if terrain_improvement_id not in self.sprite_registry:
-				terrain_improvement = self.tile_map.tile_grid.get_tile(pt).terrain_improvement
+				tile = self.tile_map.tile_grid.get_tile(pt)
+				terrain_improvement = tile.terrain_improvement
 				image = self.get_terrain_improvement_image(terrain_improvement)
 				if image is None:
 					continue
@@ -126,7 +128,10 @@ class Engine:
 		if self.tile_map.selected_unit is not None:
 			unit_selection_key = 'unit-selection'
 			if unit_selection_key not in self.sprite_registry:
-				image = self.load_image('selection.png', 'unit-selection-image')
+				image = self.load_image(
+					'selection.png',
+					'unit-selection-image',
+					)
 				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
 				self.scale_sprite_to_tile_size(sprite)
 				self.sprite_registry[unit_selection_key] = sprite
@@ -150,7 +155,10 @@ class Engine:
 		if terrain_improvement is Road:
 			return self.load_image('road.jpg', 'road-improvement-image')
 		elif terrain_improvement is IronOreDeposit:
-			return self.load_image('iron_ore.png', 'iron-ore-improvement-image')
+			return self.load_image(
+				'iron_ore.png',
+				'iron-ore-improvement-image',
+				)
 		else:
 			return None
 
@@ -178,7 +186,7 @@ class Engine:
 
 	def load_image(self, path, key):
 		if key not in self.image_registry:
-			image = pyglet.image.load(os.path.join(os.getcwd(), 'images', path))
+			image_path = os.path.join(os.getcwd(), 'images', path)
+			image = pyglet.image.load(image_path)
 			self.image_registry[key] = image
 		return self.image_registry[key]
-

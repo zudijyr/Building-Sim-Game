@@ -1,12 +1,12 @@
+from sim import SimException
 from sim.models.cargo_container import SlottedCargoContainer
 from textwrap import indent
 from uuid import uuid4
 
-class BuildingException(Exception):
-	def __init__(self, message):
-		self.message = message
-	def __str__(self):
-		return self.message
+
+class BuildingException(SimException):
+	pass
+
 
 class Building:
 
@@ -24,7 +24,8 @@ class Building:
 
 	def add_unit_factory(self, unit_factory):
 		if unit_factory.product.name in self.unit_factories:
-			raise BuildingException("A factory for that unit has already been added")
+			message = "A factory for that unit has already been added"
+			raise BuildingException(message)
 		self.unit_factories[unit_factory.product.name] = unit_factory
 
 	def receive_cargo(self, resource_type, quantity):
@@ -34,7 +35,7 @@ class Building:
 		return self.container.unload_cargo(resource_type, quantity)
 
 	def produce_resources(self):
-		[ d.digest(self.container) for d in self.resource_plants ]
+		[d.digest(self.container) for d in self.resource_plants]
 
 	def build_unit(self, unit):
 		if unit.name not in self.unit_factories:
@@ -48,8 +49,9 @@ class Building:
 			'container: \n{}'.format(indent(str(self.container), '  '))
 			]
 		for (index, resource_plant) in enumerate(self.resource_plants):
-			lines.append('resource_plant {}:\n{}'.format(index, indent(str(resource_plant), '  ')))
+			lines.append('resource_plant {}:')
+			lines.append(indent(str(resource_plant), '  '))
 		for (index, unit_factory) in enumerate(self.unit_factories):
-			lines.append('unit_factory {}:\n{}'.format(index, indent(str(unit_factory), '  ')))
+			lines.append('unit_factory {}:')
+			lines.append(indent(str(unit_factory), '  '))
 		return '\n'.join(lines)
-

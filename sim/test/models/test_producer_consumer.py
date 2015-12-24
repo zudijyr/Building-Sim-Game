@@ -1,7 +1,9 @@
 import unittest
 from sim.models.resource import Fish, Wood, Cabbage
-from sim.models.cargo_container import *
-from sim.models.producer_consumer import *
+from sim.models.cargo_container import SlottedCargoContainer
+from sim.models.producer_consumer import ProducerConsumer, ResourcePlant
+from sim.models.producer_consumer import Factory, ProducerConsumerException
+
 
 class DummyProducerConsumer(ProducerConsumer):
 
@@ -9,17 +11,16 @@ class DummyProducerConsumer(ProducerConsumer):
 		pass
 
 
-
 class ProducerConsumerModelTest(unittest.TestCase):
 
-	def test_add_resource_requirement_creates_a_new_requirement_for_a_specified_resource(self):
+	def test_add_resource_requirement_creates_a_new_requirement_for_a_specified_resource(self):  # noqa
 		dummy = DummyProducerConsumer()
 		dummy.add_resource_requirement(Fish, 10)
 		self.assertIn(Fish.name, dummy.resource_requirements.keys())
 		self.assertEqual(dummy.resource_requirements[Fish.name]['load'], 10)
 		self.assertIs(dummy.resource_requirements[Fish.name]['type'], Fish)
 
-	def test_add_resource_requirement_raises_error_if_there_is_already_a_requirement_for_that_resource_type(self):
+	def test_add_resource_requirement_raises_error_if_there_is_already_a_requirement_for_that_resource_type(self):  # noqa
 		dummy = DummyProducerConsumer()
 		dummy.add_resource_requirement(Fish, 10)
 		with self.assertRaises(ProducerConsumerException) as error_context:
@@ -29,7 +30,7 @@ class ProducerConsumerModelTest(unittest.TestCase):
 			error_context.exception.message
 			)
 
-	def test_can_consume_returns_true_if_the_supplied_container_holds_all_the_needed_requirements(self):
+	def test_can_consume_returns_true_if_the_supplied_container_holds_all_the_needed_requirements(self):  # noqa
 		tray = SlottedCargoContainer()
 		tray.add_resource_slot(Fish, 10)
 		tray.add_resource_slot(Wood, 10)
@@ -41,7 +42,7 @@ class ProducerConsumerModelTest(unittest.TestCase):
 		dummy.add_resource_requirement(Wood, 5)
 		self.assertTrue(dummy.can_consume(tray))
 
-	def test_can_consume_returns_false_if_the_supplied_container_lacks_all_the_needed_requirements(self):
+	def test_can_consume_returns_false_if_the_supplied_container_lacks_all_the_needed_requirements(self):  # noqa
 		tray = SlottedCargoContainer()
 		tray.add_resource_slot(Fish, 10)
 		tray.add_resource_slot(Wood, 10)
@@ -59,16 +60,17 @@ class ProducerConsumerModelTest(unittest.TestCase):
 		dummy2.add_resource_requirement(Cabbage, 1)
 		self.assertFalse(dummy2.can_consume(tray))
 
+
 class ResourcePlantModelTest(unittest.TestCase):
 
-	def test_add_resource_product_creates_a_new_product_for_a_specified_resource(self):
+	def test_add_resource_product_creates_a_new_product_for_a_specified_resource(self):  # noqa
 		plant = ResourcePlant()
 		plant.add_resource_product(Fish, 10)
 		self.assertIn(Fish.name, plant.resource_products.keys())
 		self.assertEqual(plant.resource_products[Fish.name]['load'], 10)
 		self.assertIs(plant.resource_products[Fish.name]['type'], Fish)
 
-	def test_add_resource_product_raises_error_if_there_is_already_a_product_for_that_resource_type(self):
+	def test_add_resource_product_raises_error_if_there_is_already_a_product_for_that_resource_type(self):  # noqa
 		plant = ResourcePlant()
 		plant.add_resource_product(Fish, 10)
 		with self.assertRaises(ProducerConsumerException) as error_context:
@@ -78,7 +80,7 @@ class ResourcePlantModelTest(unittest.TestCase):
 			error_context.exception.message
 			)
 
-	def test_can_produce_returns_true_if_the_supplied_container_has_the_necessary_capacity_for_the_products(self):
+	def test_can_produce_returns_true_if_the_supplied_container_has_the_necessary_capacity_for_the_products(self):  # noqa
 		tray = SlottedCargoContainer()
 		tray.add_resource_slot(Fish, 10)
 		tray.add_resource_slot(Wood, 10)
@@ -89,7 +91,7 @@ class ResourcePlantModelTest(unittest.TestCase):
 		plant.add_resource_product(Wood, 5)
 		self.assertTrue(plant.can_produce(tray))
 
-	def test_can_produce_returns_false_if_the_supplied_container_lacks_the_necessary_capacity_for_the_products(self):
+	def test_can_produce_returns_false_if_the_supplied_container_lacks_the_necessary_capacity_for_the_products(self):  # noqa
 		tray = SlottedCargoContainer()
 		tray.add_resource_slot(Fish, 10)
 		tray.add_resource_slot(Wood, 10)
@@ -107,7 +109,7 @@ class ResourcePlantModelTest(unittest.TestCase):
 		plant2.add_resource_product(Cabbage, 1)
 		self.assertFalse(plant2.can_produce(tray))
 
-	def test_digest_consumes_required_resources_and_produces_resource_products(self):
+	def test_digest_consumes_required_resources_and_produces_resource_products(self):  # noqa
 		tray = SlottedCargoContainer()
 		tray.add_resource_slot(Fish,    10)
 		tray.add_resource_slot(Wood,    10)
@@ -126,7 +128,7 @@ class ResourcePlantModelTest(unittest.TestCase):
 		self.assertEqual(tray.cargo_slots[Wood.name]['load'],    3)
 		self.assertEqual(tray.cargo_slots[Cabbage.name]['load'], 10)
 
-	def test_digest_does_nothing_if_the_cargo_container_cannot_unload_requirements_or_load_products(self):
+	def test_digest_does_nothing_if_the_cargo_container_cannot_unload_requirements_or_load_products(self):  # noqa
 		tray = SlottedCargoContainer()
 		tray.add_resource_slot(Fish,    10)
 		tray.add_resource_slot(Wood,    10)
@@ -153,6 +155,7 @@ class ResourcePlantModelTest(unittest.TestCase):
 		self.assertEqual(tray.cargo_slots[Wood.name]['load'],    5)
 		self.assertEqual(tray.cargo_slots[Cabbage.name]['load'], 4)
 
+
 class FactoryModelTest(unittest.TestCase):
 
 	def test_set_product_sets_the_product_that_a_factory_will_produce(self):
@@ -160,14 +163,17 @@ class FactoryModelTest(unittest.TestCase):
 		factory.set_product(Fish)
 		self.assertIs(factory.product, Fish)
 
-	def test_set_product_raises_an_exception_if_the_product_has_already_been_set(self):
+	def test_set_product_raises_an_exception_if_the_product_has_already_been_set(self):  # noqa
 		factory = Factory()
 		factory.set_product(Fish)
 		with self.assertRaises(ProducerConsumerException) as error_context:
 			factory.set_product(Fish)
-		self.assertEqual(error_context.exception.message, "The product for this factory has already been set")
+		self.assertEqual(
+			error_context.exception.message,
+			"The product for this factory has already been set",
+			)
 
-	def test_digest_consumes_required_resources_and_produces_a_new_instance_of_the_product_of_the_factory(self):
+	def test_digest_consumes_required_resources_and_produces_a_new_instance_of_the_product_of_the_factory(self):  # noqa
 		tray = SlottedCargoContainer()
 		tray.add_resource_slot(Fish,    10)
 		tray.add_resource_slot(Wood,    10)
@@ -185,4 +191,3 @@ class FactoryModelTest(unittest.TestCase):
 		self.assertEqual(tray.cargo_slots[Fish.name]['load'],    0)
 		self.assertEqual(tray.cargo_slots[Wood.name]['load'],    3)
 		self.assertIsInstance(result, Cabbage)
-

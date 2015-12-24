@@ -1,8 +1,9 @@
-class CargoContainerException(Exception):
-	def __init__(self, message):
-		self.message = message
-	def __str__(self):
-		return self.message
+from sim import SimException
+
+
+class CargoContainerException(SimException):
+	pass
+
 
 class CargoContainer:
 
@@ -28,16 +29,21 @@ class CargoContainer:
 		return capped_quantity
 
 	def can_hold_cargo(self, resource_type):
-		raise CargoContainerException("This method should be overloaded in derived class")
+		message = "This method should be overloaded in derived class"
+		raise CargoContainerException(message)
 
 	def remaining_capacity(self, resource_type):
-		raise CargoContainerException("This method should be overloaded in derived class")
+		message = "This method should be overloaded in derived class"
+		raise CargoContainerException(message)
 
 	def current_load(self, resource_type):
-		raise CargoContainerException("This method should be overloaded in derived class")
+		message = "This method should be overloaded in derived class"
+		raise CargoContainerException(message)
 
 	def get_slot(self, resource_type):
-		raise CargoContainerException("This method should be overloaded in derived class")
+		message = "This method should be overloaded in derived class"
+		raise CargoContainerException(message)
+
 
 class MixedCargoContainer(CargoContainer):
 
@@ -53,7 +59,10 @@ class MixedCargoContainer(CargoContainer):
 			])
 
 	def get_slot(self, resource_type):
-		return self.cargo_slots.setdefault(resource_type.name, { 'load':0, 'type':resource_type })
+		return self.cargo_slots.setdefault(
+			resource_type.name,
+			{'load': 0, 'type': resource_type}
+			)
 
 	def can_hold_cargo(self, resource_type):
 		return True
@@ -66,19 +75,23 @@ class MixedCargoContainer(CargoContainer):
 
 	def set_weight_capacity(self, weight_capacity):
 		if weight_capacity <= 0:
-			raise CargoContainerException("Weight capacity must be greater than 0")
+			message = "Weight capacity must be greater than 0"
+			raise CargoContainerException(message)
 		if weight_capacity <= self.get_current_weight():
-			message = "Weight capacity must be greater than or equal to the current weight"
+			message = "Capacity must be greater than or equal to"
+			message += " the current weight"
 			raise CargoContainerException(message)
 		self.weight_capacity = weight_capacity
 
 	def remaining_capacity(self, resource_type):
-		slot = self.get_slot(resource_type)
-		return (self.weight_capacity - self.get_current_weight()) // resource_type.weight
+		self.get_slot(resource_type)
+		remaining_weight = self.weight_capacity - self.get_current_weight()
+		return remaining_weight // resource_type.weight
 
 	def current_load(self, resource_type):
 		slot = self.get_slot(resource_type)
 		return slot['load']
+
 
 class SlottedCargoContainer(CargoContainer):
 
@@ -86,21 +99,24 @@ class SlottedCargoContainer(CargoContainer):
 		lines = []
 		for (name, slot) in self.cargo_slots.items():
 			lines.append('{} capacity {:.2f}:'.format(name, slot['capacity']))
-		return '\n'.join(lines + [ super().__repr__() ])
+		return '\n'.join(lines + [super().__repr__()])
 
 	def get_slot(self, resource_type):
 		if resource_type.name not in self.cargo_slots:
-			message = "A cargo slot of that type has not been added: {}".format(resource_type)
+			message = "A cargo slot of that type has not been added: "
+			message += str(resource_type)
 			raise CargoContainerException(message)
 		return self.cargo_slots[resource_type.name]
 
 	def add_resource_slot(self, input_type, input_capacity):
 		if input_type.name in self.cargo_slots:
-			raise CargoContainerException("An input slot of that resource type has already been added")
+			message = "An input slot of that resource type has "
+			message += "already been added"
+			raise CargoContainerException(message)
 		self.cargo_slots[input_type.name] = {
-			'capacity' : input_capacity,
-			'load'     : 0,
-			'type'     : input_type,
+			'capacity': input_capacity,
+			'load': 0,
+			'type': input_type,
 			}
 
 	def can_hold_cargo(self, resource_type):
@@ -113,4 +129,3 @@ class SlottedCargoContainer(CargoContainer):
 	def current_load(self, resource_type):
 		slot = self.get_slot(resource_type)
 		return slot['load']
-

@@ -1,5 +1,6 @@
 import unittest
-from sim.models.resource import *
+from sim.models.resource import Cabbage
+
 
 class ResourceModelTest(unittest.TestCase):
 

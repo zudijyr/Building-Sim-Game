@@ -1,10 +1,11 @@
-from sim.geometry import *
+from sim.geometry import Point, Rectangle
+
 
 class Camera:
 
 	def __init__(self, tile_map):
 		self.tile_map = tile_map
-		self.view_rect = Rectangle(Point(0,0), tile_map.sz)
+		self.view_rect = Rectangle(Point(0, 0), tile_map.sz)
 		self.minimum_tile_line_in_view = 10
 
 	def convert_world_vector_to_view_vector(self, v):
@@ -15,9 +16,12 @@ class Camera:
 
 	def pan(self, v):
 		scaled_v = self.convert_world_vector_to_view_vector(v)
-		new_center = self.view_rect.clamp_point(self.view_rect.center + scaled_v)
-		clamped_v = new_center - self.view_rect.center
-		self.view_rect = Rectangle(self.view_rect.p + clamped_v, self.view_rect.sz)
+		center = self.view_rect.clamp_point(self.view_rect.center + scaled_v)
+		clamped_v = center - self.view_rect.center
+		self.view_rect = Rectangle(
+			self.view_rect.p + clamped_v,
+			self.view_rect.sz,
+			)
 
 	def zoom(self, z):
 		min_sz = self.tile_map.tile_sz * self.minimum_tile_line_in_view
@@ -29,4 +33,9 @@ class Camera:
 
 	@property
 	def ortho_matrix(self):
-		return (self.view_rect.left, self.view_rect.right, self.view_rect.bottom, self.view_rect.top)
+		return (
+			self.view_rect.left,
+			self.view_rect.right,
+			self.view_rect.bottom,
+			self.view_rect.top,
+			)
