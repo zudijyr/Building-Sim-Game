@@ -3,7 +3,7 @@ from sim.models.actions import Action
 
 class Harvest(Action):
 
-	def setup(self, resource, quantity=1):
+	def setup(self, resource, quantity):
 		self.initial_quantity = quantity
 		self.quantity = quantity
 		self.resource = resource
