@@ -18,6 +18,25 @@ class Building:
 		self.unit_factories = {}
 		self.container = SlottedCargoContainer()
 		self.building_id = uuid4()
+		self.harvestable_resources = set()
+		self.pt = None
+		self.action_queue = []
+
+	@property
+	def status(self):
+		return '\n'.join([
+			'building type:    {}'.format(self.name),
+			'current position: {}'.format(self.pt),
+			'current action:   {}'.format(self.current_action),
+			'container:\n{}'.format(indent(str(self.container), '  '))
+			])
+
+	@property
+	def current_action(self):
+		if len(self.action_queue) == 0:
+			return None
+		else:
+			return self.action_queue[0]
 
 	def add_resource_plant(self, resource_plant):
 		self.resource_plants.append(resource_plant)

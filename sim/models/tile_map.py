@@ -71,23 +71,6 @@ class TileMap:
 	def get_buildings(self):
 		return [v['building'] for v in self.building_registry.values()]
 
-	def get_unit_at_position(self, pt):
-		for unit in self.get_units():
-			if (unit.pt - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
-				return unit
-		return None
-
-	def select_unit(self, unit):
-		self.selected_unit = unit
-
-	def clear_unit_selection(self):
-		self.selected_unit = None
-
-	def get_tile(self, pt):
-		if pt not in self:
-			raise TileMapException("out of bounds: ".format(pt))
-		return self.tile_grid.get_tile(self.map_coords_to_grid_coords(pt))
-
 	def get_building_position(self, building):
 		if building.building_id not in self.building_registry:
 			message = "That building has not been added to the tile map: "
@@ -102,6 +85,32 @@ class TileMap:
 			b_pt = self.building_registry[building.building_id]['position']
 			if (b_pt - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
 				return building
+
+	def get_unit_at_position(self, pt):
+		for unit in self.get_units():
+			if (unit.pt - pt).M < min(self.tile_sz.w, self.tile_sz.h) / 2:
+				return unit
+		return None
+
+	def get_unit_or_building_at_position(self, pt):
+		unit = self.get_unit_at_position(pt)
+		if unit is not None:
+			return unit
+		building = self.get_building_at_position(pt)
+		if building is not None:
+			return building
+		return None
+
+	def select_unit(self, unit):
+		self.selected_unit = unit
+
+	def clear_unit_selection(self):
+		self.selected_unit = None
+
+	def get_tile(self, pt):
+		if pt not in self:
+			raise TileMapException("out of bounds: ".format(pt))
+		return self.tile_grid.get_tile(self.map_coords_to_grid_coords(pt))
 
 	def get_terrain(self, pt):
 		tile = self.get_tile(pt)
