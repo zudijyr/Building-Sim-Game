@@ -14,7 +14,7 @@ class EventHandler:
 	def on_mouse_press(self, x, y, button, modifiers):
 		pt = self.camera.convert_world_point_to_view_point(Point(x, y))
 		if button == pyglet.window.mouse.LEFT:
-			unit = self.tile_map.get_unit_at_position(pt)
+			unit = self.tile_map.get_unit_or_building_at_position(pt)
 			if unit is None:
 				self.tile_map.clear_unit_selection()
 				self.hud.clear_action_gui()
