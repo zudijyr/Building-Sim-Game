@@ -12,6 +12,7 @@ from sim.models.terrain import Forest, Water, Grass
 from sim.models.terrain_improvement import Road, IronOreDeposit
 from sim.models.unit.peasant import Peasant
 from sim.models.unit.ship import Ship
+from sim.models.unit import Unit
 
 from sim.models.building.cabbage_farm import CabbageFarm
 from sim.models.building.fishing_hole import FishingHole
@@ -126,20 +127,21 @@ class Engine:
 			(sprite.x, sprite.y) = pt
 			sprite.draw()
 		if self.tile_map.selected_unit is not None:
-			unit_selection_key = 'unit-selection'
-			if unit_selection_key not in self.sprite_registry:
-				image = self.load_image(
-					'selection.png',
-					'unit-selection-image',
-					)
-				sprite = pyglet.sprite.Sprite(image, x=0, y=0)
-				self.scale_sprite_to_tile_size(sprite)
-				self.sprite_registry[unit_selection_key] = sprite
-			sprite = self.sprite_registry[unit_selection_key]
-			pt = self.tile_map.selected_unit.pt
-			pt = pt - self.tile_map.tile_sz * 0.5
-			(sprite.x, sprite.y) = pt
-			sprite.draw()
+			if isinstance(self.tile_map.selected_unit, Unit):
+				unit_selection_key = 'unit-selection'
+				if unit_selection_key not in self.sprite_registry:
+					image = self.load_image(
+						'selection.png',
+						'unit-selection-image',
+						)
+					sprite = pyglet.sprite.Sprite(image, x=0, y=0)
+					self.scale_sprite_to_tile_size(sprite)
+					self.sprite_registry[unit_selection_key] = sprite
+				sprite = self.sprite_registry[unit_selection_key]
+				pt = self.tile_map.selected_unit.pt
+				pt = pt - self.tile_map.tile_sz * 0.5
+				(sprite.x, sprite.y) = pt
+				sprite.draw()
 
 	def get_terrain_image(self, terrain):
 		if terrain is Forest:

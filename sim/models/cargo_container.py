@@ -19,8 +19,6 @@ class CargoContainer:
 		capacity = self.remaining_capacity(resource_type)
 		capped_quantity = min(capacity, quantity)
 		self.cargo_slots[resource_type.name]['load'] += capped_quantity
-		print(quantity)
-		print(capped_quantity)
 		return quantity - capped_quantity
 
 	def unload_cargo(self, resource_type, quantity):
