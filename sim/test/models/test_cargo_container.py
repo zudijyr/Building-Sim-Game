@@ -1,4 +1,5 @@
 import unittest
+import math
 from sim.models.resource import Fish, Cabbage, Wood
 from sim.models.cargo_container import MixedCargoContainer
 from sim.models.cargo_container import SlottedCargoContainer
@@ -49,7 +50,7 @@ class MixedCargoContainerModelTest(unittest.TestCase):
 		slot['load'] = 5
 		self.assertEqual(
 			bag.remaining_capacity(Wood),
-			(100 - 3 * Fish.weight - 5 * Cabbage.weight) // Wood.weight,
+			math.floor((100 - 3 * Fish.weight - 5 * Cabbage.weight) / Wood.weight),
 			)
 
 	def test_current_load_returns_the_current_number_of_resource_type_held_in_the_container(self):  # noqa
