@@ -58,7 +58,7 @@ class HUD:
 			harvest_button = GroupButton(
 				group_id='action-gui-buttons',
 				label=resource.name,
-				on_press=lambda x: self.handle_click(x, Harvest(resource)),
+				on_press=lambda x: self.handle_click(x, Harvest(resource, unit.container.remaining_capacity(resource))),
 				)
 			harvest_content.append(harvest_button)
 		harvest_container = HorizontalContainer(harvest_content)
