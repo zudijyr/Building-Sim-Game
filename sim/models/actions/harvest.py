@@ -14,7 +14,7 @@ class Harvest(Action):
 		return 'Harvest {} {} ({:.2f} remaining)'.format(
 			self.initial_quantity,
 			self.resource.name,
-			self.quantity,
+			self.quantity-self.gathered_quantity,
 			)
 
 	def is_possible(self, unit, dt):
