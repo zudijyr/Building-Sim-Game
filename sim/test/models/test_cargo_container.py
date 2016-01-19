@@ -1,5 +1,4 @@
 import unittest
-import math
 from sim.models.resource import Fish, Cabbage, Wood
 from sim.models.cargo_container import MixedCargoContainer
 from sim.models.cargo_container import SlottedCargoContainer
@@ -50,8 +49,7 @@ class MixedCargoContainerModelTest(unittest.TestCase):
 		slot['load'] = 5
 		self.assertEqual(
 			bag.remaining_capacity(Wood),
-			math.floor((100 - 3 * Fish.weight - 5 * Cabbage.weight) / Wood.weight),
-			)
+			(100 - 3 * Fish.weight - 5 * Cabbage.weight) / Wood.weight)
 
 	def test_current_load_returns_the_current_number_of_resource_type_held_in_the_container(self):  # noqa
 		bag = MixedCargoContainer()
@@ -73,8 +71,8 @@ class MixedCargoContainerModelTest(unittest.TestCase):
 		bag = MixedCargoContainer()
 		bag.set_weight_capacity(Fish.weight * 5 - 1)
 		remains = bag.load_cargo(Fish, 7)
-		self.assertEqual(bag.current_load(Fish), 4)
-		self.assertEqual(remains, 3)
+		self.assertEqual(bag.current_load(Fish), 4.5)
+		self.assertEqual(remains, 2.5)
 
 	def test_load_cargo_returns_entire_load_if_slot_is_already_at_capacity(self):  # noqa
 		bag = MixedCargoContainer()

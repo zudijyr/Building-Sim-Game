@@ -36,13 +36,15 @@ class HarvestTest(unittest.TestCase):
 		dummy_resource = MagicMock()
 		dummy_resource.harvest_rate = 0.5
 		dummy_unit = MagicMock()
-		harvest = Harvest(dummy_resource, 1)
-		harvest._execute(dummy_unit, 1.0)
+		dummy_unit.container.remaining_capacity.return_value = 2.0
+		harvest = Harvest(dummy_resource, 1.5)
+
+		harvest._execute(dummy_unit, 2.5)
+		self.assertEqual(harvest.quantity, 0.5)
 		dummy_unit.container.load_cargo.assert_called_once_with(
 			dummy_resource,
-			0.5,
-			)
-		self.assertEqual(harvest.quantity, 0.5)
+			1,
+		)
 
 	def test__execute_will_not_load_more_resources_than_the_requested_quantity_even_if_the_rate_by_dt_is_larger(self):  # noqa
 		dummy_resource = MagicMock()

@@ -1,5 +1,4 @@
 from sim import SimException
-import math
 
 class CargoContainerException(SimException):
 	pass
@@ -85,7 +84,7 @@ class MixedCargoContainer(CargoContainer):
 	def remaining_capacity(self, resource_type):
 		self.get_slot(resource_type)
 		remaining_weight = self.weight_capacity - self.get_current_weight()
-		return math.floor(remaining_weight/resource_type.weight)
+		return remaining_weight/resource_type.weight
 
 	def current_load(self, resource_type):
 		slot = self.get_slot(resource_type)

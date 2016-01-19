@@ -10,7 +10,6 @@ class Peasant(Unit):
 	# TODO: make a way for units to drop off cargo at random places
 	#       so they don't need to carry it all at once?
 	strength = 30
-	# Tiles per second
 	movement_speed = 1
 	name = 'Peasant'
 	moves_on_water = False
