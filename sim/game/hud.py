@@ -16,6 +16,7 @@ from sim import SimException
 from sim.models.unit import Unit
 
 from sim.models.actions.harvest import Harvest
+from sim.models.actions.transfer import Transfer
 from sim.models.actions.construct import Construct
 
 
@@ -59,7 +60,6 @@ class HUD:
 			#TODO add actions for buildings
 
 			harvest_content = [Label(text='Harvest')]
-
 			for resource in selected_object.harvestable_resources:
 				harvest_button = GroupButton(
 					group_id='action-gui-buttons',
@@ -80,9 +80,20 @@ class HUD:
 				building_content.append(building_button)
 			construct_container = HorizontalContainer(building_content)
 
+			transfer_content = [Label(text='Transfer')]
+			for resource in selected_object.harvestable_resources: #TODO other resource list?
+				transfer_button = GroupButton(
+					group_id='action-gui-buttons',
+					label=resource.name,
+					on_press=lambda x: self.handle_click(x, Transfer(resource, selected_object.container.current_load(resource))),
+					)
+				transfer_content.append(transfer_button)
+			transfer_container = HorizontalContainer(transfer_content)
+
 			action_container = VerticalContainer([
 				harvest_container,
 				construct_container,
+				transfer_container,
 				])
 			self.action_gui_batch = pyglet.graphics.Batch()
 			self.action_gui_manager = Manager(

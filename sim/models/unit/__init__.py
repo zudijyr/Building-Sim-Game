@@ -26,6 +26,7 @@ class Unit:
 		self.harvestable_resources = set()
 		self.pt = None
 		self.traversable_terrain_types = set()
+		self.target = None
 
 	def __repr__(self):
 		return self.name

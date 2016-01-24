@@ -25,7 +25,11 @@ class EventHandler:
 			unit = self.tile_map.selected_unit
 			if unit is not None:
 				unit.clear_actions()
+				unit.target = None
 				unit.add_action(MoveToward(pt))
+				target = self.tile_map.get_unit_or_building_at_position(pt)
+				if target is not None:
+					unit.target = target
 				if self.hud.selected_action is not None:
 					unit.add_action(self.hud.selected_action)
 
