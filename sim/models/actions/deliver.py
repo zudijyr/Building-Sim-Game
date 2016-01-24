@@ -2,7 +2,7 @@ from sim.models.actions import Action
 import math
 
 
-class Transfer(Action):
+class Deliver(Action):
 
 	def setup(self, resource, quantity):
 		self.initial_quantity = quantity
@@ -21,6 +21,8 @@ class Transfer(Action):
 		if unit.target is None:
 			return False
 		if unit.target.container.remaining_capacity(self.resource) <= 0:
+			return False
+		if self.quantity < 1.0:
 			return False
 		return True
 

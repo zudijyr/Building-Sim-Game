@@ -16,7 +16,8 @@ from sim import SimException
 from sim.models.unit import Unit
 
 from sim.models.actions.harvest import Harvest
-from sim.models.actions.transfer import Transfer
+from sim.models.actions.deliver import Deliver
+from sim.models.actions.pickup import Pickup
 from sim.models.actions.construct import Construct
 
 
@@ -80,20 +81,31 @@ class HUD:
 				building_content.append(building_button)
 			construct_container = HorizontalContainer(building_content)
 
-			transfer_content = [Label(text='Transfer')]
-			for resource in selected_object.harvestable_resources: #TODO other resource list?
-				transfer_button = GroupButton(
+			deliver_content = [Label(text='Deliver')]
+			for resource in selected_object.carryable_resources:
+				deliver_button = GroupButton(
 					group_id='action-gui-buttons',
 					label=resource.name,
-					on_press=lambda x: self.handle_click(x, Transfer(resource, selected_object.container.current_load(resource))),
+					on_press=lambda x: self.handle_click(x, Deliver(resource, selected_object.container.current_load(resource))),
 					)
-				transfer_content.append(transfer_button)
-			transfer_container = HorizontalContainer(transfer_content)
+				deliver_content.append(deliver_button)
+			deliver_container = HorizontalContainer(deliver_content)
+
+			pickup_content = [Label(text='Pick up')]
+			for resource in selected_object.carryable_resources:
+				pickup_button = GroupButton(
+					group_id='action-gui-buttons',
+					label=resource.name,
+					on_press=lambda x: self.handle_click(x, Pickup(resource, selected_object.container.remaining_capacity(resource))),
+					)
+				pickup_content.append(pickup_button)
+			pickup_container = HorizontalContainer(pickup_content)
 
 			action_container = VerticalContainer([
 				harvest_container,
 				construct_container,
-				transfer_container,
+				deliver_container,
+				pickup_container,
 				])
 			self.action_gui_batch = pyglet.graphics.Batch()
 			self.action_gui_manager = Manager(
