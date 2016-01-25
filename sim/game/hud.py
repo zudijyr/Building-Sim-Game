@@ -14,11 +14,15 @@ from pyglet_gui.gui import Label, Frame
 from sim import SimException
 
 from sim.models.unit import Unit
+from sim.models.building import Building
 
 from sim.models.actions.harvest import Harvest
 from sim.models.actions.deliver import Deliver
 from sim.models.actions.pickup import Pickup
 from sim.models.actions.construct import Construct
+from sim.models.actions.produce import Produce
+
+from sim.models.resource import Lumber
 
 
 class HUDException(SimException):
@@ -43,6 +47,12 @@ class HUD:
 			self.selected_action = action
 		return True
 
+	def handle_building_click(self, button_state, selected_object, action):
+		if button_state is not False:
+			self.selected_action = action
+			selected_object.add_action(action) #this should probably get moved to the event_handler
+		return True
+
 	def clear_action_gui(self):
 		self.selected_action = None
 		self.action_gui_batch = None
@@ -57,8 +67,36 @@ class HUD:
 		if selected_object is None:
 			raise HUDException("Can't build action gui with a unit of None")
 
+		if isinstance(selected_object, Building):
+			print(selected_object)
+			building = selected_object
+			produce_content = [Label(text='Harvest')]
+			resource = Lumber() #TODO other resources
+			produce_button = GroupButton(
+				group_id='action-gui-buttons',
+				label=resource.name,
+				on_press=lambda x: self.handle_building_click(x, building, Produce(building, resource, selected_object.container.remaining_capacity(resource))),
+				)
+			produce_content.append(produce_button)
+			produce_container = HorizontalContainer(produce_content)
+
+			action_container = VerticalContainer([
+				produce_container,
+				])
+			self.action_gui_batch = pyglet.graphics.Batch()
+			self.action_gui_manager = Manager(
+				action_container,
+				window=self.window,
+				theme=self.theme,
+				batch=self.action_gui_batch,
+				)
+			self.action_gui_manager.set_position(
+				10,
+				self.window.height - action_container.height - 10,
+				)
+			self.action_gui_manager.is_movable = False
+
 		if isinstance(selected_object, Unit):
-			#TODO add actions for buildings
 
 			harvest_content = [Label(text='Harvest')]
 			for resource in selected_object.harvestable_resources:
@@ -147,7 +185,7 @@ class HUD:
 		if selected_unit is not None:
 			if self.action_gui_batch is None:
 				self.build_action_gui(selected_unit)
-			if isinstance(selected_unit, Unit):
+			if self.action_gui_batch is not None:
 				self.action_gui_batch.draw()
 			if self.status_gui_batch is None:
 				self.build_status_gui()

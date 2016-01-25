@@ -28,7 +28,7 @@ class Deliver(Action):
 
 	def _execute(self, unit, dt):
 		self.transferred_quantity += min(dt * self.resource.transfer_rate, self.quantity)
-		if self.transferred_quantity > 1:
+		if self.transferred_quantity >= 1:
 			self.transferred_quantity = math.floor(self.transferred_quantity)
 			unit.target.container.load_cargo(self.resource, self.transferred_quantity)
 			unit.container.unload_cargo(self.resource, self.transferred_quantity)

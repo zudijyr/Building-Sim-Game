@@ -16,7 +16,7 @@ class ProducerConsumer:
 			requirement = self.resource_requirements[key]
 			lines.append('consumes {}:'.format(key))
 			lines.append('  type:     {}'.format(requirement['type']))
-			lines.append('  load:     {}'.format(requirement['load']))
+			lines.append('  load:     {}\n'.format(requirement['load']))
 		return '\n'.join(lines)
 
 	def add_resource_requirement(self, input_type, input_load):

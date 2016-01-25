@@ -7,6 +7,7 @@ class Resource:
 	harvestable_from = []
 	harvest_rate = 0.0
 	transfer_rate = 0.0
+	production_rate = 0.0
 
 	def __repr__(self):
 		return self.name
@@ -45,6 +46,7 @@ class Lumber(Resource):
 	name = 'lumber'
 	weight = 3
 	transfer_rate = 2
+	production_rate = 2
 
 
 class IronOre(Resource):
