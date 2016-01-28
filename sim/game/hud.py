@@ -43,14 +43,17 @@ class HUD:
 		self.clear_status_gui()
 
 	def handle_click(self, button_state, action):
+		print('clicked the unit')
 		if button_state is not False:
 			self.selected_action = action
 		return True
 
-	def handle_building_click(self, button_state, selected_object, action):
+	def handle_building_click(self, button_state, button, selected_object, action):
+		print('clicked the building')
 		if button_state is not False:
 			self.selected_action = action
 			selected_object.add_action(action) #this should probably get moved to the event_handler
+#			button.change_state() #TODO Do this when the action finishes
 		return True
 
 	def clear_action_gui(self):
@@ -68,16 +71,15 @@ class HUD:
 			raise HUDException("Can't build action gui with a unit of None")
 
 		if isinstance(selected_object, Building):
-			print(selected_object)
 			building = selected_object
-			produce_content = [Label(text='Harvest')]
-			resource = Lumber() #TODO other resources
-			produce_button = GroupButton(
-				group_id='action-gui-buttons',
-				label=resource.name,
-				on_press=lambda x: self.handle_building_click(x, building, Produce(building, resource, selected_object.container.remaining_capacity(resource))),
-				)
-			produce_content.append(produce_button)
+			produce_content = [Label(text='Produce')]
+			for resource in building.producable_resources:
+				produce_button = GroupButton(
+					group_id='action-gui-buttons',
+					label=resource.name,
+					on_press=lambda x: self.handle_building_click(x, produce_button, building, Produce(building, resource, selected_object.container.remaining_capacity(resource))),
+					)
+				produce_content.append(produce_button)
 			produce_container = HorizontalContainer(produce_content)
 
 			action_container = VerticalContainer([

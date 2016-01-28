@@ -10,10 +10,12 @@ class Produce(Action):
 		self.quantity = quantity
 		self.resource = resource
 		self.produced_quantity = 0
-		resource_plant = self.building.resource_plants[0]
-		self.required_resource = resource_plant.resource_requirements['wood']['type'] #hacky
-		self.required_quantity = self.building.container.remaining_capacity(self.required_resource)
-		print(self)
+		resource_plant = self.building.resource_plants[0] #TODO allow selecting a particular resource plant
+		for value in resource_plant.resource_requirements.values():
+			self.required_resource = value['type'] #TODO change this to handle using multiple resources
+			self.amount_used = value['load']
+		self.required_quantity = self.building.container.current_load(self.required_resource)
+		print(self.required_quantity)
 
 	def __repr__(self):
 		return 'Produce {} {} ({:.2f} remaining)'.format(
@@ -35,7 +37,7 @@ class Produce(Action):
 			self.produced_quantity = math.floor(self.produced_quantity)
 			self.building.produce_resources() #add options to specific resource, quantity
 			self.quantity -= self.produced_quantity
-			self.required_quantity -= self.produced_quantity
+			self.required_quantity -= self.produced_quantity * self.amount_used
 			self.produced_quantity = 0
 
 	def is_complete(self, building, dt):
