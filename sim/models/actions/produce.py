@@ -15,7 +15,6 @@ class Produce(Action):
 			self.required_resource = value['type'] #TODO change this to handle using multiple resources
 			self.amount_used = value['load']
 		self.required_quantity = self.building.container.current_load(self.required_resource)
-		print(self.required_quantity)
 
 	def __repr__(self):
 		return 'Produce {} {} ({:.2f} remaining)'.format(

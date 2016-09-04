@@ -9,6 +9,7 @@ class Deliver(Action):
 		self.quantity = quantity
 		self.resource = resource
 		self.transferred_quantity = 0
+		print(resource.name)
 
 	def __repr__(self):
 		return 'Transfer {} {} ({:.2f} remaining)'.format(
@@ -21,6 +22,8 @@ class Deliver(Action):
 		if unit.target is None:
 			return False
 		if unit.target.container.remaining_capacity(self.resource) <= 0:
+			return False
+		if unit.container.current_load(self.resource) < 1.0:
 			return False
 		if self.quantity < 1.0:
 			return False

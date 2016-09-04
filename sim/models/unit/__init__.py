@@ -9,7 +9,6 @@ from textwrap import indent
 class UnitException(SimException):
 	pass
 
-
 class Unit:
 	# grid units per second
 	movement_speed = 0

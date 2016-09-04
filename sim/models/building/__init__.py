@@ -19,6 +19,7 @@ class Building:
 		self.container = SlottedCargoContainer()
 		self.building_id = uuid4()
 		self.harvestable_resources = set()
+		self.producable_resources = set()
 		self.pt = None
 		self.action_queue = []
 
@@ -58,6 +59,9 @@ class Building:
 
 	def clear_actions(self):
 		self.action_queue = []
+
+	def add_producable_resource(self, resource):
+		self.producable_resources.add(resource)
 
 	def add_resource_plant(self, resource_plant):
 		self.resource_plants.append(resource_plant)

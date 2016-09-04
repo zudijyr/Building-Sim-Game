@@ -18,7 +18,9 @@ from sim.models.building import Building
 
 from sim.models.actions.harvest import Harvest
 from sim.models.actions.deliver import Deliver
+from sim.models.actions.deliver_all import DeliverAll
 from sim.models.actions.pickup import Pickup
+from sim.models.actions.pickup_all import PickupAll
 from sim.models.actions.construct import Construct
 from sim.models.actions.produce import Produce
 
@@ -43,17 +45,14 @@ class HUD:
 		self.clear_status_gui()
 
 	def handle_click(self, button_state, action):
-		print('clicked the unit')
 		if button_state is not False:
 			self.selected_action = action
 		return True
 
 	def handle_building_click(self, button_state, button, selected_object, action):
-		print('clicked the building')
 		if button_state is not False:
 			self.selected_action = action
 			selected_object.add_action(action) #this should probably get moved to the event_handler
-#			button.change_state() #TODO Do this when the action finishes
 		return True
 
 	def clear_action_gui(self):
@@ -66,99 +65,125 @@ class HUD:
 		self.status_gui_batch = None
 		self.status_gui_manager = None
 
+	def build_building_gui(self, selected_building):
+		building = selected_building
+		produce_content = [Label(text='Produce')]
+		for resource in building.producable_resources:
+			produce_button = GroupButton(
+				group_id='action-gui-buttons',
+				label=resource.name,
+				on_press=lambda x: self.handle_building_click(x, produce_button, building, Produce(building, resource, selected_building.container.remaining_capacity(resource))),
+				)
+			produce_content.append(produce_button)
+		produce_container = HorizontalContainer(produce_content)
+
+		action_container = VerticalContainer([
+			produce_container,
+			])
+		self.action_gui_batch = pyglet.graphics.Batch()
+		self.action_gui_manager = Manager(
+			action_container,
+			window=self.window,
+			theme=self.theme,
+			batch=self.action_gui_batch,
+			)
+		self.action_gui_manager.set_position(
+			#it's on the right as a hack to fix the Manager bug
+			self.window.width - action_container.width - 30,
+			self.window.height - action_container.height - 10,
+			)
+		self.action_gui_manager.is_movable = False
+
+	def build_unit_gui(self, selected_object):
+		harvest_content = [Label(text='Harvest')]
+		for resource in selected_object.harvestable_resources:
+			harvest_button = GroupButton(
+				group_id='action-gui-buttons',
+				label=resource.name,
+				on_press=lambda x: self.handle_click(x, Harvest(resource, selected_object.container.remaining_capacity(resource))),
+				)
+			harvest_content.append(harvest_button)
+		harvest_container = HorizontalContainer(harvest_content)
+
+		building_content = [Label(text='Construct')]
+		for building_factory in selected_object.building_factories.values():
+			building_button = GroupButton(
+				group_id='action-gui-buttons',
+				label=building_factory.product.name,
+				on_press=lambda x:
+					self.handle_click(x, Construct(building_factory.product)),
+				)
+			building_content.append(building_button)
+		construct_container = HorizontalContainer(building_content)
+
+		deliver_content = [Label(text='Deliver')]
+		for resource in selected_object.carryable_resources:
+			deliver_button = GroupButton(
+				group_id='action-gui-buttons',
+				label=resource.name,
+				on_press=lambda x: self.handle_click(x, Deliver(resource, selected_object.container.current_load(resource))),
+				)
+			deliver_content.append(deliver_button)
+		deliver_container = HorizontalContainer(deliver_content)
+
+		deliver_all_content = [Label(text='DeliverAll')]
+		deliver_all_button = GroupButton(
+			group_id='action-gui-buttons',
+			label='all',
+			on_press=lambda x: self.handle_click(x, DeliverAll(selected_object)
+			))
+		deliver_all_content.append(deliver_all_button)
+		deliver_all_container = HorizontalContainer(deliver_all_content)
+
+		pickup_content = [Label(text='Pick up')]
+		for resource in selected_object.carryable_resources:
+			pickup_button = GroupButton(
+				group_id='action-gui-buttons',
+				label=resource.name,
+				on_press=lambda x: self.handle_click(x, Pickup(resource, selected_object.container.remaining_capacity(resource))),
+				)
+			pickup_content.append(pickup_button)
+		pickup_container = HorizontalContainer(pickup_content)
+
+		pickup_all_content = [Label(text='PickupAll')]
+		pickup_all_button = GroupButton(
+			group_id='action-gui-buttons',
+			label='all',
+			on_press=lambda x: self.handle_click(x, PickupAll(selected_object)
+			))
+		pickup_all_content.append(pickup_all_button)
+		pickup_all_container = HorizontalContainer(pickup_all_content)
+
+		action_container = VerticalContainer([
+			harvest_container,
+			construct_container,
+			deliver_container,
+			deliver_all_container,
+			pickup_container,
+			pickup_all_container
+			])
+		self.action_gui_batch = pyglet.graphics.Batch()
+		self.action_gui_manager = Manager(
+			action_container,
+			window=self.window,
+			theme=self.theme,
+			batch=self.action_gui_batch,
+			)
+		self.action_gui_manager.set_position(
+			10,
+			self.window.height - action_container.height - 10,
+			)
+		self.action_gui_manager.is_movable = False
+
 	def build_action_gui(self, selected_object):
 		if selected_object is None:
 			raise HUDException("Can't build action gui with a unit of None")
 
 		if isinstance(selected_object, Building):
-			building = selected_object
-			produce_content = [Label(text='Produce')]
-			for resource in building.producable_resources:
-				produce_button = GroupButton(
-					group_id='action-gui-buttons',
-					label=resource.name,
-					on_press=lambda x: self.handle_building_click(x, produce_button, building, Produce(building, resource, selected_object.container.remaining_capacity(resource))),
-					)
-				produce_content.append(produce_button)
-			produce_container = HorizontalContainer(produce_content)
-
-			action_container = VerticalContainer([
-				produce_container,
-				])
-			self.action_gui_batch = pyglet.graphics.Batch()
-			self.action_gui_manager = Manager(
-				action_container,
-				window=self.window,
-				theme=self.theme,
-				batch=self.action_gui_batch,
-				)
-			self.action_gui_manager.set_position(
-				10,
-				self.window.height - action_container.height - 10,
-				)
-			self.action_gui_manager.is_movable = False
+			self.build_building_gui(selected_object)
 
 		if isinstance(selected_object, Unit):
-
-			harvest_content = [Label(text='Harvest')]
-			for resource in selected_object.harvestable_resources:
-				harvest_button = GroupButton(
-					group_id='action-gui-buttons',
-					label=resource.name,
-					on_press=lambda x: self.handle_click(x, Harvest(resource, selected_object.container.remaining_capacity(resource))),
-					)
-				harvest_content.append(harvest_button)
-			harvest_container = HorizontalContainer(harvest_content)
-
-			building_content = [Label(text='Construct')]
-			for building_factory in selected_object.building_factories.values():
-				building_button = GroupButton(
-					group_id='action-gui-buttons',
-					label=building_factory.product.name,
-					on_press=lambda x:
-						self.handle_click(x, Construct(building_factory.product)),
-					)
-				building_content.append(building_button)
-			construct_container = HorizontalContainer(building_content)
-
-			deliver_content = [Label(text='Deliver')]
-			for resource in selected_object.carryable_resources:
-				deliver_button = GroupButton(
-					group_id='action-gui-buttons',
-					label=resource.name,
-					on_press=lambda x: self.handle_click(x, Deliver(resource, selected_object.container.current_load(resource))),
-					)
-				deliver_content.append(deliver_button)
-			deliver_container = HorizontalContainer(deliver_content)
-
-			pickup_content = [Label(text='Pick up')]
-			for resource in selected_object.carryable_resources:
-				pickup_button = GroupButton(
-					group_id='action-gui-buttons',
-					label=resource.name,
-					on_press=lambda x: self.handle_click(x, Pickup(resource, selected_object.container.remaining_capacity(resource))),
-					)
-				pickup_content.append(pickup_button)
-			pickup_container = HorizontalContainer(pickup_content)
-
-			action_container = VerticalContainer([
-				harvest_container,
-				construct_container,
-				deliver_container,
-				pickup_container,
-				])
-			self.action_gui_batch = pyglet.graphics.Batch()
-			self.action_gui_manager = Manager(
-				action_container,
-				window=self.window,
-				theme=self.theme,
-				batch=self.action_gui_batch,
-				)
-			self.action_gui_manager.set_position(
-				10,
-				self.window.height - action_container.height - 10,
-				)
-			self.action_gui_manager.is_movable = False
+			self.build_unit_gui(selected_object)
 
 	def build_status_gui(self):
 		self.status_box = Document(
