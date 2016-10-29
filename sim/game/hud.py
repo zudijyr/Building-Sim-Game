@@ -5,7 +5,7 @@ import pyglet
 from pyglet.gl import glLoadIdentity, gluOrtho2D
 
 from pyglet_gui.document import Document
-from pyglet_gui.buttons import GroupButton
+from pyglet_gui.buttons import Button, GroupButton
 from pyglet_gui.containers import HorizontalContainer, VerticalContainer
 from pyglet_gui.theme import Theme
 from pyglet_gui.manager import Manager
@@ -24,7 +24,10 @@ from sim.models.actions.pickup_all import PickupAll
 from sim.models.actions.construct import Construct
 from sim.models.actions.produce import Produce
 
-from sim.models.resource import Lumber
+from sim.models.resource import Lumber, Wood
+from sim.models.building.cabbage_farm import CabbageFarm
+from sim.models.building.iron_mine import IronMine
+
 
 
 class HUDException(SimException):
@@ -45,6 +48,7 @@ class HUD:
 		self.clear_status_gui()
 
 	def handle_click(self, button_state, action):
+		print(action)
 		if button_state is not False:
 			self.selected_action = action
 		return True
@@ -96,34 +100,76 @@ class HUD:
 
 	def build_unit_gui(self, selected_object):
 		harvest_content = [Label(text='Harvest')]
-		for resource in selected_object.harvestable_resources:
-			harvest_button = GroupButton(
-				group_id='action-gui-buttons',
-				label=resource.name,
-				on_press=lambda x: self.handle_click(x, Harvest(resource, selected_object.container.remaining_capacity(resource))),
-				)
-			harvest_content.append(harvest_button)
+		#for resource in selected_object.harvestable_resources:
+		#	harvest_button = GroupButton(
+		#		group_id='action-gui-buttons',
+		#		label=resource.name,
+		#		on_press=lambda x: self.handle_click(x, Harvest(resource, selected_object.container.remaining_capacity(resource))),
+		#		)
+		#	harvest_content.append(harvest_button)
+		harvest_wood_button = GroupButton(
+			group_id='action-gui-buttons',
+			label=Wood.name,
+			on_press=lambda x: self.handle_click(x, Harvest(Wood, selected_object.container.remaining_capacity(Wood))),
+			)
+		harvest_content.append(harvest_wood_button)
 		harvest_container = HorizontalContainer(harvest_content)
 
 		building_content = [Label(text='Construct')]
-		for building_factory in selected_object.building_factories.values():
-			building_button = GroupButton(
-				group_id='action-gui-buttons',
-				label=building_factory.product.name,
-				on_press=lambda x:
-					self.handle_click(x, Construct(building_factory.product)),
-				)
-			building_content.append(building_button)
+		#for building_factory in selected_object.building_factories.values():
+		#	building_button = GroupButton(
+		#		group_id='action-gui-buttons',
+		#		label=building_factory.product.name,
+		#		on_press=lambda x:
+		#			self.handle_click(x, Construct(building_factory.product)),
+		#		)
+		#	building_content.append(building_button)
+		building_cabbage_farm_button = GroupButton(
+			group_id='action-gui-buttons',
+			label=CabbageFarm.name,
+			on_press=lambda x:
+				self.handle_click(x, Construct(CabbageFarm)),
+			)
+		building_content.append(building_cabbage_farm_button)
+		building_iron_mine_button = GroupButton(
+			group_id='action-gui-buttons',
+			label=IronMine.name,
+			on_press=lambda x:
+				self.handle_click(x, Construct(IronMine)),
+			)
+		building_content.append(building_iron_mine_button)
+		#building_farm_button = GroupButton(
+		#	group_id='action-gui-buttons',
+		#	label=building_factory.Farm.name,
+		#	on_press=lambda x:
+		#		self.handle_click(x, Construct(building_factory.Farm)),
+		#	)
+		#building_content.append(building_farm_button)
 		construct_container = HorizontalContainer(building_content)
 
 		deliver_content = [Label(text='Deliver')]
-		for resource in selected_object.carryable_resources:
-			deliver_button = GroupButton(
-				group_id='action-gui-buttons',
-				label=resource.name,
-				on_press=lambda x: self.handle_click(x, Deliver(resource, selected_object.container.current_load(resource))),
-				)
-			deliver_content.append(deliver_button)
+		#for resource in selected_object.carryable_resources:
+		#	deliver_button = GroupButton(
+		#		group_id='action-gui-buttons',
+		#		label=resource.name,
+		#		on_press=lambda x: self.handle_click(x, Deliver(resource, selected_object.container.current_load(resource))),
+		#		)
+		#	deliver_content.append(deliver_button)
+		#
+		#For some reason adding the buttons in a loop causes them to get the same action (same resource)
+		#TODO change the interface so that only relevant resource buttons appear
+		deliver_wood_button = GroupButton(
+			group_id='action-gui-buttons',
+			label=Wood.name,
+			on_press=lambda x: self.handle_click(x, Deliver(Wood, selected_object.container.current_load(Wood))),
+			)
+		deliver_content.append(deliver_wood_button)
+		deliver_lumber_button = GroupButton(
+			group_id='action-gui-buttons',
+			label=Lumber.name,
+			on_press=lambda x: self.handle_click(x, Deliver(Lumber, selected_object.container.current_load(Lumber))),
+			)
+		deliver_content.append(deliver_lumber_button)
 		deliver_container = HorizontalContainer(deliver_content)
 
 		deliver_all_content = [Label(text='DeliverAll')]
@@ -136,13 +182,29 @@ class HUD:
 		deliver_all_container = HorizontalContainer(deliver_all_content)
 
 		pickup_content = [Label(text='Pick up')]
-		for resource in selected_object.carryable_resources:
-			pickup_button = GroupButton(
-				group_id='action-gui-buttons',
-				label=resource.name,
-				on_press=lambda x: self.handle_click(x, Pickup(resource, selected_object.container.remaining_capacity(resource))),
-				)
-			pickup_content.append(pickup_button)
+		#for resource in selected_object.carryable_resources:
+		#	pickup_button = GroupButton(
+		#		group_id='action-gui-buttons',
+		#		label=resource.name,
+		#		on_press=lambda x: self.handle_click(x, Pickup(resource, selected_object.container.remaining_capacity(resource))),
+		#		)
+		#	pickup_content.append(pickup_button)
+		#pickup_container = HorizontalContainer(pickup_content)
+		#
+		#For some reason adding the buttons in a loop causes them to get the same action (same resource)
+		#TODO change the interface so that only relevant resource buttons appear
+		pickup_wood_button = GroupButton(
+			group_id='action-gui-buttons',
+			label=Wood.name,
+			on_press=lambda x: self.handle_click(x, Pickup(Wood, selected_object.container.remaining_capacity(Wood))),
+			)
+		pickup_content.append(pickup_wood_button)
+		pickup_lumber_button = GroupButton(
+			group_id='action-gui-buttons',
+			label=Lumber.name,
+			on_press=lambda x: self.handle_click(x, Pickup(Lumber, selected_object.container.remaining_capacity(Lumber))),
+			)
+		pickup_content.append(pickup_lumber_button)
 		pickup_container = HorizontalContainer(pickup_content)
 
 		pickup_all_content = [Label(text='PickupAll')]

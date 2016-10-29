@@ -9,7 +9,7 @@ class Deliver(Action):
 		self.quantity = quantity
 		self.resource = resource
 		self.transferred_quantity = 0
-		print(resource.name)
+		#print(resource.name)
 
 	def __repr__(self):
 		return 'Transfer {} {} ({:.2f} remaining)'.format(
