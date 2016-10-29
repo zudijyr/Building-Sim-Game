@@ -2,6 +2,7 @@ import pyglet
 
 from sim.geometry import Point, Vector
 from sim.models.actions.move_toward import MoveToward
+from sim.models.unit import Unit
 
 
 class EventHandler:
@@ -23,9 +24,13 @@ class EventHandler:
 				self.hud.build_action_gui(unit)
 		if button == pyglet.window.mouse.RIGHT:
 			unit = self.tile_map.selected_unit
-			if unit is not None:
+			if unit is not None and isinstance(unit, Unit):
 				unit.clear_actions()
+				unit.target = None
 				unit.add_action(MoveToward(pt))
+				target = self.tile_map.get_unit_or_building_at_position(pt)
+				if target is not None:
+					unit.target = target
 				if self.hud.selected_action is not None:
 					unit.add_action(self.hud.selected_action)
 

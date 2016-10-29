@@ -12,6 +12,7 @@ class LumberMill(Building):
 		super().__init__()
 		self.container.add_resource_slot(Wood, 5)
 		self.container.add_resource_slot(Lumber, 5)
+		self.add_producable_resource(Lumber)
 		lumber_plant = ResourcePlant()
 		lumber_plant.add_resource_requirement(Wood, 1)
 		lumber_plant.add_resource_product(Lumber, 1)

@@ -9,7 +9,6 @@ from textwrap import indent
 class UnitException(SimException):
 	pass
 
-
 class Unit:
 	# grid units per second
 	movement_speed = 0
@@ -24,8 +23,10 @@ class Unit:
 		self.unit_id = uuid4()
 		self.action_queue = []
 		self.harvestable_resources = set()
+		self.carryable_resources = set()
 		self.pt = None
 		self.traversable_terrain_types = set()
+		self.target = None
 
 	def __repr__(self):
 		return self.name
@@ -53,6 +54,9 @@ class Unit:
 
 	def add_harvestable_resource(self, resource):
 		self.harvestable_resources.add(resource)
+
+	def add_carryable_resource(self, resource):
+		self.carryable_resources.add(resource)
 
 	def can_harvest_resource(self, resource):
 		return resource in self.harvestable_resources

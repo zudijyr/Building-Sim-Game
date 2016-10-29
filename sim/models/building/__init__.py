@@ -19,6 +19,7 @@ class Building:
 		self.container = SlottedCargoContainer()
 		self.building_id = uuid4()
 		self.harvestable_resources = set()
+		self.producable_resources = set()
 		self.pt = None
 		self.action_queue = []
 
@@ -37,6 +38,30 @@ class Building:
 			return None
 		else:
 			return self.action_queue[0]
+
+	def act(self, dt):
+		if len(self.action_queue) == 0:
+			return
+		action = self.action_queue.pop(0)
+		if not action.is_possible(self, dt):
+			return
+		action.execute(self, dt)
+		if action.is_complete(self, dt):
+			action.finish(self, dt)
+		else:
+			self.add_immediate_action(action.next_action(self, dt))
+
+	def add_action(self, action):
+		self.action_queue.append(action)
+
+	def add_immediate_action(self, action):
+		self.action_queue.insert(0, action)
+
+	def clear_actions(self):
+		self.action_queue = []
+
+	def add_producable_resource(self, resource):
+		self.producable_resources.add(resource)
 
 	def add_resource_plant(self, resource_plant):
 		self.resource_plants.append(resource_plant)

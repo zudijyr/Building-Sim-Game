@@ -61,7 +61,7 @@ class Engine:
 
 		self.update_terrain()
 		self.update_terrain_improvements()
-		self.update_buildings()
+		self.update_buildings(dt)
 		self.update_units(dt)
 
 		self.hud.draw(self.tile_map.selected_unit)
@@ -97,8 +97,9 @@ class Engine:
 			(sprite.x, sprite.y) = self.tile_map.grid_coords_to_map_coords(pt)
 			sprite.draw()
 
-	def update_buildings(self):
+	def update_buildings(self, dt):
 		for building in self.tile_map.get_buildings():
+			building.act(dt)
 			if building.building_id not in self.sprite_registry:
 				image = self.get_building_image(building)
 				if image is None:

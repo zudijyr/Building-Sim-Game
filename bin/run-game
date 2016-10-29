@@ -59,10 +59,14 @@ def main():
 	tile_map.place_building_on_grid(building3, Point(6, 11))
 	tile_map.place_building_on_grid(building4, Point(6, 12))
 	tile_map.place_building_on_grid(building5, Point(10, 8))
+	building5.receive_cargo(Wood, 1)
+	building5.receive_cargo(Lumber, 1)
 	###
 
 	### add units
 	unit1 = Peasant()
+	unit1.receive_cargo(Wood, 1)
+	unit1.receive_cargo(Lumber, 1)
 	tile_map.place_unit_on_grid(unit1, Point(4, 4))
 	unit1.add_action(MoveToward(tile_map.grid_coords_to_map_coords(Point(7, 7))))
 	unit1.add_action(Harvest(Wood, quantity=10))

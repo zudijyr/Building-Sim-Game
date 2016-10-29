@@ -9,6 +9,7 @@ class ProducerConsumer:
 
 	def __init__(self):
 		self.resource_requirements = {}
+		self.required_resource_list = []
 
 	def __repr__(self):
 		lines = []
@@ -16,7 +17,7 @@ class ProducerConsumer:
 			requirement = self.resource_requirements[key]
 			lines.append('consumes {}:'.format(key))
 			lines.append('  type:     {}'.format(requirement['type']))
-			lines.append('  load:     {}'.format(requirement['load']))
+			lines.append('  load:     {}\n'.format(requirement['load']))
 		return '\n'.join(lines)
 
 	def add_resource_requirement(self, input_type, input_load):
@@ -28,6 +29,7 @@ class ProducerConsumer:
 			'load': input_load,
 			'type': input_type,
 			}
+		self.required_resource_list.append(input_type)
 
 	def can_consume(self, cargo_container):
 		for requirement in self.resource_requirements.values():
